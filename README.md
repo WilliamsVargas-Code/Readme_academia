@@ -135,8 +135,7 @@ Mapeamos os três principais fluxos de funcionamento da academia com base na ent
 RO01 - Composição e Tipos de Planos Financeiros
 
     A academia de artes marciais oferece planos de adesão nas modalidades: Mensal, Trimestral, Anual e Familiar, 
-    vinculados às aulas de artes marciais (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira e No-Gi.). O sistema deve calcular 
-    automaticamente as mensalidadese aplicar descontos específicos para pacotes de longa duração ou familiares.
+    vinculados às aulas de artes marciais (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira e No-Gi.).
 
 RO02 - Padronização do Vencimento de Mensalidades
 
