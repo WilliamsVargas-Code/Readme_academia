@@ -113,25 +113,23 @@ Mapeamos os três principais fluxos de funcionamento da academia com base na ent
     
         O sistema deve garantir o sigilo de dados sensíveis dos alunos (especificamente o CPF e os registos de problemas de saúde).
 
-- RNF03 - Desempenho (Performance): 
-    
-        O sistema deve processar consultas de inadimplência, registro de presença de alunos e contrato expirados com tempo
-        de resposta inferior a 2 segundos, garantindo agilidade e evitando a formação de filas na entrada da academia.
+- RNF03 - Vencimento Fixo Padronizado:    
+       
+        Independentemente da data de matrícula, o motor financeiro deve padronizar o vencimento de todas as mensalidades
+        para o quinto dia útil de cada mês.
 
-- RNF04 - Disponibilidade (Availability): 
+- RNF04 - Limite Operacional de Alunos : 
     
-        O sistema deve garantir alta disponibilidade, operando sem interrupções não planejadas durante todo o horário de funcionamento
-        da academia, para assegurar que a liberação de acesso e o recebimento de mensalidades não sejam paralisados.
+        O sistema deve impedir tecnicamente que uma turma ultrapasse o teto máximo de 30 (trinta) alunos simultâneos.
 
-- RNF05 - Confiabilidade e Backup (Reliability): 
+- RNF05 - Exclusividade de Ensino do Professor : 
     
-        O sistema de banco de dados deve realizar rotinas automatizadas de backup diário de todas as informações (ex.: alunos, pagamentos,
-        frequências e graduações), prevenindo qualquer perda de dados em caso de falha de hardware.
+       Uma barreira sistémica deve garantir que um professor seja associado apenas a turmas da modalidade na qual é especialista.
 
-- RNF06 - Usabilidade (Usability): 
+- RNF06 - Regras Estritas de Trancamento : 
     
-        Considerando que a equipe da academia utiliza atualmente fichas de papel, o sistema deve possuir uma interface simples, intuitiva e
-        de fácil navegação, exigindo um tempo mínimo de treinamento para que recepcionistas e professores consigam operá-lo.
+        O sistema só deve permitir a alteração do status do aluno para 'Trancado' mediante o preenchimento de uma
+        justificativa médica (lesão), bloqueando a cobrança e a contagem de tempo do plano atual.
 ---
 
 ## 4\. Regras de Negócio (Restrições e regras de funcionamento)
