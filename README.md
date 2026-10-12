@@ -59,9 +59,34 @@ Este trabalho delimita-se à modelagem conceitual do banco de dados, não contem
 
 Mapeamos os três principais fluxos de funcionamento da academia com base na entrevista:
 
+
+* **Captação e Aula Experimental:** Todo aluno novo tem direito a uma aula experimental. Nessa aula, o interessado conhece a modalidade e o professor antes de decidir pela matrícula. Caso decida continuar, o processo segue para o Cadastro e Matrícula. Caso contrário, o contato é encerrado. Atualmente a aula experimental não é registrada em nenhum controle, pode ser agendada pelo whatsapp ou presencialmente. O sistema deve registar essa aula experimental como um pré cadastro do aluno
+  
 * **Processo de Cadastro e Matrícula:** O aluno preenche uma ficha física de papel com seus dados. A data da matrícula é anotada nessa ficha. Não existe um número de matrícula gerado, a identificação é feita apenas pelo nome/CPF.
-* **Processo de Mensalidade:** A academia trabalha com os planos Mensal, Trimestral, Anual e Família. O vencimento é fixo (todo 5º dia útil). O controle é feito de forma manual pelo WhatsApp, registrando apenas a data em que o aluno pagou.
+* **Processo de Mensalidade** A academia trabalha com os planos Mensal, Trimestral, Anual e Família. O vencimento é fixo (todo 5º dia útil). O controle é feito de forma manual pelo WhatsApp, registrando apenas a data em que o aluno pagou.
+
+* **Contratação de Planos:** A academia oferece os planos Mensal, Trimestral, Anual e Família, e cada plano possui um desconto específico. Na matrícula, o aluno escolhe o plano, que define o valor das mensalidades, o plano família e definido a partir de três pessoas
+
+* **Montagem de Turmas e Horários:** A turma é formada a partir da associação entre aluno e  professor, dentro de uma modalidade e de um horário definido, respeitando o limite de 30 alunos. os horários são definidos pela academia
+ 
+* **Trancamento e Cancelamento:** O trancamento só é permitido mediante atestado médico ou justificativa de lesão, e suspende a cobrança e a contagem de tempo do plano, Já o cancelamento pode ser feita a qualquer momento caso o plano contratado seja mensal
+
+* **Compra de Materiais e Equipamentos:** As compras são feitas pelo CEO Adalberto, em três grupos:
+ * **Materiais de treino** (saco de pancada, cordas, pneus e similares): compra eventual, sem periodicidade fixa, conforme a necessidade.
+ * **Materiais de higiene** (álcool, papel higiênico…) são itens que são comprados semanalmente pelo Ceo
+ * **Equipamentos básicos** Para os alunos que não possuem os equipamentos necessário (caneleiras ,luvas e capacetes): são comprados pelo CEO para o aluno iniciante, sem fazer nenhum custo na mensalidade
+
+* **Gestão e Pagamento dos Professores** O CEO Adalberto, além de gestor, é professor exclusivo de Muay Thai. Os professores das demais modalidades não são assalariados, a remuneração é calculada pela quantidade de aulas ministradas no período. Esse cálculo depende de um registro confiável das aulas dadas, o que se integra ao controle de frequência.
+
+
+* **Livre Acesso às Modalidades:** O aluno com plano ativo pode treinar em qualquer uma das modalidades oferecidas, sem possuir o uso dos equipamentos 
+
+* **Contas a pagar:** A academia possui despesas fixas, como aluguel e contas de consumo e pagamentos de professores.
+
+
 * **Processo de Graduação e Frequência:** Atualmente, a presença nas aulas **não é registrada** de forma alguma. No entanto, a frequência deveria influenciar diretamente na elegibilidade para os exames de faixa (nas modalidades que possuem faixa) ou na análise técnica (como no Boxe). A evolução hoje depende da percepção visual do professor.
+
+
 
 ---
 
