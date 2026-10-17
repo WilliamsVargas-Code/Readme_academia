@@ -160,7 +160,7 @@ A academia tem despesas fixas: aluguel, contas de consumo (água, luz etc.), man
 | --- | --- | --- |
 | Venda de produtos e suplementos | Não incluído | Não faz parte da demanda da academia; descartado no levantamento. |
 | Marketing e divulgação (Instagram, panfletos) | Não incluído | Não é problema de gestão de informações que um banco de dados resolva. |
-| Folha de pagamento com encargos trabalhistas | Não incluído | Professores são prestadores pagos por aula; só há 1 colaborador fixo (recepção). **[a confirmar]** |
+| Folha de pagamento com encargos trabalhistas | Não incluído | Professores são prestadores pagos por aula.|
 | Controle de inventário de durabilidade dos equipamentos | Não incluído | A academia compra sob demanda e não tem esse controle; o registro de compras cobre o necessário. |
 
 
