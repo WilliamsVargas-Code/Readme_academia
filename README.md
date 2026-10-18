@@ -2,11 +2,10 @@
 
 ## Metadados
 
-* **Nome do Aluno 1:** Felipe Piazza Bononi- **RGM:** 47349361
-* **Nome do Aluno 2:** Nickolas Henrique Bezerra - **RGM:** 47685778
-* **Nome do Aluno 3:** Pedro Henrique Ruola Coiado - **RGM:** 47589124
-* **Nome do Aluno 4:** Raphaela Gonçalves Neves - **RGM:** 47656166
-* **Nome do Aluno 5:** Williams Vargas Neves Paoli dos Santos - **RGM:** 47336820
+* **Nome do Aluno 1:** Nickolas Henrique Bezerra - **RGM:** 47685778
+* **Nome do Aluno 2:** Pedro Henrique Ruola Coiado - **RGM:** 47589124
+* **Nome do Aluno 3:** Raphaela Gonçalves Neves - **RGM:** 47656166
+* **Nome do Aluno 4:** Williams Vargas Neves Paoli dos Santos - **RGM:** 47336820
 * **Professor/Disciplina:** Cid Rodrigues De Andrade - Modelagem de Banco de Dados
 
 ---
