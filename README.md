@@ -80,9 +80,8 @@ O Plano Família exige no mínimo duas pessoas com vínculo de parentesco compro
 
 O sistema registra o contrato com aluno, plano, data de início, data de fim, valor da mensalidade, percentual de desconto e acréscimo de multimodalidade, quando houver.
 
-Forma de pagamento: Nos planos com duração superior a um mês (trimestral, semestral e anual, inclusive no Plano Família), o aluno escolhe entre pagar mensalmente ou quitar o plano, pagando o valor do período de uma só vez. No plano mensal, o pagamento é sempre mensal. O sistema registra no contrato a forma de pagamento escolhida (mensal ou quitação).
+Forma de pagamento: Os planos Trimestral, Semestral e Anual definem apenas o ciclo de contratação e a faixa de desconto aplicada, e não alteram a forma de pagamento. Em todos eles, o aluno paga exclusivamente em parcelas mensais, com vencimento no 5º dia útil de cada mês. A academia não oferece a opção de quitação antecipada, isto é, o pagamento integral do plano em uma única parcela. Assim, um aluno com plano anual realiza 12 pagamentos mensais ao longo da vigência, e não um único pagamento no início.
 
-A quitação não gera desconto adicional, o desconto é definido pelo ciclo do plano e vale igualmente para as duas formas de pagamento. Assim, o valor total do contrato é o mesmo, seja pago em parcelas ou de uma só vez.
 
 #### **Cobrança e Recebimento de Mensalidades**
 
