@@ -68,6 +68,8 @@ Hoje nenhuma aula experimental é registrada: a informação depende da memória
 
 O aluno preenche hoje uma ficha de papel com CPF, nome completo, data de nascimento, endereço, e-mail, telefone (principal e de reserva), problemas de saúde, esportes já praticados e se já é graduado. A data da matrícula é anotada na ficha. Não existe número de matrícula, o aluno é identificado pelo nome ou CPF. As fichas ficam em pastas físicas no balcão, com risco reconhecido de extravio e deterioração.
 
+Alunos menores de idade precisam se um responsável legal.
+
 No sistema, o aluno recebe um identificador único e cada vínculo dele com uma turma gera uma **matrícula**, com data e situação. A situação do aluno é Ativo (mensalidade em dia), Inativo ou Trancado. O aluno pode praticar mais de uma modalidade, conforme a sua disponibilidade e seu plano, e a troca de turma, hoje não registrada, passa a ser registrada armazenando assim seu tempo de treino em cada modalidade.
 
 #### **Contratação de Planos**
@@ -87,11 +89,14 @@ Forma de pagamento: Os planos Trimestral, Semestral e Anual definem apenas o cic
 
 A mensalidade vence todo 5º dia útil do mês, independentemente da data de matrícula. Hoje o controle é feito pelo WhatsApp e registra apenas a data em que o aluno pagou, atrasos não são registrados. Por isso a inadimplência é o problema mais frequente da academia.
 
-Quando o aluno opta por pagar mensalmente, o sistema gera uma mensalidade por mês de contrato, cada uma com vencimento no 5º dia útil. Quando o aluno quita o plano, o sistema registra um único pagamento referente a todo o período, sem gerar mensalidades mensais. Em ambos os casos, o registro guarda o contrato, a data de vencimento, a data de pagamento, o valor devido, o valor pago e a situação (Paga, Pendente ou Atrasada).
+O sistema gera uma mensalidade por mês de vigência do contrato, cada uma com vencimento no 5º dia útil, independentemente do plano (inclusive Trimestral, Semestral e Anual). Cada registro guarda o contrato, a competência (mês de referência), a data de vencimento, a data de pagamento, o valor, a situação e, nos planos de maior duração, o valor da multa por atraso quando houver.
 
-**Atraso e multas.** A academia não cobra multa nem juros por atraso de mensalidade. O aluno com mensalidade vencida (após o 5º dia útil) tem a situação de pagamento marcada como atrasada e fica bloqueado de participar das aulas até regularizar o pagamento. Esse bloqueio impede também o registro de presença e, quando a catraca com reconhecimento facial for integrada, passa a ser aplicado automaticamente na entrada.
+**Atraso e multas.**
+O aluno com mensalidade vencida (após o 5º dia útil) tem a situação de pagamento marcada como atrasada e fica bloqueado de participar das aulas até regularizar o pagamento. Esse bloqueio vale para todos os planos e impede também o registro de presença; quando a catraca com reconhecimento facial for integrada, passa a ser aplicado automaticamente na entrada.
 
-A única multa cobrada pela academia é a rescisória, aplicada ao aluno que possui plano de maior duração (trimestral, semestral e anual) e solicita o cancelamento antes do fim do contrato. O plano mensal não tem multa: pode ser cancelado a qualquer momento. O sistema registra a multa no contrato, com o valor e a data do cancelamento (ver Trancamento e Cancelamento).
+Nos planos Trimestral, Semestral e Anual (inclusive no Plano Família dessas durações), o atraso gera também multa por atraso, além do bloqueio. No plano Mensal (inclusive o Família mensal). O sistema registra, na mensalidade, o valor da multa por atraso, quando houver. 
+
+A academia cobra ainda a multa rescisória, aplicada ao aluno de plano Trimestral, Semestral ou Anual (inclusive no Plano Família dessas durações) que cancela antes do fim do contrato. O valor é calculado de acordo com os meses que ainda faltam para o término do contrato na data do pedido. O plano Mensal, inclusive o Família mensal, não tem multa rescisória e pode ser cancelado a qualquer momento. O sistema registra no contrato a data do cancelamento e o valor da multa.
 
 #### **Montagem de Turmas e Horários**
 
@@ -102,6 +107,7 @@ Cada modalidade tem uma regra criada pelos professores prestadores de serviço p
 #### **Controle de Frequência**
 
 Hoje a presença não é registrada de forma alguma. O sistema deve registrar cada aula ministrada (turma, data, horário e professor que a deu) e, para cada aula, a presença de cada aluno matriculado. Esse registro tem duas funções: embasar a elegibilidade do aluno para graduação e comprovar as aulas dadas para o pagamento dos professores.
+A frequência fica guardada para que cada professor responsável pela modalidade tenha controle de quantos alunos podem ser graduados e de quais já estão no tempo de serem graduados.
 
 #### **Graduação e Exames de Faixa**
 
@@ -115,13 +121,13 @@ O **trancamento** é concedido em duas situações:
 
 - **Lesão ou razão médica:** basta justificativa apresentada pelo WhatsApp ou presencialmente, sem necessidade de laudo médico formal. O sistema registra o motivo, durante o trancamento, a cobrança e a contagem do tempo do plano ficam suspensas, e não há nenhuma cobrança, até a situação do aluno ser restabelecida.
 
-- **Migração de modalidade:** o aluno troca de arte marcial sem taxa, encargo ou cobrança adicional. O CEO apenas confirma se há vaga na nova modalidade.
+- **Troca de modalidade:** o aluno troca de arte marcial sem taxa, encargo ou cobrança adicional. O CEO apenas confirma se há vaga na nova modalidade. Não há suspensão de cobrança.
 
-O **cancelamento** de plano mensal pode ser feito a qualquer momento. Nos planos de maior duração (e também no Plano Família), o cancelamento antecipado gera **multa rescisória**, calculada conforme o mês em que o aluno pede a interrupção (por exemplo, no segundo ou terceiro mês de um trimestral) e comunicada presencialmente ou pelo WhatsApp. Hoje trancamentos e cancelamentos são tratados só pelo WhatsApp, sem registro.
+O **cancelamento** de plano mensal pode ser feito a qualquer momento. Nos planos de maior duração (e também no Plano Família), o cancelamento antecipado gera **multa rescisória**, calculada conforme o mês em que o aluno pede a interrupção (por exemplo, no segundo ou terceiro mês de um trimestral) e comunicada presencialmente ou pelo WhatsApp. Hoje trancamentos e cancelamentos são tratados só pelo WhatsApp, sem registro, multa rescisória é diferente da multa por atraso (ver “Atraso, bloqueio e multas”).
 
-#### **Equipamentos Iniciais**
+#### **Equipamentos da academia**
 
-O aluno recém-matriculado pode treinar em qualquer modalidade, mesmo sem equipamento próprio. A academia empresta temporariamente luvas, capacetes, caneleiras e materiais de treino funcional até que o aluno regularize o seu kit pessoal. Esse empréstimo não gera custo na mensalidade, contudo o equipamento deve permanecer na academia
+A academia possui equipamentos próprios (luvas, capacetes, caneleiras e materiais de treino funcional), que podem ser usados por todos os alunos durante as aulas. Assim, o aluno recém-matriculado pode treinar em qualquer modalidade mesmo sem equipamento próprio. Não há registro de empréstimo nem cobrança.
 
 #### **Compras**
 
@@ -137,7 +143,7 @@ As compras são feitas pelo CEO Adalberto, em quatro grupos:
 
 #### **Gestão e Pagamento dos Professores**
 
-O CEO Adalberto, além de gestor, é professor de Muay Thai. Os demais professores são prestadores de serviço, não assalariados, e recebem por quantidade de aulas ministradas no período, o que depende do registro confiável das aulas (ver Controle de Frequência). O professor pode levar acessórios pessoais, mas a academia oferece toda a infraestrutura necessária.
+O CEO Adalberto, além de gestor, é professor de Muay Thai. Os demais professores são prestadores de serviço, não assalariados, Cada uma das seis modalidades, inclusive a Capoeira, tem um professor responsável. e recebem por quantidade de aulas ministradas no período, o que depende do registro confiável das aulas (ver Controle de Frequência). O professor pode levar acessórios pessoais, mas a academia oferece toda a infraestrutura necessária.
 
 Quando o professor titular falta, o aluno tem direito a uma aula de reposição (na mesma modalidade ou em outra modalidade). Hoje isso é combinado verbalmente, sem registro.
 
