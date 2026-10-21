@@ -156,10 +156,9 @@ A academia tem despesas fixas: aluguel, contas de consumo (água, luz etc.), man
 | **Processo comum em academias** | **Situação** | **Justificativa** |
 | --- | --- | --- |
 | Venda de produtos e suplementos | Não incluído | Não faz parte da demanda da academia; descartado no levantamento. |
-| Marketing e divulgação (Instagram, panfletos) | Não incluído | Não é problema de gestão de informações que um banco de dados resolva. |
 | Folha de pagamento com encargos trabalhistas | Não incluído | Professores são prestadores pagos por aula.|
 | Controle de inventário de durabilidade dos equipamentos | Não incluído | A academia compra sob demanda e não tem esse controle; o registro de compras cobre o necessário. |
-
+| Marketing e divulgação | Não incluído | A academia divulga seus treinos no Instagram com vídeos produzidos por uma aluna, familiar do CEO, sem custo e sem fluxo formal de produção ou aprovação. Não há despesa a lançar em Contas a Pagar, nem contrato ou pagamento a registrar. Apesar de muitos sistemas do mercado oferecerem acompanhamento da jornada do contato, da consulta à matrícula, o levantamento não apontou a captação de alunos como problema de gestão. O primeiro contato do interessado já é preservado pelo registro da aula experimental como pré-cadastro. |
 
 ---
 
