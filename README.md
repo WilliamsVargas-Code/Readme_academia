@@ -134,6 +134,10 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Como o banco de dados resolve:** Cria a entidade INTERESSADO, capturando o nome, telefone, data do atendimento e o retorno da visita (Resultado_Interesse), fornecendo métricas sobre o índice de conversão de aulas experimentais em novos contratos.
 
+### Conclusão 
+
+A implantação de um banco de dados relacional é indispensável para substituir as fichas de papel e centralizar o controle hoje dividido com planilhas e mensagens informais. O sistema unifica os dados cadastrais, financeiros e pedagógicos em uma base sólida e auditável. Paralelamente, o anseio da academia pela instalação futura de uma catraca com reconhecimento facial na entrada atua apenas como um hardware externo de consumo de dados: essa automação não interfere na modelagem do banco de dados, que opera de forma independente e pronta para fornecer
+
 ## 1.4 Justificativa da escolha:
 
 A escolha desta academia fundamenta-se em sua expressiva relevância comunitária na promoção da saúde e no ensino de defesa pessoal. A viabilidade e o aprofundamento dessa seleção decorrem do fato de um dos integrantes da equipe, Nickolas, ser aluno da instituição. Tal condição proporcionou acesso privilegiado à administração, permitindo uma análise precisa dos desafios vivenciados no controle discente, na gestão contratual e no acompanhamento da frequência. A pesquisa de campo, realizada por ele em conjunto com o gestor principal, Adalberto, evidenciou a dependência de formulários impressos para cadastro e a verificação de pagamentos via aplicativos de mensagens. Essa prática sujeita a operação a vulnerabilidades significativas, como a perda de dados essenciais e a ineficácia do controle financeiro. Portanto, o desenvolvimento de um banco de dados mostra-se uma medida imprescindível para assegurar o armazenamento centralizado e seguro das informações, além de prover a infraestrutura necessária para a futura automação do controle de acesso por catraca, conforme almejado pela direção.
