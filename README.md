@@ -159,111 +159,287 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
 ---
 
-## **2. Processos de Negócio**
-
-Mapeamos os processos de funcionamento da academia com base nas entrevistas de 01/09/2026 e 13/10/2026 com o CEO Adalberto.
-
-#### **Captação e Aula Experimental**
-
-O interessado agenda a aula experimental presencialmente ou pelo WhatsApp, combinando dia e horário com a academia. A academia prioriza horários de menor movimento (sextas-feiras e turmas matutinas) para dar atenção individual ao iniciante, mas isso não é regra rígida: ele pode participar de qualquer horário. Na aula, o interessado conhece a modalidade e o professor antes de decidir pela matrícula. Se decidir continuar, o processo segue para Cadastro e Matrícula, caso contrário, o contato é encerrado.
-
-Hoje nenhuma aula experimental é registrada: a informação depende da memória dos professores e da gestão. O sistema deve registrar cada aula experimental como um pré-cadastro, vale lembrar que a aula experimental é totalmente grátis podendo ser realizada apenas uma vez.
-
-#### **Cadastro e Matrícula**
-
-O aluno preenche hoje uma ficha de papel com CPF, nome completo, data de nascimento, endereço, e-mail, telefone (principal e de reserva), problemas de saúde, esportes já praticados e se já é graduado. A data da matrícula é anotada na ficha. Não existe número de matrícula, o aluno é identificado pelo nome ou CPF. As fichas ficam em pastas físicas no balcão, com risco reconhecido de extravio e deterioração.
-
-Alunos menores de idade precisam se um responsável legal.
-
-No sistema, o aluno recebe um identificador único e cada vínculo dele com uma turma gera uma **matrícula**, com data e situação. A situação do aluno é Ativo (mensalidade em dia), Inativo ou Trancado. O aluno pode praticar mais de uma modalidade, conforme a sua disponibilidade e seu plano, e a troca de turma, hoje não registrada, passa a ser registrada armazenando assim seu tempo de treino em cada modalidade.
-
-#### **Contratação de Planos**
-
-A academia oferece os planos Mensal, Trimestral, Semestral e Anual, e cada duração tem uma faixa de desconto progressivo própria. Na matrícula, o aluno escolhe o plano, que define o valor da mensalidade.
-
-Os planos regulares cobrem uma única modalidade. Se o aluno quiser praticar mais de uma arte marcial ou ter livre acesso a todas, aplica-se um acréscimo proporcional sobre o valor contratado, mantida a tabela de desconto do ciclo escolhido.
-
-O Plano Família exige no mínimo duas pessoas com vínculo de parentesco comprovado e existe em cada duração (mensal, trimestral, semestral e anual), cada uma com seu desconto.
-
-O sistema registra o contrato com aluno, plano, data de início, data de fim, valor da mensalidade, percentual de desconto e acréscimo de multimodalidade, quando houver.
-
-Forma de pagamento: Os planos Trimestral, Semestral e Anual definem apenas o ciclo de contratação e a faixa de desconto aplicada, e não alteram a forma de pagamento. Em todos eles, o aluno paga exclusivamente em parcelas mensais, com vencimento no 5º dia útil de cada mês. A academia não oferece a opção de quitação antecipada, isto é, o pagamento integral do plano em uma única parcela. Assim, um aluno com plano anual realiza 12 pagamentos mensais ao longo da vigência, e não um único pagamento no início.
-
-
-#### **Cobrança e Recebimento de Mensalidades**
-
-A mensalidade vence todo 5º dia útil do mês, independentemente da data de matrícula. Hoje o controle é feito pelo WhatsApp e registra apenas a data em que o aluno pagou, atrasos não são registrados. Por isso a inadimplência é o problema mais frequente da academia.
-
-O sistema gera uma mensalidade por mês de vigência do contrato, cada uma com vencimento no 5º dia útil, independentemente do plano (inclusive Trimestral, Semestral e Anual). Cada registro guarda o contrato, a competência (mês de referência), a data de vencimento, a data de pagamento, o valor, a situação e, nos planos de maior duração, o valor da multa por atraso quando houver.
-
-**Atraso e multas.**
-O aluno com mensalidade vencida (após o 5º dia útil) tem a situação de pagamento marcada como atrasada e fica bloqueado de participar das aulas até regularizar o pagamento. Esse bloqueio vale para todos os planos e impede também o registro de presença; quando a catraca com reconhecimento facial for integrada, passa a ser aplicado automaticamente na entrada.
-
-Nos planos Trimestral, Semestral e Anual (inclusive no Plano Família dessas durações), o atraso gera também multa por atraso, além do bloqueio. No plano Mensal (inclusive o Família mensal). O sistema registra, na mensalidade, o valor da multa por atraso, quando houver. 
-
-A academia cobra ainda a multa rescisória, aplicada ao aluno de plano Trimestral, Semestral ou Anual (inclusive no Plano Família dessas durações) que cancela antes do fim do contrato. O valor é calculado de acordo com os meses que ainda faltam para o término do contrato na data do pedido. O plano Mensal, inclusive o Família mensal, não tem multa rescisória e pode ser cancelado a qualquer momento. O sistema registra no contrato a data do cancelamento e o valor da multa.
-
-#### **Montagem de Turmas e Horários**
-
-A turma é definida por uma modalidade, um professor responsável e um dia e horário, e os horários são fixados pela academia de acordo com a modalidade. O aluno entra na turma por meio da matrícula. Cada turma comporta no máximo 30 alunos o sistema deve bloquear novas matrículas ao atingir esse limite.
-
-Cada modalidade tem uma regra criada pelos professores prestadores de serviço para abrir um novo horário: Muay Thai,  a partir de 4 alunos (turma do CEO); Boxe, 6; Jiu-Jitsu, Kickboxing e No-Gi, 8; Capoeira, 10. Na prática, o instrutor pode dar o treino mesmo com menos alunos. Além do professor, a turma costuma ter um instrutor auxiliar, que não é funcionário: é o aluno mais graduado ou com mais tempo de treino.
-
-#### **Controle de Frequência**
-
-Hoje a presença não é registrada de forma alguma. O sistema deve registrar cada aula ministrada (turma, data, horário e professor que a deu) e, para cada aula, a presença de cada aluno matriculado. Esse registro tem duas funções: embasar a elegibilidade do aluno para graduação e comprovar as aulas dadas para o pagamento dos professores.
-A frequência fica guardada para que cada professor responsável pela modalidade tenha controle de quantos alunos podem ser graduados e de quais já estão no tempo de serem graduados.
-
-#### **Graduação e Exames de Faixa**
-
-Muay Thai, Jiu-Jitsu, Kickboxing, No-Gi e Capoeira têm exame de faixa. No Boxe não há exame: a evolução é medida por análise técnica do professor e estimativa do tempo de treino. A evolução considera tempo de treino, técnica e resistência, e a frequência influencia a liberação para o exame. Hoje a decisão depende da percepção visual do professor e a data da mudança de faixa fica só no certificado.
-
-O sistema deve registrar, para cada graduação, o aluno, a modalidade, a faixa ou nível, a data e as observações.
-
-#### **Trancamento e Cancelamento**
-
-O **trancamento** é concedido em duas situações:
-
-- **Lesão ou razão médica:** basta justificativa apresentada pelo WhatsApp ou presencialmente, sem necessidade de laudo médico formal. O sistema registra o motivo, durante o trancamento, a cobrança e a contagem do tempo do plano ficam suspensas, e não há nenhuma cobrança, até a situação do aluno ser restabelecida.
-
-- **Troca de modalidade:** o aluno troca de arte marcial sem taxa, encargo ou cobrança adicional. O CEO apenas confirma se há vaga na nova modalidade. Não há suspensão de cobrança.
-
-O **cancelamento** de plano mensal pode ser feito a qualquer momento. Nos planos de maior duração (e também no Plano Família), o cancelamento antecipado gera **multa rescisória**, calculada conforme o mês em que o aluno pede a interrupção (por exemplo, no segundo ou terceiro mês de um trimestral) e comunicada presencialmente ou pelo WhatsApp. Hoje trancamentos e cancelamentos são tratados só pelo WhatsApp, sem registro, multa rescisória é diferente da multa por atraso (ver “Atraso, bloqueio e multas”).
-
-#### **Equipamentos da academia**
-
-A academia possui equipamentos próprios (luvas, capacetes, caneleiras e materiais de treino funcional), que podem ser usados por todos os alunos durante as aulas. Assim, o aluno recém-matriculado pode treinar em qualquer modalidade mesmo sem equipamento próprio. Não há registro de empréstimo nem cobrança.
-
-#### **Compras**
-
-As compras são feitas pelo CEO Adalberto, em quatro grupos:
-
-- **Materiais de treino** (saco de pancada, cordas, pneus e similares): compra sob demanda, conforme o desgaste, sem periodicidade fixa e sem inventário.
-
-- **Materiais de higiene e limpeza** (álcool, descartáveis, sanitizantes, papel higiênico): compra semanal e presencial, sem controle de estoque.
-
-- **Equipamentos de proteção para iniciantes** (luvas, capacetes, caneleiras): comprados pela academia para o empréstimo descrito acima.
-
-- **Água para consumo** (garrafas ou galões para alunos e professores): compra semanal, também feita pelo CEO, sem controle de estoque, é fornecida totalmente de graça para todos que frequentam a academia
-
-#### **Gestão e Pagamento dos Professores**
-
-O CEO Adalberto, além de gestor, é professor de Muay Thai. Os demais professores são prestadores de serviço, não assalariados, Cada uma das seis modalidades, inclusive a Capoeira, tem um professor responsável. e recebem por quantidade de aulas ministradas no período, o que depende do registro confiável das aulas (ver Controle de Frequência). O professor pode levar acessórios pessoais, mas a academia oferece toda a infraestrutura necessária.
-
-Quando o professor titular falta, o aluno tem direito a uma aula de reposição (na mesma modalidade ou em outra modalidade). Hoje isso é combinado verbalmente, sem registro.
-
-#### **Contas a Pagar**
-
-A academia tem despesas fixas: aluguel, contas de consumo (água, luz etc.), manutenção, pagamento dos professores e compras de materiais. Hoje não há controle sistematizado: o CEO guarda de memória os valores e as datas de vencimento. O sistema deve registrar cada despesa com descrição, categoria, valor, data de vencimento, data de pagamento e situação.
-
-### **Processos não incluídos e justificativa**
-
-| **Processo comum em academias** | **Situação** | **Justificativa** |
-| --- | --- | --- |
+## 2. Processos de Negócio
+ 
+Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/10/2026 com o CEO Adalberto e dos esclarecimentos do grupo. Cada processo segue a mesma estrutura: **Hoje (AS-IS)**, **No sistema (TO-BE)** em passos numerados com o responsável por cada um, **Dados registrados**, **Regras** e **Integração** com os outros processos.
+ 
+**Valores confidenciais:** mensalidades, percentuais de desconto, acréscimo por modalidade extra, multas, fórmula da multa rescisória e taxas de exame existem na academia, mas são dados confidenciais do negócio e não são divulgados neste documento. O sistema tem os campos para guardá-los, e a massa de dados usa valores fictícios.
+ 
+**Papéis:** CEO (Adalberto, gestor, professor de Muay Thai e único contratado); professores (5 prestadores de serviço, um responsável por modalidade); aluno; interessado (quem ainda não é aluno); responsável legal (de aluno menor de idade).
+ 
+**Porte:** cerca de 30 a 40 alunos, 6 modalidades (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira, No-Gi), 4 turmas por dia em horários diferentes, turmas de até 30 alunos.
+ 
+---
+ 
+### 1. Captação e Aula Experimental
+ 
+**Hoje (AS-IS):** o interessado agenda a aula presencialmente ou pelo WhatsApp. A academia prefere horários de menor movimento (sextas-feiras e turmas matutinas), mas não é regra rígida. Nada é registrado: se a pessoa já fez a aula experimental depende da memória dos professores e da gestão (P8).
+ 
+**No sistema (TO-BE):**
+ 
+1. O interessado combina dia e horário com a academia, presencialmente ou pelo WhatsApp. *(interessado e CEO)*
+2. O CEO ou o professor responsável pela modalidade registra o pré-cadastro. O registro pode ser feito antes da aula, no agendamento, que é a forma mais eficiente. O professor controla se a turma tem vaga.
+3. O sistema confere se o interessado já fez aula experimental, pelo ID, pelo nome e pelo telefone. Se já fez, não permite novo registro, porque a aula é gratuita e só pode ser feita uma vez.
+4. A aula é realizada com o professor da modalidade.
+5. O interessado decide e o resultado do interesse é registrado:
+   - **Segue:** vai para Cadastro e Matrícula. Os dados são digitados novamente: nome, telefones, CPF, histórico de treino, e-mail, problemas de saúde, data de nascimento, endereço (CEP, rua, número e bairro) e situação. A autorização de uso de imagem é perguntada nessa etapa. O pré-cadastro fica registrado como convertido.
+   - **Não segue:** o pré-cadastro fica registrado como encerrado.
+**Dados registrados:** identificador (ID), nome, telefone, data do primeiro contato, modalidade, data e horário da aula, professor, resultado do interesse.
+ 
+**Regras:** aula gratuita; apenas uma por interessado.
+ 
+**Integração:** envia o interessado para Cadastro e Matrícula.
+ 
+---
+ 
+### 2. Cadastro e Matrícula
+ 
+**Hoje (AS-IS):** o aluno preenche uma ficha de papel guardada em pasta física no balcão, com risco de extravio e deterioração (P5). A data da matrícula é anotada na ficha. Não existe número de matrícula: o aluno é identificado por nome ou CPF. A troca de turma não é registrada.
+ 
+**No sistema (TO-BE):**
+ 
+1. O aluno informa seus dados: CPF, nome completo, data de nascimento, endereço (CEP, rua, número e bairro), e-mail, problemas de saúde, esportes já praticados, por quanto tempo treinou e se já é graduado. Informa também quantos telefones forem necessários (principal, reserva, emergência). *(aluno e CEO)*
+2. O sistema confere a idade. Se o aluno tem menos de 18 anos, exige os dados do responsável legal (nome, CPF, telefone e parentesco) e o atestado de aptidão física, entregue antes da matrícula. O sistema registra a data de entrega do atestado.
+3. O CEO confirma o cadastro. O sistema gera o identificador único do aluno, que já fica com a situação **Ativo**.
+4. O aluno escolhe o plano (processo 3).
+5. O aluno escolhe a modalidade e a turma. O sistema cria a **matrícula** (aluno + turma) com data e situação e confere o limite de 30 alunos ativos. Se a turma estiver lotada, o aluno escolhe outra turma.
+6. A primeira mensalidade é gerada já com o valor integral, sem cálculo proporcional, e vence no 5º dia útil seguinte.
+**Troca de turma:** passa a ser registrada. A matrícula antiga é encerrada e uma nova é criada; a antiga nunca é apagada e fica no histórico. O tempo de treino é guardado por aluno em cada modalidade.
+ 
+**Autorização de uso de imagem:** quando o interessado vira aluno, o CEO pergunta se a academia pode usar a imagem dele em vídeos do Instagram. O sistema registra a resposta (autoriza ou não autoriza) e a data. Se o aluno tem menos de 18 anos, a resposta é dada pelo responsável legal.
+ 
+**Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco) e data de entrega do atestado, quando menor; autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
+ 
+**Regras:** situação do aluno restrita a Ativo (contrato vigente), Inativo (contrato terminado) ou Trancado (trancamento em curso); um aluno pode ter várias matrículas (várias modalidades) e um único contrato; menor de 18 anos exige responsável legal e atestado de aptidão física; CPF único; problemas de saúde e CPF são dados sensíveis (LGPD); a autorização de uso de imagem é opcional e fica registrada com a data; matrícula encerrada nunca é apagada.
+ 
+**Integração:** recebe de Aula Experimental; envia para Contratação de Planos, Frequência e Graduação.
+ 
+---
+ 
+### 3. Contratação de Planos
+ 
+**Hoje (AS-IS):** a academia trabalha com planos de diferentes durações, sem registro formal do que cada aluno contratou além da data de pagamento anotada no WhatsApp (P9).
+ 
+**No sistema (TO-BE):**
+ 
+1. O aluno escolhe a duração: Mensal, Trimestral, Semestral ou Anual. Cada duração tem uma faixa de desconto progressivo (percentuais confidenciais).
+2. O aluno escolhe a abrangência. O plano regular cobre uma única modalidade. Para mais de uma modalidade ou livre acesso a todas, aplica-se um acréscimo proporcional, mantida a tabela de desconto do ciclo. Cada aluno tem um único contrato (no Plano Família, o contrato é do titular e cobre os dependentes), que lista as modalidades cobertas; cada modalidade extra entra nesse mesmo contrato como um acréscimo.
+3. **Plano Família:** exige no mínimo duas pessoas com parentesco comprovado e existe em todas as durações, cada uma com seu desconto. O plano tem um responsável (titular) e pode ter até 4 dependentes. O titular tem um contrato único, que cobre os dependentes. A prova de parentesco exige, no mínimo, o RG: o sistema registra o tipo de documento apresentado e a data da conferência, sem guardar o número do RG.
+4. O sistema calcula a mensalidade (valor base + acréscimos por modalidade extra - desconto).
+5. O contrato é registrado e o sistema gera as mensalidades (processo 4).
+**Pagamento:** os planos Trimestral, Semestral e Anual definem apenas o ciclo e o desconto. O pagamento é sempre em parcelas mensais, vencendo no 5º dia útil. Não existe quitação antecipada. Um plano anual gera 12 mensalidades.
+ 
+**Renovação:** o contrato não termina sozinho. No fim do ciclo, o aluno é contatado e avisado de possíveis alterações no desconto do seu plano. Se aceita, o contrato continua; se recusa, o contrato é cancelado e o aluno passa a Inativo.
+ 
+**Dados registrados (contrato):** aluno, plano, modalidades cobertas, data de início, data de fim do ciclo, valor da mensalidade, percentual de desconto, acréscimos por modalidade extra (quando houver), data do cancelamento e valor da multa rescisória (quando houver). No Plano Família, também o titular, os dependentes e o documento de parentesco apresentado.
+ 
+**Regras:** vencimento fixo no 5º dia útil; multa rescisória só em planos de maior duração (processo 5); contrato só termina por cancelamento.
+ 
+**Integração:** recebe de Cadastro e Matrícula; envia para Cobrança e para Trancamento e Cancelamento.
+ 
+---
+ 
+### 4. Cobrança e Recebimento de Mensalidades
+ 
+**Hoje (AS-IS):** o controle é feito pelo WhatsApp e registra apenas a data em que o aluno pagou. Atrasos não são registrados. A inadimplência é o problema mais frequente da academia (P1).
+ 
+**No sistema (TO-BE):**
+ 
+1. O sistema gera uma mensalidade por mês de vigência do contrato, com vencimento no 5º dia útil, para todos os planos. A geração é mensal, e não de uma só vez, para acompanhar qualquer alteração no contrato (trancamento, cancelamento). Meses de trancamento por lesão não geram mensalidade.
+2. O aluno paga por Pix, cartão de crédito ou cartão de débito. O CEO registra o pagamento no sistema.
+3. O sistema registra a data de pagamento e muda a situação para **Paga**.
+4. Se o 5º dia útil passa sem pagamento, a situação vira **Atrasada** e, a partir do 6º dia útil, o aluno fica **bloqueado**: não participa das aulas e o sistema impede o registro de presença. Com a catraca de reconhecimento facial, o bloqueio passa a valer na entrada.
+5. **Multa por atraso:** nos planos Trimestral, Semestral e Anual (inclusive Família dessas durações), além do bloqueio há multa, de valor confidencial, calculada por cada mês de atraso. No Mensal (inclusive Família mensal) há só o bloqueio, sem multa. Não há juros.
+6. Ao regularizar, o CEO registra o pagamento e o aluno é desbloqueado.
+7. O sistema registra o recibo de cada pagamento: o recibo é emitido ao aluno e também guardado no sistema.
+**Dados registrados (mensalidade):** contrato, competência (mês de referência), data de vencimento, data de pagamento, forma de pagamento, valor, valor da multa por atraso (quando houver), valor da taxa de exame (quando houver), situação (Paga, Atrasada, Pendente); e o recibo.
+ 
+**Regras:** vencimento no 5º dia útil independente da data de matrícula; bloqueio a partir do 6º dia útil, para todos os planos; a situação em dia ou bloqueado do aluno é derivada das mensalidades.
+ 
+**Integração:** recebe de Contratação de Planos, de Trancamento (suspende a geração) e de Graduação (taxa de exame cobrada junto com a mensalidade); envia o bloqueio para Frequência.
+ 
+---
+ 
+### 5. Trancamento, Troca de Modalidade e Cancelamento
+ 
+**Hoje (AS-IS):** trancamentos e cancelamentos são tratados só pelo WhatsApp, sem registro (P6).
+ 
+**No sistema (TO-BE):**
+ 
+**Trancamento por lesão ou razão médica**
+ 
+1. O aluno apresenta a justificativa pelo WhatsApp ou presencialmente. Não precisa de laudo médico formal.
+2. O CEO registra o trancamento com motivo, data de início e data combinada de retorno. Não há prazo máximo: cabe ao CEO controlar os trancamentos e decidir o que fazer em cada caso.
+3. Durante o trancamento, a cobrança e a contagem de tempo do plano ficam suspensas e não há multa. A data de fim do ciclo do contrato é ajustada.
+4. Na data de retorno combinada, a matrícula volta a ficar ativa.
+**Troca de modalidade** (não é trancamento)
+ 
+1. O aluno pede a troca. O CEO confirma se há vaga na nova modalidade.
+2. Não há taxa, encargo, cobrança adicional nem suspensão de cobrança.
+3. A matrícula antiga é encerrada e a nova é criada. Se for só troca, o contrato continua o mesmo e não há valor adicional. Se o aluno **acrescentar** uma modalidade ao que já treina, o contrato continua o mesmo, com um acréscimo para essa modalidade.
+**Cancelamento**
+ 
+1. O aluno comunica o cancelamento presencialmente ou pelo WhatsApp. O acesso termina na data do pedido.
+2. **Plano Mensal** (inclusive Família mensal): cancela a qualquer momento, sem multa rescisória.
+3. **Trimestral, Semestral e Anual** (inclusive Família): o cancelamento antecipado gera multa rescisória, calculada pelos meses que faltam para o fim do ciclo (fórmula e valores confidenciais). A multa é cobrada depois do cancelamento.
+4. O contrato registra a data do cancelamento e o valor da multa. Quando o contrato termina, o aluno passa à situação Inativo.
+**Dados registrados:** no trancamento, aluno, motivo, data de início, data de retorno combinada; no cancelamento, data e valor da multa (no contrato).
+ 
+**Regras:** a multa rescisória é diferente da multa por atraso; trancamento por lesão isenta multas; troca de modalidade não suspende cobrança; adicionar modalidade gera um acréscimo no contrato existente.
+ 
+**Integração:** recebe de Contratação de Planos; suspende ou encerra a geração de mensalidades (Cobrança).
+ 
+---
+ 
+### 6. Montagem de Turmas e Horários
+ 
+**Hoje (AS-IS):** as turmas são organizadas por cronograma de aulas, com horários definidos de acordo com a modalidade. Não há controle formal das vagas.
+ 
+**No sistema (TO-BE):**
+ 
+1. O CEO cria a turma com modalidade, professor responsável, dia da semana, horário de início e horário de fim. Há 4 turmas por dia, em horários diferentes. Aos sábados só há turma de Capoeira, que tem uma única turma.
+2. O sistema só aceita o professor se ele ensina a modalidade da turma (cada professor tem uma única modalidade).
+3. O aluno entra na turma pela matrícula. Ao chegar a 30 alunos ativos, o sistema bloqueia novas matrículas.
+4. Regra de referência para abrir horário: Muay Thai 4 alunos (turma do CEO), Boxe 6, Jiu-Jitsu, Kickboxing e No-Gi 8, Capoeira 10. O sistema só alerta quando a turma tem menos alunos, porque na prática o instrutor pode dar o treino assim mesmo.
+5. **Instrutor auxiliar:** o professor responsável pela modalidade pode escolher o aluno mais graduado para auxiliar, mas isso não é regra e não é marcado no sistema.
+**Dados registrados:** turma (modalidade, professor, dia, horário de início e fim) e quórum por modalidade.
+ 
+**Integração:** fornece as turmas para Matrícula e Frequência.
+ 
+---
+ 
+### 7. Controle de Frequência
+ 
+**Hoje (AS-IS):** a presença não é registrada de forma alguma. A liberação para exame depende da percepção visual do professor (P2).
+ 
+**No sistema (TO-BE):**
+ 
+1. Na aula, o professor abre a **aula ministrada** da turma: turma, data, horário e professor que a deu. No futuro, a catraca com reconhecimento facial registra a turma e o horário em que o aluno entrou.
+2. O sistema lista os alunos com matrícula ativa. Alunos trancados ou bloqueados por atraso não têm presença registrada.
+3. O professor marca presença ou falta de cada aluno.
+4. O histórico fica guardado por matrícula. Cada professor consulta quais alunos já têm a frequência que ele exige para o exame.
+**Reposição de aula** (sem registro de presença)
+ 
+1. Quando o professor titular falta, o aluno tem direito a uma aula de reposição, na mesma modalidade ou em outra.
+2. O professor confirma se há vaga na turma escolhida.
+3. O aluno comparece e apenas assiste à aula: não é registrada presença para ele, porque não é matriculado nessa turma. A reposição fica registrada no sistema só como concessão usada (aluno, aula perdida, turma e data da reposição). A vaga ocupada por ele conta no limite de 30 da turma nessa aula.
+**Funções do registro:** embasar a liberação para graduação e comprovar as aulas dadas, base do pagamento dos professores.
+ 
+**Dados registrados:** aula (turma, data, hora de início e fim, professor); presença (aula, matrícula, presente ou ausente); reposição (aluno, aula perdida, turma e data da reposição), sem presença.
+ 
+**Regras:** a frequência mínima para exame é definida por cada professor, não pela academia; aluno bloqueado não registra presença.
+ 
+**Integração:** recebe de Matrícula, Turmas e Cobrança (bloqueio); envia para Graduação e para Pagamento dos Professores.
+ 
+---
+ 
+### 8. Graduação e Exames de Faixa
+ 
+**Hoje (AS-IS):** a evolução considera tempo de treino, técnica e resistência, mas depende da percepção visual do professor. A data da mudança de faixa fica só no certificado (P3).
+ 
+**No sistema (TO-BE):**
+ 
+1. O professor consulta a frequência e o tempo de treino do aluno na modalidade e decide quem está apto. Cada faixa tem seu tempo mínimo, cadastrado em cada faixa, para o sistema alertar quem já pode ser avaliado.
+2. O aluno apto paga a **taxa de exame**, com valor diferente por faixa (as primeiras são mais baratas). A taxa é registrada no sistema (valores confidenciais) e cobrada junto com a mensalidade, paga por Pix, crédito ou débito.
+3. O exame acontece. Muay Thai, Jiu-Jitsu, Kickboxing, No-Gi e Capoeira têm exame de faixa.
+4. O professor registra o resultado do exame. A reprovação também é registrada, com o motivo em palavras-chave (por exemplo, condicionamento físico, técnica), para o professor entender por que os alunos estão reprovando.
+5. **Boxe:** não há exame. A evolução é registrada como análise técnica do professor, com observação e data, sem faixa.
+**Dados registrados:** aluno, modalidade, faixa ou nível avaliado (vazio no Boxe), data, resultado (aprovado ou reprovado), observações e motivo da reprovação, em palavras-chave; taxa de exame (valor, cobrada junto com a mensalidade).
+ 
+**Regras:** apenas modalidades com sistema de faixas têm faixa; o aluno só faz exame com a frequência exigida pelo professor e o tempo mínimo da faixa; reprovação fica no histórico.
+ 
+**Integração:** recebe de Frequência e de Matrícula (tempo de treino); a taxa de exame vai para Cobrança e é cobrada junto com a mensalidade.
+ 
+---
+ 
+### 9. Equipamentos da Academia
+ 
+**Hoje (AS-IS):** a academia tem luvas, capacetes, caneleiras e materiais de treino funcional, usados por todos os alunos durante as aulas. Não há registro nem cobrança.
+ 
+**No sistema (TO-BE):** não há processo de empréstimo. O aluno recém-matriculado pode treinar em qualquer modalidade sem equipamento próprio. Os equipamentos entram no sistema apenas pela compra (processo 10).
+ 
+---
+ 
+### 10. Compras
+ 
+**Hoje (AS-IS):** o CEO faz as compras de memória, sem inventário nem registro (P4).
+ 
+**No sistema (TO-BE):**
+ 
+1. O CEO compra, em quatro grupos: materiais de treino (saco de pancada, cordas, pneus), sob demanda e conforme o desgaste; higiene e limpeza (álcool, descartáveis, sanitizantes, papel higiênico), semanal e presencial; equipamentos de proteção para os alunos (luvas, capacetes, caneleiras); e água para consumo, semanal, fornecida gratuitamente a todos.
+2. O CEO registra cada compra no sistema e guarda a nota ou o comprovante. A academia não tem fornecedor fixo: o fornecedor muda de uma compra para outra.
+3. Cada compra gera uma despesa em Contas a Pagar.
+**Dados registrados:** data, grupo da compra, descrição, quantidade, valor total, forma de pagamento, nota ou comprovante guardado e fornecedor (o nome é anotado em cada compra, sem cadastro fixo).
+ 
+**Regras:** sem controle de estoque nem de durabilidade (justificado na tabela de exclusões).
+ 
+**Integração:** envia para Contas a Pagar.
+ 
+---
+ 
+### 11. Gestão e Pagamento dos Professores
+ 
+**Hoje (AS-IS):** o CEO é professor de Muay Thai. Os demais 5 professores são prestadores de serviço, não assalariados, um por modalidade (6 professores no total). Reposições e acordos são verbais, sem registro. As aulas ministradas não são registradas, então o pagamento por aula não tem base confiável (P7). A qualificação (tempo de treino, faixa, mestres anteriores) é só conversada.
+ 
+**No sistema (TO-BE):**
+ 
+1. O professor é cadastrado com CPF, nome, data de nascimento, endereço, e-mail, telefone, modalidade de atuação, nível de experiência e qualificações (tempo de treino, faixa, mestres anteriores).
+2. A cada período, o CEO apura o valor devido a cada professor pelas **aulas ministradas**, a partir do registro de frequência. O valor por aula é igual para todos os professores.
+3. O CEO paga o professor no 5º dia útil, por Pix.
+4. O pagamento gera uma despesa em Contas a Pagar.
+**Dados registrados:** professor, período de apuração, aulas ministradas, valor por aula, valor total, data de pagamento, forma de pagamento.
+ 
+**Regras:** o pagamento depende do registro confiável das aulas ministradas; um professor só leciona a modalidade em que é especialista.
+ 
+**Integração:** recebe de Frequência (aulas ministradas); envia para Contas a Pagar.
+ 
+---
+ 
+### 12. Contas a Pagar
+ 
+**Hoje (AS-IS):** não há controle sistematizado. O CEO guarda de memória os valores e as datas de vencimento (P4).
+ 
+**No sistema (TO-BE):**
+ 
+1. O CEO registra todo mês cada despesa, uma por vencimento: aluguel, contas de consumo (água, luz etc.), manutenção, pagamento de professores e compras. O sistema registra o nome do credor (locador, concessionária, fornecedor), sem dados bancários.
+2. O sistema mostra as despesas a vencer e as vencidas.
+3. Ao pagar, o CEO registra a data de pagamento e a situação muda para Paga.
+**Dados registrados:** descrição, categoria, credor, valor, data de vencimento, data de pagamento, situação.
+ 
+**Integração:** recebe de Compras e de Pagamento dos Professores.
+ 
+---
+ 
+### Integração entre os processos
+ 
+| Origem | Destino | O que passa | Efeito |
+|---|---|---|---|
+| Aula Experimental | Cadastro e Matrícula | Dados do interessado | Pré-cadastro vira aluno |
+| Cadastro e Matrícula | Contratação de Planos | Aluno | Contrato é criado |
+| Contratação de Planos | Cobrança | Contrato, valor, vigência | Geração mensal das mensalidades |
+| Trancamento | Cobrança e Contrato | Período de trancamento | Suspende mensalidades e ajusta a data de fim |
+| Cancelamento | Contrato e Cobrança | Data e multa rescisória | Encerra mensalidades |
+| Cobrança | Frequência | Mensalidade atrasada | Aluno bloqueado, sem presença |
+| Turmas e Matrícula | Frequência | Alunos ativos da turma | Lista de presença |
+| Frequência (reposição) | Frequência | Aula perdida e aula de reposição | Reposição registrada, sem presença |
+| Frequência | Graduação | Presenças por matrícula | Aptidão para exame |
+| Graduação | Cobrança | Taxa de exame | Somada à mensalidade |
+| Frequência | Pagamento dos Professores | Aulas ministradas | Valor a pagar |
+| Compras e Pagamento dos Professores | Contas a Pagar | Valor e vencimento | Despesa registrada |
+| Contratação de Planos | Contrato e Cancelamento | Fim do ciclo: aviso ao aluno e resposta | Contrato continua ou é cancelado e o aluno fica Inativo |
+ 
+---
+ 
+### Processos não incluídos e justificativa
+ 
+| Processo comum em academias | Situação | Justificativa |
+|---|---|---|
 | Venda de produtos e suplementos | Não incluído | Não faz parte da demanda da academia; descartado no levantamento. |
-| Folha de pagamento com encargos trabalhistas | Não incluído | Professores são prestadores pagos por aula.|
-| Controle de inventário de durabilidade dos equipamentos | Não incluído | A academia compra sob demanda e não tem esse controle; o registro de compras cobre o necessário. |
-| Marketing e divulgação | Não incluído | A academia divulga seus treinos no Instagram com vídeos produzidos por uma aluna, familiar do CEO, sem custo e sem fluxo formal de produção ou aprovação. Não há despesa a lançar em Contas a Pagar, nem contrato ou pagamento a registrar. Apesar de muitos sistemas do mercado oferecerem acompanhamento da jornada do contato, da consulta à matrícula, o levantamento não apontou a captação de alunos como problema de gestão. O primeiro contato do interessado já é preservado pelo registro da aula experimental como pré-cadastro. |
+| Folha de pagamento com encargos trabalhistas | Não incluído | O único contratado é o CEO e os demais professores são prestadores pagos por aula (processo 11). O CEO retira seu ganho das mensalidades e das taxas de exame, sem salário, então não há folha de pagamento. |
+| Controle de estoque e durabilidade de equipamentos | Não incluído | A academia compra sob demanda e não tem esse controle; o registro de compras cobre o necessário. |
+| Empréstimo de equipamentos | Não incluído | Os equipamentos são de uso livre nas aulas, sem registro nem cobrança. |
+| Registro do instrutor auxiliar | Não incluído | O professor escolhe o aluno informalmente, sem regra fixa; não há necessidade de dado. |
+| Marketing e divulgação | Não incluído | A divulgação é feita no Instagram, com vídeos produzidos sem custo e sem fluxo formal. Não há despesa, contrato ou pagamento a registrar. A aula experimental entra como processo (pré-cadastro) e preserva o primeiro contato do interessado. |
 
 ---
 
