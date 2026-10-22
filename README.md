@@ -38,15 +38,47 @@ Base Forte Leste - Academia de Artes Marciais (Gerida pelo CEO Adalberto). É um
   
 ## 1.2 Contexto e porte
 
-Organização de pequeno porte. A academia oferece 6 modalidades (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira e No-Gi). As turmas são divididas por horários e possuem um limite de até 30 alunos por turma.
-  
+### Natureza Jurídica e Atuação
+
+Empresa privada com fins lucrativos, atuante na prestação de serviços esportivos, condicionamento físico e ensino de artes marciais.
+
+### Quadro de Pessoal e Recursos Humanos
+
+* **Administração e Atendimento:** 1 recepcionista fixa responsável pelo atendimento presencial, cadastro em balcão e conferência de comprovantes.
+
+* **Corpo Docente e Gestão:** 1 gestor geral (CEO) que também ministra as turmas de Muay Thai, somado a 5 professores contratados como prestadores de serviços terceirizados para as demais modalidades (Boxe, Jiu-Jitsu, Kickboxing, No-Gi e Capoeira).
+
+* **Corpo de Apoio:** Instrutores auxiliares rotativos (alunos avançados/graduados que prestam suporte técnico sem vínculo empregatício formal).
+
+### Estrutura de Modalidades e Grade de Horários
+
+* **Modalidades Ofertadas:** 6 artes marciais ativas (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira e No-Gi).   
+
+* **Grade Semanal:** 18 turmas regulares distribuídas de segunda a sábado nos períodos matutino, vespertino e noturno.   
+
+* **Capacidade Física:** Limite estrito de segurança de até 30 alunos por turma simultaneamente no tatame.   
+
+* **Quantidade Mínima por Modalidade:** Parâmetro para abertura formal de horários: Muay Thai (4 alunos), Boxe (6 alunos), Jiu-Jitsu/Kickboxing/No-Gi (8 alunos) e Capoeira (10 alunos).
+
+### Volumetria Operacional Estimada (Base para a Massa de Dados):
+
+* **Alunos Ativos:** Faixa estimada entre 80 e 100 praticantes matriculados, considerando a distribuição dos alunos nas turmas regulares acima do quantidade mínima operacional de cada modalidade.
+
+* **Contratos:** Estimativa de 70 a 85 contratos ativos. O número de contratos é inferior ao total de alunos matriculados devido à adesão ao Plano Família, modalidade na qual um único contrato e responsável financeiro englobam dois ou mais dependentes/parentes com desconto progressivo.
+
+* **Movimentação Financeira Mensal:** Emissão recorrente de 70 a 85 faturas de mensalidade por mês (uma para cada contrato vigente, com vencimento no 5º dia útil), gerando no banco um histórico de liquidações pontuais, pagamentos com acréscimo de juros e registros de inadimplência para testes das consultas gerenciais.  
+
+* **Aulas Experimentais:** Média observada de 2 a 4 atendimentos semanais de novos interessados para testes gratuitos (cerca de 8 a 16 por mês), que hoje dependem unicamente da memória dos instrutores.   
+
+* **Rotina de Compras e Despesas:** Reposição presencial semanal de insumos de higiene/limpeza realizada pelo gestor, além do lançamento mensal das despesas fixas da academia (locação, água, luz e pagamento de docentes). 
+
 ## 1.3 Problemas e necessidades identificados
   
 A Academia Base Forte Leste enfrenta atualmente uma crise operacional decorrente da dependência exclusiva de fichas impressas de papel e do controle informal de tratativas via WhatsApp, sem a integração de um sistema   informatizado central. A administração da unidade apoia-se na memória individual dos funcionários e em anotações descentralizadas, gerando descontinuidade de dados, insegurança jurídica, vulnerabilidades financeiras e falhas no planejamento das aulas.
 
 Para solucionar esses gargalos e atender formalmente aos requisitos da disciplina, os problemas de gestão de informação foram catalogados e numerados de P1 a P7, conectando as rotinas operacionais observadas em campo às soluções estruturadas no banco de dados relacional:
 
-**P1 - Vulnerabilidade no armazenamento manual em fichas físicas e risco de perda de dados**
+### P1 - Vulnerabilidade no armazenamento manual em fichas físicas e risco de perda de dados
 
 **O que acontece na prática:** O cadastro de novos alunos é realizado exclusivamente à mão em formulários impressos de papel preenchidos no balcão da recepção. Essas folhas reúnem dados cadastrais, telefones de emergência, identificação de pais ou responsáveis no caso de praticantes menores de idade e anotações sobre problemas de saúde preexistentes, ficando arquivadas em pastas físicas abertas sobre a bancada de atendimento.
 
@@ -54,7 +86,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Como o banco de dados resolve:** Substitui o uso do papel pelo armazenamento digital seguro nas tabelas ALUNO e RESPONSAVEL. Cada praticante recebe um identificador primário exclusivo (Id_Aluno), garantindo a preservação dos dados de saúde, eliminando o risco de perda física de cadastros e permitindo a recuperação instantânea das informações do aluno.
 
-**P2 - Inadimplência oculta e falta de controle sobre pagamentos de mensalidades**
+### P2 - Inadimplência oculta e falta de controle sobre pagamentos de mensalidades
 
 **O que acontece na prática:** As mensalidades de todas as modalidades vencem rigidamente no 5º dia útil de cada mês. Todavia, o controle de quitação baseia-se em trocas informais de mensagens pelo WhatsApp, onde a administração apenas marca em conversas a data em que o comprovante foi encaminhado ou em que o valor foi pago no balcão.
 
@@ -62,7 +94,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Como o banco de dados resolve:** Estrutura a tabela PAGAMENTO, registrando o valor nominal devido, a data efetiva de liquidação, o montante liquidado, acréscimos moratórios (Valor_Multa_Juros) e os estados do título (Pendente, Pago, Atrasado), viabilizando relatórios imediatos de fluxo de caixa e inadimplência.
 
-**P3 - Acordos verbais na contratação de planos e descontrole no cálculo de multas rescisórias**
+### P3 - Acordos verbais na contratação de planos e descontrole no cálculo de multas rescisórias
 
 **O que acontece na prática:** O estabelecimento oferece planos nas modalidades Mensal, Trimestral, Anual e Familiar (com descontos progressivos a partir de dois membros com vínculo de parentesco), além de aplicar cobranças complementares caso o aluno queira ter acesso a mais de uma luta da grade. Todos esses termos são formalizados por acertos verbais no balcão.
 
@@ -70,7 +102,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Como o banco de dados resolve:** Interliga as entidades PLANO e CONTRATO, assegurando o registro do período de vigência, do valor mensal fixado no ato da venda, das taxas de acréscimo de multimodalidade e dos parâmetros objetivos de cálculo de multa por rescisão antecipada.
 
-**P4 - Troca de faixas e graduação sem comprovação de frequência mínima nas aulas**
+### P4 - Troca de faixas e graduação sem comprovação de frequência mínima nas aulas
 
 **O que acontece na prática:** Para progredir de graduação nas modalidades estruturadas por faixas (Muay Thai, Jiu-Jitsu, Kickboxing e Capoeira), o praticante deve cumprir um período de prática e uma assiduidade mínima comprovada. No entanto, a academia não mantém nenhum tipo de lista de chamada, caderno de presenças ou catraca eletrônica.
 
@@ -78,7 +110,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Como o banco de dados resolve:** Integra as tabelas AULA, MATRICULA e GRADUACAO, computando a assiduidade diária por modalidade e viabilizando consultas que atestam com precisão se a meta mínima de presença foi alcançada antes da emissão do certificado de faixa.
 
-**P5 - Superlotação, descontrole de vagas por trancamento e transferências informais de modalidade**
+### P5 - Superlotação, descontrole de vagas por trancamento e transferências informais de modalidade
 
 **O que acontece na prática:** Os horários são programados para suportar um teto de segurança de até 30 alunos por turma. Contudo, tanto as solicitações de trancamento de plano por lesão médica quanto os pedidos de troca definitiva de arte marcial (por exemplo, transferência do Boxe para o Muay Thai) ocorrem por mensagens no WhatsApp ou de boca no balcão.
 
@@ -86,7 +118,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Como o banco de dados resolve:** Integra as tabelas TURMA, MATRICULA e a entidade dependente TRANCAMENTO, mantendo o histórico de transferências, a comprovação formal de afastamento por lesão (Atestado_Por, Motivo) e permitindo o cálculo dinâmico da ocupação das turmas em tempo real.
 
-**P6 - Dificuldade no cálculo do repasse financeiro e controle das aulas lecionadas pelos professores**
+### P6 - Dificuldade no cálculo do repasse financeiro e controle das aulas lecionadas pelos professores
 
 **O que acontece na prática:** A organização oferta 6 modalidades esportivas (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira e No-Gi), operando com um quadro de 6 professores. O CEO ministra exclusivamente as aulas de Muay Thai, ao passo que os outros 5 profissionais trabalham sob o regime de prestação de serviços, recebendo a remuneração com base na quantidade de aulas efetivamente dadas no mês.
 
@@ -94,7 +126,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Como o banco de dados resolve:** Modela o relacionamento entre as tabelas PROFESSOR e AULA (armazenando o atributo Valor_Por_Aula) em conjunto com a entidade DESPESA, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
 
-**P7 - Desperdício de contatos e falta de acompanhamento de aulas experimentais**
+### P7 - Desperdício de contatos e falta de acompanhamento de aulas experimentais
 
 **O que acontece na prática:** A academia disponibiliza uma aula experimental gratuita para interessados que desejam experimentar uma modalidade antes de efetivar o vínculo. No entanto, nenhum dado de identificação ou contato desse participante é registrado no momento do agendamento.
 
