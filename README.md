@@ -652,10 +652,15 @@ Abaixo está o dicionário de dados completo em uma imagem **clicável**, com to
 ---
 
 ## 8\. Justificativa Técnica
-
-Como o grupo é iniciante na disciplina, optamos por uma abordagem direta e focada nos problemas críticos relatados pelo CEO Adalberto: mensalidades e frequência. Criamos a entidade **PRESENCA** separada do **ALUNO** porque mapeamos que a frequência é o dado que o professor precisa para avaliar a troca de faixa. Se guardássemos apenas a "última presença" no cadastro do aluno, a academia continuaria sem o histórico necessário para os certificados de graduação. A separação das entidades garante que o banco de dados resolva a desorganização atual sem inflar a complexidade do modelo nesta primeira entrega.
-
 ---
+Premissa do Modelo:
+Ao iniciarmos a estruturação deste projeto, a nossa principal premissa foi focar na resolução imediata das "Dores" mais urgentes da academia, evitando criar um sistema super complexo logo nesta primeira etapa. Como o nosso grupo ainda está a dar os primeiros passos na disciplina, decidimos que o modelo precisava ser direto, enxuto e, acima de tudo, funcional para o dia a dia do gestor Adalberto. O nosso ponto de partida foi construir uma base sólida que substituía o atual caos das pastas e fichas de papel por uma estrutura digital confiável, atacando de frente os dois maiores gargalos operacionais identificados no levantamento: o descontrole financeiro das mensalidades e a total falta de acompanhamento da assiduidade dos alunos.   
+
+
+Decisões de Modelagem:
+Com base nessa premissa, tomamos decisões arquiteturais focadas na realidade do negócio. A principal delas foi a criação da entidade **PRESENCA** de forma totalmente separada da entidade **ALUNO**. Num primeiro momento, para simplificar, poderia parecer mais fácil colocar apenas um campo de "última presença" dentro do próprio cadastro do aluno. No entanto, percebemos que o histórico acumulado de aulas é o dado vital que os professores utilizam para avaliar se o praticante tem o tempo de tatame exigido para a troca de faixa.
+
+Se guardássemos apenas a última data de comparecimento, o sistema sobrescreveria o passado e a academia continuaria "cega", sem o histórico necessário para basear e justificar os exames de graduação. Separar essas entidades foi a maneira mais lógica que encontramos para garantir que o banco de dados rastreie a jornada técnica do aluno aula a aula. Dessa forma, conseguimos resolver a desorganização atual de forma definitiva, entregando o valor que a academia precisa sem inflar a complexidade do nosso modelo nesta primeira entrega.
 
 ## 9. Uso de Inteligência Artificial
 
