@@ -42,9 +42,7 @@ Base Forte Leste - Academia de Artes Marciais (Gerida pelo CEO Adalberto). É um
 
 Empresa privada com fins lucrativos, atuante na prestação de serviços esportivos, condicionamento físico e ensino de artes marciais.
 
-### Quadro de Pessoal e Recursos Humanos
-
-* **Administração e Atendimento:** 1 recepcionista fixa responsável pelo atendimento presencial, cadastro em balcão e conferência de comprovantes.
+### Quadro de Pessoal 
 
 * **Corpo Docente e Gestão:** 1 gestor geral (CEO) que também ministra as turmas de Muay Thai, somado a 5 professores contratados como prestadores de serviços terceirizados para as demais modalidades (Boxe, Jiu-Jitsu, Kickboxing, No-Gi e Capoeira).
 
