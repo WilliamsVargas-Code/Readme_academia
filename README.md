@@ -165,7 +165,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 **Papéis:** CEO (Adalberto, gestor, professor de Muay Thai e único contratado; a academia não tem recepcionista, então ele também faz a recepção); professores (5 prestadores de serviço, um responsável por modalidade); aluno; interessado (quem ainda não é aluno); responsável legal (de aluno menor de idade).
  
-**Porte:** cerca de 30 a 40 alunos, 6 modalidades (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira, No-Gi), 4 turmas por dia em horários diferentes, turmas de até 30 alunos.
+**Porte:** cerca de 80 a 100 alunos, 6 modalidades (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira, No-Gi), 4 turmas por dia em horários diferentes, turmas de até 30 alunos.
  
 ---
  
