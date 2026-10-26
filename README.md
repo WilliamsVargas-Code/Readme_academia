@@ -687,6 +687,7 @@ Abaixo está o dicionário de dados completo em uma imagem **clicável**, com to
 ## 7\. Diagrama Entidade-Relacionamento (DER)
 <img width="2082" height="1485" alt="diagrama_er" src="diagrama_er.png" />
 
+**Legenda:** O Diagrama Entidade-Relacionamento (DER) conceitual deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web (https://app.brmodeloweb.com](https://app.brmodeloweb.com/publicview/6add53f7af2ec3e0c35bc0ef)), adotando a notação gráfica conceitual de Peter Chen com indicação de cardinalidades (mín, máx) em ambas as extremidades das relações.
 
 
 
