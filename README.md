@@ -92,13 +92,13 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **O que acontece na prática:** As mensalidades de todas as modalidades vencem rigidamente no 5º dia útil de cada mês. Todavia, o controle de quitação baseia-se em trocas informais de mensagens pelo WhatsApp, onde a administração apenas marca em conversas a data em que o comprovante foi encaminhado ou em que o valor foi pago no balcão.
 
-**Por que é um problema:** A gestão não possui visibilidade em tempo real sobre quais alunos estão em atraso, qual é o saldo inadimplente total acumulado e deixa de aplicar as penalidades de juros e multas previstas. Diversos praticantes permanecem com acesso liberado aos treinos mesmo com pendências financeiras prolongadas, devido à carência de rotinas automáticas de auditoria e cobrança.
+**Por que é um problema:** A gestão não possui visibilidade em tempo real sobre quais alunos estão em atraso, qual é o saldo inadimplente total acumulado e deixa de aplicar as penalidades de multas previstas. Diversos praticantes permanecem com acesso liberado aos treinos mesmo com pendências financeiras prolongadas, devido à carência de rotinas automáticas de auditoria e cobrança.
 
-**Como o banco de dados resolve:** Estrutura a tabela PAGAMENTO, registrando o valor nominal devido, a data efetiva de liquidação, o montante liquidado, acréscimos moratórios (Valor_Multa_Juros) e os estados do título (Pendente, Pago, Atrasado), viabilizando relatórios imediatos de fluxo de caixa e inadimplência.
+**Como o banco de dados resolve:** Estrutura a tabela PAGAMENTO, registrando o valor nominal devido, a data efetiva de liquidação, o montante liquidado, acréscimos moratórios (Valor_Multa) e os estados do título (Pendente, Pago, Atrasado), viabilizando relatórios imediatos de fluxo de caixa e inadimplência.
 
 ### P3 - Acordos verbais na contratação de planos e descontrole no cálculo de multas rescisórias
 
-**O que acontece na prática:** O estabelecimento oferece planos nas modalidades Mensal, Trimestral, Anual e Familiar (com descontos progressivos a partir de dois membros com vínculo de parentesco), além de aplicar cobranças complementares caso o aluno queira ter acesso a mais de uma luta da grade. Todos esses termos são formalizados por acertos verbais no balcão.
+**O que acontece na prática:** O estabelecimento oferece planos nas modalidades Mensal, Semestral, Trimestral, Anual e Familiar (com descontos progressivos a partir de dois membros com vínculo de parentesco), além de aplicar cobranças complementares caso o aluno queira ter acesso a mais de uma luta da grade. Todos esses termos são formalizados por acertos verbais no balcão.
 
 **Por que é um problema:** Na ocorrência de cancelamentos antecipados de pacotes com duração trimestral ou anual, a empresa não tem suporte em registros formais de vigência para cobrar as multas rescisórias devidas. Esse vácuo gera contestações por parte dos alunos e provoca perdas de receita previamente planejadas.
 
@@ -106,7 +106,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 ### P4 - Troca de faixas e graduação sem comprovação de frequência mínima nas aulas
 
-**O que acontece na prática:** Para progredir de graduação nas modalidades estruturadas por faixas (Muay Thai, Jiu-Jitsu, Kickboxing e Capoeira), o praticante deve cumprir um período de prática e uma assiduidade mínima comprovada. No entanto, a academia não mantém nenhum tipo de lista de chamada, caderno de presenças ou catraca eletrônica.
+**O que acontece na prática:** Para progredir de graduação nas modalidades estruturadas por faixas (Muay Thai, No-Gi, Jiu-Jitsu, Kickboxing e Capoeira), o praticante deve cumprir um período de prática e uma assiduidade mínima comprovada. No entanto, a academia não mantém nenhum tipo de lista de chamada, caderno de presenças ou catraca eletrônica.
 
 **Por que é um problema:** A permissão para que o aluno se inscreva no exame de graduação apoia-se unicamente na memória dos instrutores, sem embasamento em dados históricos reais. Esse critério subjetivo compromete o rigor pedagógico e o nivelamento técnico esperado pela academia.
 
