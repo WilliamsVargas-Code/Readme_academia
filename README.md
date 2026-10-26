@@ -11,23 +11,27 @@
 ---
 
 # Título 
-Modelagem de Banco de Dados Relacional para o Sistema de Gestão da Academia Base Forte Leste.
+Modelagem e Implementação de Banco de Dados Relacional para o Sistema de Gestão da Academia Base Forte Leste
 
 ## Introdução
 A academia de artes marciais Base Forte Leste enfrenta atualmente uma crise operacional decorrente da ausência de um sistema informatizado de gestão. Todo o controle administrativo é feito por meio de fichas de papel preenchidas manualmente no ato da matrícula e por tratativas informais via WhatsApp, sem qualquer padronização ou centralização das informações. Essa fragilidade estrutural gera três problemas críticos para o negócio: atrasos recorrentes no pagamento das mensalidades, que vencem todo 5º dia útil sem que a inadimplência seja formalmente registrada ou monitorada; total ausência de controle sobre a frequência dos alunos nas aulas, o que impede qualquer análise objetiva de assiduidade e dificuldade em rastrear o tempo real de treino de cada aluno, informação essencial para embasar a concessão de exames de faixa, hoje decidida apenas pela percepção visual do professor. Diante disso, evidencia-se a necessidade de estruturar um banco de dados relacional capaz de organizar e integrar essas informações.
 
 ## Desenvolvimento
-O objetivo geral deste trabalho é desenvolver o modelo conceitual (DER) de um banco de dados relacional para dar suporte à gestão administrativa e pedagógica da academia Base Forte Leste, centralizando os dados hoje dispersos entre fichas físicas e conversas informais.
+O objetivo geral é fornecer a modelagem e a implementação física do banco de dados relacional da Academia Base Forte Leste, organizando os fluxos operacionais em uma estrutura normalizada e consistente. 
 
-Como objetivos específicos, o grupo busca:
+Os objetivos específicos incluem:
 
-Modelar o cadastro de alunos, contemplando dados pessoais, problema de saúde e situação cadastral (ativo, inativo ou trancado);
-Modelar o cadastro de professores, vinculando-os às respectivas modalidades de ensino;
-Estruturar o controle de turmas, respeitando o limite de 30 alunos por turma e a associação entre modalidade, horários e professor.
-Registrar de forma sistemática os pagamentos de mensalidade, identificando plano contratado e data de pagamento, de modo a permitir o acompanhamento da inadimplência
-Viabilizar o registro diário de frequência dos alunos, criando a base de dados necessária para subsidiar decisões de graduação;
-Registrar o histórico de graduações e exames de faixa realizados por cada aluno.
-Este trabalho delimita-se à modelagem conceitual do banco de dados, não contemplando sua implementação física nem o desenvolvimento de uma aplicação de software. O escopo abrange exclusivamente os processos de cadastro de alunos, professores e turmas, controle de mensalidades, registro de frequência e histórico de graduação, por serem os pontos críticos apontados pelo CEO Adalberto na entrevista de campo. Ficam fora do escopo desta entrega questões como a integração futura com sistemas de catraca por reconhecimento facial (prevista apenas como requisito não funcional de compatibilidade futura) e qualquer módulo de venda de produtos ou suplementos, tema descartado ainda na fase de levantamento de requisitos por não fazer parte da demanda original da academia.
+* Modelar os cadastros de alunos, vínculos de responsáveis e condições médicas; 
+
+* Integrar planos, contratos, aditivos de multimodalidade e faturas financeiras de mensalidades; 
+
+* Rastrear as turmas, horários e aulas ministradas pelo corpo técnico; 
+
+* Computar a frequência diária necessária aos exames de graduação e ao cálculo de honorários por aula; 
+
+* Entregar os modelos conceitual e lógico, o script DDL/DML em MySQL e as consultas SQL gerenciais para tomada de decisão. 
+
+O projeto limita-se à arquitetura do banco de dados e suas consultas analíticas. Não contempla o desenvolvimento de sistemas visuais/aplicativos, módulos comerciais de venda de artigos esportivos nem a operação do hardware de catraca facial, cuja independência arquitetural permite acoplamento posterior sem modificações no esquema das tabelas.
 
 
 # 1. Caracterização da Organização
