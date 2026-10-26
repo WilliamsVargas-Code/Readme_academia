@@ -583,65 +583,104 @@ Abaixo está o dicionário de dados completo em uma imagem **clicável**, com to
 
 ## 6\. Modelagem Conceitual
 
-### Entidades reconhecidas e justificativas:
+### 6.1 Entidades reconhecidas e justificativas:
 
-* **ALUNO:** Armazena os dados pessoais, cadastrais e de saúde dos praticantes. 
-* **PROFESSOR:** Registra os profissionais e suas respectivas especializações técnicas.
-* **MODALIDADE:** Define as opções de luta oferecidas pela academia. 
-* **TURMA:** Organiza o cronograma de horários e vincula o professor responsável.
-* **MATRÍCULA:** Entidade associativa que gerencia a relação entre aluno e turma, controlando o status cadastral.
-* **PLANO:** Agrupa as condições comerciais, preços e durações dos pacotes. 
-* **PAGAMENTO:** Controla o histórico financeiro para mitigar a inadimplência. 
-* **PRESENÇA:** Registra o comparecimento diário para embasar a evolução técnica e graduação.
-* **GRADUAÇÃO:** Armazena o histórico de exames de faixa e o progresso dos alunos.   
+**1. ALUNO:** Centraliza os registros de identificação civil, dados médicos preliminares, histórico esportivo e autorizações de imagem e privacidade. 
 
-### Atributos e Classificações:
-
-* **ALUNO:** Contém o identificador principal Id_Aluno (PK), o CPF como chave alternativa, o Nome_Completo, a Data_Nascimento, um endereço estruturado composto por Rua, Numero, Bairro e CEP, além de Email, Telefone, o atributo multivalorado de Problema_Saude e o Status cadastral.
+**2. RESPONSÁVEL:** Formaliza os dados do responsável legal pelo aluno menor de 18 anos, garantindo a conformidade jurídica com o Art. 14 da LGPD para as turmas infantis. 
   
-* **PROFESSOR:** É identificado por Id_Professor (PK), contendo também o CPF, Nome_Completo, Data_Nascimento, dados de endereço compostos por Rua, Numero, Bairro e CEP, Email, Telefone, Problema_Saude, além de Especialização, Nivel de Experiencia e Registro_Qualificacoes.
+**3. PROFESSOR:** Cadastra os docentes e o gestor técnico, detalhando especializações, registros profissionais e o valor base de honorários por aula ministrada. 
+
+**4. MODALIDADE:** Catálogo das artes marciais ofertadas, definindo se a luta adota sistema de graduação por faixas e seus parâmetros de quórum operacional. 
+
+**5. TURMA:** Define a grade de treinos, organizando os dias da semana, horários de início/fim e o teto máximo de capacidade física no tatame. 
+
+**6. MATRÍCULA:** Entidade associativa que vincula o aluno à turma em que está inscrito, rastreando a data de ingresso e a situação cadastral ativa ou inativa. 
+
+**7. TRANCAMENTO:** Entidade dependente vinculada à matrícula, que registra períodos de afastamento por razões médicas ou lesões, suspendendo a cobrança sem incidência de multas. 
+
+**8. AULA:** Materializa a ocorrência real e datada de um treino ministrado por um professor para uma turma específica, servindo de elo para registro de presenças e folha de repasse. 
+
+**9. PLANO:** Tabela comercial com as durações (mensal, trimestral, anual), descontos aplicados e regras de quantidade mínima de pessoas para pacotes familiares. 
+
+**10. CONTRATO:** Formaliza o acordo comercial entre o aluno e a academia, fixando vigência, valores mensais pactuados, acréscimos por multimodalidade e parâmetros de multa rescisória. 
+
+**11. PAGAMENTO:** Controla as parcelas financeiras periódicas geradas pelos contratos, apurando valores devidos, acréscimos de mora por atraso e liquidações efetivas. 
+
+**12. GRADUAÇÃO:** Registra a evolução técnica discente, arquivando exames de faixa, análises técnicas, aprovações e motivos de reprovação. 
+
+**13. INTERESSADO** Gerencia a captação de clientes (leads), registrando os dados do visitante, a data da aula experimental gratuita e o resultado do interesse. 
+
+**14. DESPESA:** Consolida as saídas operacionais financeiras da organização (aluguel, contas de consumo, suprimentos de limpeza) e a liquidação dos honorários das aulas dos professores. 
   
-* **MODALIDADE:** Possui o Id_Modalidade (PK), o Nome_Modalidade, a Data_Inicio_Aulas e um indicador lógico de Possui_Sistema_Faixas. 
+### 6.2 Atributos e Classificações:
 
-* **TURMA:** Agrupa o Id_Turma (PK), o Dia_Semana, os horários Horario_Inicio e Horario_Fim, e o controle de Vagas_Ocupadas.
+**1. ALUNO:**  Id_Aluno (PK), Nome_Completo, CPF, Data_Nascimento, Situacao, Historico_Treino, Aceite_Uso_Imagem, Data_Autorizacao_Imagem, Data_Entrega_Atestado, Endereco (Atributo Composto: Rua, Numero, Bairro, CEP), Problema_Saude (1,n) (Multivalorado), Email (1,n) (Multivalorado), Telefone (1,n) (Multivalorado).
   
-* **MATRÍCULA:** Estruturada com o Id_Matricula (PK), a Data_Matricula, o campo de Esportes_Praticado, além do Status_Matricula e do Motivo_Trancamento. 
+**2. RESPONSÁVEL:** Id_Responsavel (PK), Nome, CPF, Telefone, Parentesco.
   
-* **PLANO:** Contém o Id_Plano (PK), o Nome_Plano, o Preco, a Duracao_Meses e o Porcentual_Desconto.
+**3. PROFESSOR:** Id_Professor (PK), Nome_Completo, CPF, Data_Nascimento, Valor_Por_Aula, Endereco (Composto: Rua, Numero, Bairro, CEP), Email (1,n) (Multivalorado), Telefone (1,n) (Multivalorado), Especializacao (1,n) (Multivalorado), Registro_Qualificacoes (1,n) (Multivalorado), Nivel_De_Experiencia (1,n) (Multivalorado).
+   
+**4. MODALIDADE:** Id_Modalidade (PK), Nome_Modalidade, Quantidade_Minima_Referencia, Situacao, Possui_Sistema_Faixas, Data_Inicio_Aulas.
   
-* **PAGAMENTO:** Registrado pelo Id_Pagamento (PK), acompanhado da Data_Vencimento e do Status_Pagamento.
+**5. TURMA:** Id_Turma (PK), Dia_Semana, Horario_Inicio, Horario_Fim, Capacidade_Maxima (Restrição fixa em 30).
   
-* **PRESENÇA:** Composta pelo Id_Presenca (PK), a Data_Aula, o Horario_Aula e o marcador de Presença.
+**6. MATRÍCULA:** Id_Matricula (PK), Data_Matricula,Situacao (Ativa, Trancada, Encerrada, Cancelada).
   
-* **GRADUAÇÃO:** Reúne o Id_Graduacao (PK), o Nivel_Faixa, a Data_Graduacao e o campo de Observacao.
-
-### Relacionamentos Pertinentes:
-
-* **Domina (Professor e Modalidade - 1:N / N:N):** Um professor possui uma ou mais especializações, e uma modalidade pode ser lecionada por múltiplos professores.
-
-* **Leciona (Professor e Turma - 1:N):** Um professor é responsável por reger uma ou mais turmas, enquanto cada turma possui um único professor principal alocado. 
-
-* **Vincula / Realiza (Aluno, Matrícula e Turma - 1:N e N:1):** Relacionamento associativo que modela a regra de que um aluno pode se matricular em várias turmas e uma turma comporta múltiplos alunos (limitados a 30 por turma).
+**7. TRANCAMENTO:** Id_Trancamento (PK), Tipo_Trancamento, Motivo, Atestado_Por, Data_Inicio, Data_Retorno_Prevista, Data_Retorno_Efetiva.
   
-* **Possui (Aluno e Pagamento - 1:N):** Um aluno gera múltiplos registros de pagamento ao longo de sua permanência na academia, mas cada pagamento individual pertence a apenas um aluno.
+**8. AULA:** Id_Aula (PK), Data_Aula, Hora_Inicio, Aula_Origem (para controle de reposições), Presenca (indicador booleano associado à frequência).
+  
+**9. PLANO:** Id_Plano (PK), Nome_Plano, Duracao_Meses, Valor_Mensalidade, Porcentual_Desconto, Quantidade_Minima_Pessoas, Condicao.
+  
+**10. CONTRATO:** Id_Contrato (PK), Data_Inicio, Data_Fim, Valor_Mensal_Acordado, Acrescimo_Modalidade, Doc_Parentesco_Tipo, Data_Conferencia_Parentesco, Data_Cancelamento, Valor_Multa, Responsavel_Pelo_Plano.
+  
+**11. PAGAMENTO:** Id_Pagamento (PK), Data_Vencimento, Data_Pagamento, Valor_Devido, Valor_Pago, Situacao (Pendente, Pago, Atrasado), Valor_Multa, Forma_Pagamento, Valor_Taxa_Graduacao.
+  
+**12. GRADUAÇÃO:** Id_Graduacao (PK), Tipo_Avaliacao, Nivel_Faixa, Data_Graduacao, Resultado (Aprovado, Reprovado), Motivo_Reprovacao.
+  
+**13. INTERESSADO** Id_Interessado (PK), Nome, Telefone, Data_Aula, Horario_Aula, Resultado_Interesse (Convertido, Encerrado, Pendente).
+  
+**14. DESPESA:** Id_Despesa (PK), Categoria, Descricao, Credor, Data_Vencimento, Data_Pagamento, Valor, Valor_Pago, Situacao.
 
-* **Refere (Pagamento e Plano - N:1):** Vários pagamentos referenciam um mesmo plano contratado, que dita as regras financeiras aplicadas. 
+### 6.3 Relacionamentos Pertinentes:
 
-* **Comparece (Aluno e Presença - 1:N): ** Um aluno possui diversos registros de presença diária ao longo de suas aulas. 
+**1. Aluno e Responsável (Possui / Representa):** ALUNO (0,1) --- (1,n) RESPONSAVEL. Um responsável pode representar um ou vários alunos menores de idade; o aluno maior não possui vínculo com responsável. 
 
-* **Obtém (Aluno e Graduação - 1:N):** O aluno acumula ao longo da sua trajetória um histórico de graduações e exames de faixa aprovados.
+**2. Aluno e Contrato (Firma / Contrata):** ALUNO (1,1) --- (1,n) CONTRATO. Um aluno pode firmar contratos ao longo de sua trajetória; cada contrato pertence a um titular discente. 
 
-* **Referência (Modalidade e Graduação - 1:N): ** Vincula a progressão de faixas à modalidade esportiva específica que adota sistema de graduação.
+**3. Plano e Contrato (Define / Baseia):** PLANO (1,1) --- (0,n) CONTRATO. Um plano comercial serve de molde para múltiplos contratos; o contrato deriva de um único plano. 
 
-### Restrições e Políticas Organizacionais Aplicadas ao Modelo:
+**4. Contrato e Pagamento (Gera):** CONTRATO (1,1) --- (1,n) PAGAMENTO. Cada contrato firmado gera periodicamente as parcelas de pagamento. 
 
-* **Restrição de Capacidade Física:** A entidade Turma interligada à Matrícula valida a restrição organizacional de limite máximo de 30 alunos por turma. 
+**5. Contrato e Modalidade (Cobre / Inclui):** CONTRATO (1,n) --- (0,n) MODALIDADE. O contrato básico cobre a modalidade principal e suporta regras adicionais de acréscimo proporcional.
 
-* **Condicionalidade de Status de Trancamento:** O atributo Motivo_Trancamento na tabela Matrícula torna-se de preenchimento obrigatório sempre que o status for modificado para "Trancado", assegurando a política de que tal alteração só ocorre por motivo de lesão
+**6. Aluno, Matricula e Turma (Realiza / Vincula):** ALUNO (1,1) --- (1,n) MATRICULA (n,1) --- (1,1) TURMA. Relacionamento associativo que viabiliza ao aluno estar matriculado em turmas respeitando o limite físico.
 
-* **Exclusividade de Especialização:** A integridade do modelo impede que um professor lecione turmas de modalidades para as quais não possua a devida qualificação registrada. 
+**7. Matrícula e Trancamento (Registra):** MATRICULA (1,1) --- (0,n) TRANCAMENTO. Uma matrícula pode sofrer múltiplos registros históricos de trancamento por lesão médica.
 
-* **Política de Vencimento Fixo:** A entidade Pagamento padroniza o vencimento para o quinto dia útil de cada mês, operando em conjunto com o bloqueio de frequência caso o Status_Pagamento esteja pendente.
+**8. Turma e Modalidade (Aloca):**  TURMA (1,n) --- (1,1) MODALIDADE. Uma modalidade abrange várias turmas na grade; cada turma pertence a uma única modalidade.
+
+**9. Turma e Professor (Leciona):** TURMA (1,n) --- (1,1) PROFESSOR. Cada turma possui um docente titular alocado responsável pela modalidade. 
+
+**10. Turma e Aula (Gera / Executa):** TURMA (1,1) --- (1,n) AULA. Cada turma desdobra-se em sessões datadas de treinos executados.
+
+**11. Aula e Professor (Ministra):** AULA (1,n) --- (1,1) PROFESSOR. Cada aula realizada é computada para o professor que de fato a conduziu (permitindo rastrear reposições). 
+
+**12. Aula e Matrícula (Frequenta):** AULA (0,n) --- (1,n) MATRICULA. O comparecimento do aluno vincula sua matrícula ativa à sessão de treino da turma. 
+
+**13. Professor e Despesa (Recebe / Gera):** PROFESSOR (1,1) --- (0,n) DESPESA. As aulas lecionadas por um docente prestador de serviços consolidam os honorários operacionais lançados em contas a pagar. 
+
+**14. Aluno, Modalidade e Graduação (Obtém / Referencia):** ALUNO (1,1) --- (0,n) GRADUACAO (n,1) --- (1,1) MODALIDADE. O histórico de evolução de faixas do praticante é categorizado rigorosamente por modalidade de arte marcial.
+
+**15. Interessado e Aluno (Origina):** INTERESSADO (0,1) --- (1,1) ALUNO. Um interessado que participou da aula experimental gratuita pode ser convertido em matrícula definitiva. 
+
+**16. Interessado e Modalidade (Escolhe / Agenda):** INTERESSADO (1,1) --- (0,n) MODALIDADE. Cada interessado agenda uma única aula experimental vinculada à modalidade esportiva de interesse, enquanto uma modalidade pode receber nenhum ou vários interessados cadastrados ao longo do tempo.
+
+**17. Professor e Graduação (Avalia / Examina):** PROFESSOR (0,n) --- (1,1) GRADUAÇÃO. Um professor pode atuar como examinador em nenhuma ou várias avaliações de faixa, enquanto cada registro de graduação é avaliado e validado por exatamente um professor titular responsável. 
+
+**18. Professor e Modalidade (Domina / Especializa-se):** PROFESSOR (1,1) --- (1,n) MODALIDADE. Cada professor possui domínio e atua exclusivamente em uma modalidade esportiva, enquanto uma modalidade conta com um ou mais docentes devidamente qualificados para ministrá-la na grade. 
+
     
 ---
 
