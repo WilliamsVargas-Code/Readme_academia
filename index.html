@@ -251,7 +251,7 @@
     </tbody>
   </table>
 
-  <p style="font-size:12.5px;color:var(--muted);">Versão deste dicionário: v2.1 — 27/10/2026. Conferência com o modelo lógico: nomes das tabelas de apoio dos atributos multivalorados e atributo NM_RESPONSAVEL_PLANO em CONTRATO; em PAGAMENTO, VL_MULTA_ATRASO passou a VL_MULTA e VL_TAXA_EXAME a VL_TAXA_GRADUACAO (nomes do MER e do DER); QT_TEMPO_MINIMO_FAIXA e DS_OBSERVACAO removidos de GRADUAÇÃO (não constam no MER nem no DER). Base v2.0 — 25/10/2026, reescrita sobre o MER e o DER atualizados: 14 entidades (novas: RESPONSÁVEL, INTERESSADO, CONTRATO, AULA, TRANCAMENTO e DESPESA), PRESENÇA e PARTICIPA como tabelas associativas, cardinalidades pelo lado oposto (Look-Across), atributos multivalorados, domínios de status unificados e códigos de regra da numeração nova.</p>
+  <p style="font-size:12.5px;color:var(--muted);">Versão deste dicionário: v2.2 — 29/10/2026. Conferência com o modelo lógico: nomes e tipos atualizados para ter 100% de acurácia com os tipos listados no modelo lógico.</p>
 
   <!-- 4. DICIONÁRIO POR ENTIDADE -->
   <h2 class="sec">4. Dicionário de dados por entidade</h2>
@@ -266,13 +266,13 @@ ENDERECO = DS_RUA + NR_LOGRADOURO + NM_BAIRRO + NR_CEP</div>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
       <tr><td class="attr pk">ID_ALUNO</td><td>integer</td><td>Sim (PK)</td><td>Código de localização do registro; não sofre operação matemática.</td></tr>
-      <tr><td class="attr">CPF</td><td>varchar(11)</td><td>Sim</td><td>Apenas dígitos, sem pontuação. Não pode ser duplicado.</td></tr>
+      <tr><td class="attr">CPF</td><td>char(14)</td><td>Sim</td><td>Apenas dígitos, sem pontuação. Não pode ser duplicado.</td></tr>
       <tr><td class="attr">NM_COMPLETO</td><td>varchar(150)</td><td>Sim</td><td>Nome completo do aluno.</td></tr>
       <tr><td class="attr">DT_NASCIMENTO</td><td>date</td><td>Sim</td><td>Usada para cálculo de idade e para exigir o responsável legal se menor de 18 anos.</td></tr>
       <tr><td class="attr">DS_RUA</td><td>varchar(100)</td><td>Sim</td><td>Logradouro (aluno); parte do atributo composto ENDERECO.</td></tr>
       <tr><td class="attr">NR_LOGRADOURO</td><td>varchar(10)</td><td>Sim</td><td>Número do endereço ("Numero" no DER); não sofre operação matemática.</td></tr>
       <tr><td class="attr">NM_BAIRRO</td><td>varchar(60)</td><td>Sim</td><td>Bairro.</td></tr>
-      <tr><td class="attr">NR_CEP</td><td>varchar(8)</td><td>Sim</td><td>Apenas dígitos.</td></tr>
+      <tr><td class="attr">NR_CEP</td><td>char(9)</td><td>Sim</td><td>Apenas dígitos.</td></tr>
       <tr><td class="attr">DS_EMAIL</td><td>varchar(100)</td><td>Sim (1,n)</td><td>E-mail de contato; multivalorado.</td></tr>
       <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim (1,n)</td><td>Telefones de contato (principal, reserva, emergência); multivalorado.</td></tr>
       <tr><td class="attr">DS_PROBLEMA_SAUDE</td><td>varchar(200)</td><td>Sim (1,n)</td><td>Dado sensível (RNF02); multivalorado. Sem problema de saúde, registrar "nenhum".</td></tr>
