@@ -15,7 +15,7 @@
  
 | Artefato | Local |
 | :-- | :-- |
-| Levantamento de requisitos (texto do grupo) | [levantamento/levantamento.md](levantamento/levantamento.md) [PENDENTE: criar] |
+| Levantamento de requisitos (texto do grupo) | [levantamento/levantamento.md](levantamento/levantamento.md)|
 | DER conceitual revisado | [diagrama_er.png](diagrama_er.png) |
 | Modelo lógico | [modelo_logico.png](modelo_logico.png) [PENDENTE: criar] |
 | Dicionário de dados (HTML) | [index.html](index.html) · [GitHub Pages](https://williamsvargas-code.github.io/Readme_academia/) |
