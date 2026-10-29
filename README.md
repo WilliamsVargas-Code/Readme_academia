@@ -2,11 +2,12 @@
 
 ## Metadados
 
-* **Nome do Aluno 1:** Nickolas Henrique Bezerra - **RGM:** 47685778
-* **Nome do Aluno 2:** Pedro Henrique Ruola Coiado - **RGM:** 47589124
-* **Nome do Aluno 3:** Raphaela Gonçalves Neves - **RGM:** 47656166
-* **Nome do Aluno 4:** Williams Vargas Neves Paoli dos Santos - **RGM:** 47336820
-* **Professor/Disciplina:** Cid Rodrigues De Andrade - Modelagem de Banco de Dados
+| Nome completo do aluno | RGM | Usuário do GitHub |
+| :-- | :-- | :-- |
+| Nickolas Henrique Bezerra | 47685778 | Nickolashbezerra |
+| Pedro Henrique Ruola Coiado | 47589124 | PedroCoiado |
+| Raphaela Gonçalves Neves | 47656166 | RaphaelaSeven |
+| Williams Vargas Neves Paoli dos Santos | 47336820 | WilliansVargas-Code |
 
 ---
 
