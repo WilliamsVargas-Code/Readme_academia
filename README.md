@@ -588,11 +588,12 @@ RE05 - Bloqueio Automatizado de Catraca por Inadimplência
 
 ---
 
-## 5\. Dicionário de Dados Conceitual (Preliminar)
+## 5\. Dicionário de Dados Conceitual
 
-Abaixo está o dicionário de dados completo em uma imagem **clicável**, com todas as entidades e atributos que constam no Diagrama Entidade-Relacionamento (Seção 7):
+Abaixo está o dicionário de dados completo em uma imagem **clicável**, com todas as entidades e atributos que constam no Diagrama:
 
 [![Website Preview Screenshot](img_preview_dicionario.png)](https://williamsvargas-code.github.io/Readme_academia/)
+
 
 ---
 
