@@ -9,6 +9,20 @@
 | Raphaela Gonçalves Neves | 47656166 | RaphaelaSeven |
 | Williams Vargas Neves Paoli dos Santos | 47336820 | WilliansVargas-Code |
 
+**Professor/Disciplina:** Cid Rodrigues De Andrade — Modelagem de Banco de Dados
+
+## Artefatos do repositório
+ 
+| Artefato | Local |
+| :-- | :-- |
+| Levantamento de requisitos (texto do grupo) | [levantamento/levantamento.md](levantamento/levantamento.md) [PENDENTE: criar] |
+| DER conceitual revisado | [diagrama_er.png](diagrama_er.png) |
+| Modelo lógico | [modelo_logico.png](modelo_logico.png) [PENDENTE: criar] |
+| Dicionário de dados (HTML) | [index.html](index.html) · [GitHub Pages](https://williamsvargas-code.github.io/Readme_academia/) |
+| Script SQL | [docs/script.sql](docs/script.sql) [PENDENTE: criar] |
+| Massa de dados | [docs/massa_de_dados.sql](docs/massa_de_dados.sql) [PENDENTE: criar] |
+| Slides do pitch | [slides/apresentacao.pdf](slides/apresentacao.pdf) [PENDENTE: criar] |
+
 ---
 
 # Título 
