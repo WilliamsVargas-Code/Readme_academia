@@ -150,54 +150,71 @@
 <div class="page">
 
   <header class="doc-header">
-    <div class="eyebrow">Entrega 1 · Modelagem de Banco de Dados · Prof. Cid Rodrigues De Andrade</div>
+    <div class="eyebrow">Modelagem de Banco de Dados · Prof. Cid Rodrigues De Andrade</div>
     <h1>Dicionário de Dados</h1>
     <div class="doc-sub">Sistema de Gestão de Informações — Base Forte Leste (Academia de Artes Marciais)</div>
   </header>
 
   <!-- 1. MODELO CONCEITUAL -->
   <h2 class="sec">1. Modelo conceitual</h2>
-  <p>Este modelo representa a gestão administrativa e pedagógica da academia Base Forte Leste, na qual cada aluno se matricula em turmas de uma ou mais modalidades, acumula presenças, pagamentos e, quando aplicável, graduações.</p>
-
+  <p>Este modelo representa a gestão administrativa, financeira e pedagógica da academia Base Forte Leste: o interessado faz uma aula experimental, vira aluno e se matricula em turmas; o contrato define o plano e gera as mensalidades; cada aula ministrada registra as presenças e, quando aplicável, o aluno é avaliado em uma graduação.</p>
   <table>
     <thead>
-      <tr><th>Entidade</th><th>Relaciona-se com</th><th>Cardinalidade</th></tr>
+      <tr><th>Entidade</th><th>Relaciona-se com</th><th>Cardinalidade</th><th>(mín,máx)</th></tr>
     </thead>
     <tbody>
-      <tr><td>PROFESSOR</td><td>MODALIDADE</td><td>N:1 — vários professores podem se especializar na mesma modalidade, mas cada professor se especializa em exatamente uma</td></tr>
-      <tr><td>MODALIDADE</td><td>TURMA</td><td>1:N — uma modalidade pode ter várias turmas, divididas por horário e dia da semana</td></tr>
-      <tr><td>PROFESSOR</td><td>TURMA</td><td>1:N — um professor leciona várias turmas, mas cada turma tem um único professor responsável</td></tr>
-      <tr><td>ALUNO</td><td>MATRÍCULA</td><td>1:N — cada matrícula é de um único aluno, mas um aluno pode ter várias matrículas ao longo do tempo</td></tr>
-      <tr><td>TURMA</td><td>MATRÍCULA</td><td>1:N — cada matrícula pertence a uma única turma, mas uma turma reúne várias matrículas (até o limite de 30)</td></tr>
-      <tr><td>MATRÍCULA</td><td>PRESENÇA</td><td>1:N — cada presença refere-se a uma única matrícula, que acumula várias presenças ao longo do tempo</td></tr>
-      <tr><td>ALUNO</td><td>PAGAMENTO</td><td>1:N — cada pagamento é de um único aluno, que realiza vários pagamentos (mensalidades)</td></tr>
-      <tr><td>PLANO</td><td>PAGAMENTO</td><td>1:N — cada pagamento usa um único plano, mas o mesmo plano é usado em vários pagamentos de alunos diferentes</td></tr>
-      <tr><td>ALUNO</td><td>GRADUAÇÃO</td><td>1:N — cada graduação é de um único aluno, que pode acumular várias graduações</td></tr>
-      <tr><td>MODALIDADE</td><td>GRADUAÇÃO</td><td>1:N — cada graduação refere-se a uma única modalidade, que pode gerar várias graduações</td></tr>
+      <tr><td>ALUNO</td><td>MATRÍCULA</td><td>1:N — cada matrícula é de um único aluno; um aluno pode ter várias matrículas ao longo do tempo</td><td>ALUNO (1,1) · MATRÍCULA (1,n)</td></tr>
+      <tr><td>TURMA</td><td>MATRÍCULA</td><td>1:N — cada matrícula pertence a uma única turma; uma turma reúne várias matrículas (no máximo 30 ativas, RE01)</td><td>TURMA (1,1) · MATRÍCULA (0,n)</td></tr>
+      <tr><td>MATRÍCULA</td><td>TRANCAMENTO</td><td>1:N — cada trancamento é de uma única matrícula; uma matrícula pode ter vários trancamentos</td><td>MATRÍCULA (1,1) · TRANCAMENTO (0,n)</td></tr>
+      <tr><td>MODALIDADE</td><td>TURMA</td><td>1:N — cada turma pertence a uma única modalidade; uma modalidade tem várias turmas, por dia e horário</td><td>MODALIDADE (1,1) · TURMA (0,n)</td></tr>
+      <tr><td>MODALIDADE</td><td>PROFESSOR</td><td>1:N — cada professor atua em uma única modalidade; uma modalidade pode ter vários professores</td><td>MODALIDADE (1,1) · PROFESSOR (0,n)</td></tr>
+      <tr><td>PROFESSOR</td><td>TURMA</td><td>1:N — cada turma tem um único professor responsável; um professor leciona várias turmas</td><td>PROFESSOR (1,1) · TURMA (1,n)</td></tr>
+      <tr><td>TURMA</td><td>AULA</td><td>1:N — cada aula é de uma única turma; uma turma gera várias aulas datadas</td><td>TURMA (1,1) · AULA (1,n)</td></tr>
+      <tr><td>PROFESSOR</td><td>AULA</td><td>1:N — cada aula é ministrada por um único professor; um professor ministra várias aulas</td><td>PROFESSOR (1,1) · AULA (1,n)</td></tr>
+      <tr><td>AULA</td><td>MATRÍCULA</td><td>N:N (tabela PRESENÇA) — em cada aula há presença de várias matrículas, e cada matrícula acumula presenças em várias aulas</td><td>AULA (0,n) · MATRÍCULA (1,n)</td></tr>
+      <tr><td>ALUNO</td><td>RESPONSÁVEL</td><td>N:1 — um aluno menor de 18 anos tem um responsável legal; um responsável pode representar vários alunos</td><td>ALUNO (1,n) · RESPONSÁVEL (0,1)</td></tr>
+      <tr><td>ALUNO</td><td>INTERESSADO</td><td>1:1 opcional — um interessado que faz a aula experimental pode virar aluno, mas o aluno também pode ser cadastrado direto</td><td>ALUNO (0,1) · INTERESSADO (0,1)</td></tr>
+      <tr><td>MODALIDADE</td><td>INTERESSADO</td><td>1:N — cada interessado agenda a aula experimental em uma única modalidade; uma modalidade recebe vários interessados</td><td>MODALIDADE (1,1) · INTERESSADO (0,n)</td></tr>
+      <tr><td>ALUNO</td><td>CONTRATO</td><td>1:N — cada contrato tem um único titular; um aluno pode firmar contratos ao longo do tempo</td><td>ALUNO (1,1) · CONTRATO (1,n)</td></tr>
+      <tr><td>PLANO</td><td>CONTRATO</td><td>1:N — cada contrato deriva de um único plano; um plano serve de base para vários contratos</td><td>PLANO (1,1) · CONTRATO (0,n)</td></tr>
+      <tr><td>CONTRATO</td><td>PAGAMENTO</td><td>1:N — cada pagamento é parcela de um único contrato; um contrato gera várias parcelas</td><td>CONTRATO (1,1) · PAGAMENTO (1,n)</td></tr>
+      <tr><td>CONTRATO</td><td>MODALIDADE</td><td>N:N (tabela PARTICIPA) — um contrato cobre uma ou mais modalidades; uma modalidade está em vários contratos</td><td>CONTRATO (0,n) · MODALIDADE (1,n)</td></tr>
+      <tr><td>ALUNO</td><td>GRADUAÇÃO</td><td>1:N — cada graduação é de um único aluno, que acumula várias</td><td>ALUNO (1,1) · GRADUAÇÃO (0,n)</td></tr>
+      <tr><td>MODALIDADE</td><td>GRADUAÇÃO</td><td>1:N — cada graduação refere-se a uma única modalidade, que pode ter várias</td><td>MODALIDADE (1,1) · GRADUAÇÃO (0,n)</td></tr>
+      <tr><td>PROFESSOR</td><td>GRADUAÇÃO</td><td>1:N — cada graduação é avaliada por um único professor, que pode avaliar várias</td><td>PROFESSOR (1,1) · GRADUAÇÃO (0,n)</td></tr>
+      <tr><td>PROFESSOR</td><td>DESPESA</td><td>1:N opcional — uma despesa pode ser o repasse a um professor; despesas como aluguel e luz não têm professor</td><td>PROFESSOR (0,1) · DESPESA (0,n)</td></tr>
     </tbody>
   </table>
+  <p style="font-size:12.5px;color:var(--muted);"><strong>Convenção:</strong> (mín,máx) ao lado de uma entidade indica quantas ocorrências <em>dela</em> se relacionam com uma ocorrência da outra (leitura pelo lado oposto, “Look-Across”, a mesma do DER no brModelo Web). Exemplo: ALUNO (1,1) · MATRÍCULA (1,n) significa que cada matrícula é de exatamente um aluno e que um aluno tem de uma a n matrículas.</p>
+  <p style="font-size:12.5px;color:var(--muted);">Mínimos em zero: TURMA–MATRÍCULA (0,n), porque a turma guarda no histórico as matrículas encerradas, canceladas e trancadas, e o limite de 30 vale só para as ativas (RE01); MODALIDADE–GRADUAÇÃO (0,n), porque uma modalidade nova ainda não tem avaliações e o Boxe registra análise técnica, não faixa (RO06); ALUNO–RESPONSÁVEL (0,1), porque o aluno maior de idade não tem responsável (RE03); ALUNO–INTERESSADO (0,1), porque o aluno pode ser cadastrado sem passar pela aula experimental; PROFESSOR–DESPESA (0,1), porque só o repasse a professor está ligado a um professor.</p>
+  <p style="font-size:12.5px;color:var(--muted);">ALUNO–MATRÍCULA é 1:N porque, na troca de turma ou de modalidade, a matrícula antiga é encerrada e uma nova é criada; a antiga nunca é apagada e preserva o histórico de presença. Fora do escopo deste modelo: venda de equipamentos e de suplementos; o foco é a gestão de matrículas, contratos e pagamentos.</p>
 
-  <p><strong>MATRÍCULA</strong> é a entidade associativa entre ALUNO e TURMA: como um aluno pode praticar mais de uma modalidade e uma turma reúne vários alunos (relação N:N), a matrícula divide essa relação em duas partes simples (ALUNO–MATRÍCULA e TURMA–MATRÍCULA) e serve de base para PRESENÇA, que passa a se referir à matrícula, e não diretamente a aluno e turma isoladamente.</p>
+  <p><strong>MATRÍCULA</strong> é a entidade associativa entre ALUNO e TURMA: como um aluno pode praticar mais de uma modalidade e uma turma reúne vários alunos (N:N), a matrícula divide essa relação em duas partes simples. <strong>PRESENÇA</strong> (AULA × MATRÍCULA) e <strong>PARTICIPA</strong> (CONTRATO × MODALIDADE) são tabelas associativas dos relacionamentos N:N do DER; não são entidades novas.</p>
 
   <ul class="entity-defs">
     <li><strong>Aluno</strong> é a pessoa física matriculada na academia para a prática de uma ou mais modalidades.</li>
-    <li><strong>Professor</strong> é a pessoa física responsável por ministrar aulas, especializada em exatamente uma modalidade.</li>
+    <li><strong>Responsável</strong> é o responsável legal de um aluno menor de 18 anos.</li>
+    <li><strong>Interessado</strong> é quem agenda a aula experimental gratuita (uma por pessoa) e ainda não é aluno.</li>
+    <li><strong>Professor</strong> é o prestador de serviço (ou o próprio proprietário) que ministra aulas em uma única modalidade, pago por aula.</li>
     <li><strong>Modalidade</strong> é cada uma das seis práticas de luta oferecidas (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira, No-Gi).</li>
-    <li><strong>Turma</strong> é o agrupamento de alunos em um horário fixo, vinculado a uma modalidade e a um professor responsável.</li>
-    <li><strong>Matrícula</strong> é o vínculo entre um aluno e uma turma específica, substituindo a identificação apenas por nome/CPF da ficha física.</li>
-    <li><strong>Presença</strong> é o registro de comparecimento do aluno em uma aula da turma em que está matriculado.</li>
-    <li><strong>Pagamento</strong> é o registro de cada mensalidade quitada por um aluno, referente a um plano contratado.</li>
-    <li><strong>Plano</strong> é cada uma das quatro modalidades de contratação da mensalidade (Mensal, Trimestral, Anual, Família), com preço e condições próprias.</li>
-    <li><strong>Graduação</strong> é o registro de avaliação de faixa (ou análise técnica, no caso do Boxe) de um aluno em uma modalidade.</li>
+    <li><strong>Turma</strong> é o agrupamento de alunos em dia e horário fixos, de uma modalidade e de um professor responsável.</li>
+    <li><strong>Matrícula</strong> é o vínculo entre um aluno e uma turma.</li>
+    <li><strong>Trancamento</strong> é o afastamento de uma matrícula por lesão ou razão médica, sem cobrança nem multa.</li>
+    <li><strong>Aula</strong> é a ocorrência datada de um treino ministrado por um professor a uma turma; é a base das presenças e do repasse ao professor.</li>
+    <li><strong>Plano</strong> é a condição comercial (duração, valor e desconto), inclusive o Plano Família.</li>
+    <li><strong>Contrato</strong> é o acordo do aluno com a academia: plano, vigência, valor mensal combinado, acréscimos e multa rescisória.</li>
+    <li><strong>Pagamento</strong> é cada parcela mensal gerada pelo contrato, com vencimento, liquidação, multa e taxa de exame.</li>
+    <li><strong>Graduação</strong> é o registro de exame de faixa, ou de análise técnica no Boxe, de um aluno em uma modalidade, com resultado.</li>
+    <li><strong>Despesa</strong> é cada saída financeira da academia: aluguel, contas, compras e repasse aos professores.</li>
   </ul>
 
   <!-- 2. FLUXO DE DADOS -->
   <h2 class="sec">2. Fluxo de dados (visão de DFD)</h2>
-  <p>Aluno procura a academia → cadastro em <strong>ALUNO</strong> → aluno se matricula em uma <strong>TURMA</strong> (vinculada a uma <strong>MODALIDADE</strong> e a um <strong>PROFESSOR</strong>), gerando uma <strong>MATRÍCULA</strong> → cada aula frequentada gera um registro de <strong>PRESENÇA</strong> vinculado a essa matrícula → mensalmente, o aluno realiza um <strong>PAGAMENTO</strong> referente ao <strong>PLANO</strong> contratado, com vencimento fixo no 5º dia útil → periodicamente, o professor avalia o aluno e, quando aplicável, registra uma <strong>GRADUAÇÃO</strong> vinculada à modalidade.</p>
+  <p>O interessado agenda a aula experimental (<strong>INTERESSADO</strong>) e, se segue, vira <strong>ALUNO</strong> (com <strong>RESPONSÁVEL</strong>, se menor de idade) → o aluno firma um <strong>CONTRATO</strong> sobre um <strong>PLANO</strong>, cobrindo uma ou mais modalidades → matricula-se em uma <strong>TURMA</strong> (de uma <strong>MODALIDADE</strong> e de um <strong>PROFESSOR</strong>), gerando uma <strong>MATRÍCULA</strong> → o contrato gera mensalmente um <strong>PAGAMENTO</strong>, com vencimento no 5º dia útil; atraso bloqueia a frequência → cada <strong>AULA</strong> ministrada registra a <strong>PRESENÇA</strong> das matrículas ativas → a frequência embasa a <strong>GRADUAÇÃO</strong> → lesão ou razão médica gera um <strong>TRANCAMENTO</strong>, que suspende a cobrança → as aulas ministradas e as compras da academia geram <strong>DESPESA</strong>.</p>
 
   <!-- 3. CONVENÇÕES -->
   <h2 class="sec">3. Convenções do dicionário</h2>
-  <p>Nível de abstração: esta é uma entrega de <strong>modelo conceitual</strong>, sem implementação física definida. Os tipos indicados na coluna "Tipo físico" seguem a notação SQL padrão trabalhada em aula (Integer, Varchar(N), Date, Text, Real/Numeric, Boolean) como referência para a próxima etapa do projeto, e não representam ainda uma escolha de SGBD.</p>
+  <p>Nível de abstração: modelo conceitual com camada física de referência. <strong>SGBD:</strong> MySQL 8.0; <strong>mecanismo de armazenamento:</strong> InnoDB (transações e chaves estrangeiras); <strong>charset/collation:</strong> utf8mb4 / utf8mb4_unicode_ci (acentos do português e comparação sem distinção de maiúsculas). Tipos usados: Integer, Varchar(N), Date, Time, Timestamp, Text, Real/Numeric, Boolean — em MySQL, Numeric vira DECIMAL(10,2) e Boolean vira TINYINT(1). Backup diário automatizado, conforme RNF05.</p>
 
   <p><strong>Notação formal (símbolos usados neste dicionário):</strong></p>
   <table>
@@ -210,192 +227,402 @@
       <tr><td>[ | ]</td><td>escolha obrigatória entre alternativas</td></tr>
       <tr><td>/ /</td><td>rótulo de um grupo repetitivo</td></tr>
       <tr><td>@</td><td>identificador (chave primária)</td></tr>
+      <tr><td>1{ }n</td><td>atributo multivalorado: de 1 a n valores por ocorrência</td></tr>
       <tr><td>* *</td><td>comentário, fora da estrutura formal</td></tr>
     </tbody>
   </table>
 
-  <p><strong>Prefixos:</strong> NM_ nome, DT_ data, ID_ identificador (não sofre operação matemática), CD_ código de domínio, QT_ quantidade, TP_ tipo (categorização), IN_ indicador booleano. Este dicionário também usa DS_ (descrição/texto livre), NR_ (número que não sofre operação matemática, ex.: telefone), HR_ (horário) e VL_ (valor monetário) — não estão entre os sete prefixos-padrão do curso, mas seguem o mesmo princípio, à semelhança do uso de DS_ no estudo de caso de referência da disciplina e de VL_TITULO no exemplo de Título Financeiro visto em aula.</p>
+  <p><strong>Prefixos:</strong> NM_ nome, DT_ data, ID_ identificador (não sofre operação matemática), CD_ código de domínio, QT_ quantidade, TP_ tipo (categorização), IN_ indicador booleano. Este dicionário também usa DS_ (descrição/texto livre), NR_ (número que não sofre operação matemática, ex.: telefone), HR_ (horário), VL_ (valor monetário) e PC_ (percentual) — não estão entre os sete prefixos-padrão do curso, mas seguem o mesmo princípio, à semelhança do uso de DS_ no estudo de caso de referência da disciplina e de VL_TITULO no exemplo de Título Financeiro visto em aula.</p>
 
-  <p style="font-size:12.5px;color:var(--muted);">Versão deste dicionário: v1.0 — preliminar, sujeita a revisão nas próximas entregas do projeto.</p>
+  <p><strong>Atributos multivalorados</strong> (1,n) — e-mail, telefone, problema de saúde, especialização, nível de experiência e registro de qualificações — são mapeados em tabelas de apoio ligadas à entidade por chave estrangeira (tabela abaixo); nas fichas da Seção 4 aparecem como um atributo com a marca multivalorado. O atributo composto <strong>ENDERECO</strong> é decomposto em DS_RUA, NR_LOGRADOURO, NM_BAIRRO e NR_CEP (1FN). Os códigos de regra (RO, RE) seguem a numeração do documento de Regras de Negócio atualizado.</p>
+
+  <p><strong>Tabelas de apoio dos atributos multivalorados</strong> (nomes conforme o modelo lógico). Cada uma tem chave primária composta pelo valor e pela chave estrangeira da entidade de origem, o que impede o mesmo valor repetido para a mesma ocorrência.</p>
+  <table>
+    <thead><tr><th>Tabela de apoio</th><th>Entidade de origem</th><th>Atributo</th><th>Chave primária (composta)</th></tr></thead>
+    <tbody>
+      <tr><td class="attr">EMAIL_ALUNO</td><td>ALUNO</td><td class="attr">DS_EMAIL</td><td class="attr">DS_EMAIL + ID_ALUNO</td></tr>
+      <tr><td class="attr">TELEFONE_ALUNO</td><td>ALUNO</td><td class="attr">NR_TELEFONE</td><td class="attr">NR_TELEFONE + ID_ALUNO</td></tr>
+      <tr><td class="attr">PROBLEMA_SAUDE_ALUNO</td><td>ALUNO</td><td class="attr">DS_PROBLEMA_SAUDE</td><td class="attr">DS_PROBLEMA_SAUDE + ID_ALUNO</td></tr>
+      <tr><td class="attr">EMAIL_PROFESSOR</td><td>PROFESSOR</td><td class="attr">DS_EMAIL</td><td class="attr">DS_EMAIL + ID_PROFESSOR</td></tr>
+      <tr><td class="attr">TELEFONE_PROFESSOR</td><td>PROFESSOR</td><td class="attr">NR_TELEFONE</td><td class="attr">NR_TELEFONE + ID_PROFESSOR</td></tr>
+      <tr><td class="attr">ESPECIALIZACAO</td><td>PROFESSOR</td><td class="attr">DS_ESPECIALIZACAO</td><td class="attr">DS_ESPECIALIZACAO + ID_PROFESSOR</td></tr>
+      <tr><td class="attr">NIVEL_DE_EXPERIENCIA</td><td>PROFESSOR</td><td class="attr">DS_NIVEL_EXPERIENCIA</td><td class="attr">DS_NIVEL_EXPERIENCIA + ID_PROFESSOR</td></tr>
+      <tr><td class="attr">REGISTRO_QUALIFICACOES</td><td>PROFESSOR</td><td class="attr">DS_REGISTRO_QUALIFICACOES</td><td class="attr">DS_REGISTRO_QUALIFICACOES + ID_PROFESSOR</td></tr>
+    </tbody>
+  </table>
+
+  <p style="font-size:12.5px;color:var(--muted);">Versão deste dicionário: v2.1 — 27/10/2026. Conferência com o modelo lógico: nomes das tabelas de apoio dos atributos multivalorados e atributo NM_RESPONSAVEL_PLANO em CONTRATO; em PAGAMENTO, VL_MULTA_ATRASO passou a VL_MULTA e VL_TAXA_EXAME a VL_TAXA_GRADUACAO (nomes do MER e do DER); QT_TEMPO_MINIMO_FAIXA e DS_OBSERVACAO removidos de GRADUAÇÃO (não constam no MER nem no DER). Base v2.0 — 25/10/2026, reescrita sobre o MER e o DER atualizados: 14 entidades (novas: RESPONSÁVEL, INTERESSADO, CONTRATO, AULA, TRANCAMENTO e DESPESA), PRESENÇA e PARTICIPA como tabelas associativas, cardinalidades pelo lado oposto (Look-Across), atributos multivalorados, domínios de status unificados e códigos de regra da numeração nova.</p>
 
   <!-- 4. DICIONÁRIO POR ENTIDADE -->
   <h2 class="sec">4. Dicionário de dados por entidade</h2>
 
-  <!-- ALUNO -->
   <h3 class="entity">ALUNO</h3>
-  <div class="notation">ALUNO = @ID_ALUNO + CPF + NM_COMPLETO + DT_NASCIMENTO + (DS_ENDERECO) + (DS_EMAIL) +
-NR_TELEFONE + (NR_TELEFONE_RESERVA) + (DS_PROBLEMA_SAUDE) + (DS_ESPORTES_PRATICADOS) +
-[TP_ATIVO | TP_INATIVO | TP_TRANCADO] + (DS_MOTIVO_TRANCAMENTO)</div>
-  <p class="leitura">@ID_ALUNO é o identificador único; CPF, NM_COMPLETO, DT_NASCIMENTO e NR_TELEFONE são obrigatórios; os campos entre ( ) nem sempre são preenchidos no cadastro; [TP_ATIVO | TP_INATIVO | TP_TRANCADO] exige escolher exatamente uma situação, e DS_MOTIVO_TRANCAMENTO só é preenchido quando a escolha é TP_TRANCADO (Seção 4 — trancamento exige lesão comprovada).</p>
+  <div class="notation">ALUNO = @ID_ALUNO + CPF + NM_COMPLETO + DT_NASCIMENTO + ENDERECO + 1{DS_EMAIL}n + 1{NR_TELEFONE}n +
+1{DS_PROBLEMA_SAUDE}n + DS_HISTORICO_TREINO + [TP_ATIVO | TP_INATIVO | TP_TRANCADO] +
+IN_ACEITE_USO_IMAGEM + DT_AUTORIZACAO_IMAGEM + (DT_ENTREGA_ATESTADO) + (ID_RESPONSAVEL) + (ID_INTERESSADO)
+ENDERECO = DS_RUA + NR_LOGRADOURO + NM_BAIRRO + NR_CEP</div>
+  <p class="leitura">@ID_ALUNO é o identificador único; os campos entre ( ) nem sempre são preenchidos; [TP_ATIVO | TP_INATIVO | TP_TRANCADO] exige escolher exatamente uma situação (RE06). ID_RESPONSAVEL só existe para menor de 18 anos (RE03) e DT_ENTREGA_ATESTADO registra a entrega do atestado de aptidão física desse menor. ID_INTERESSADO só existe quando o aluno veio da aula experimental. A inadimplência não é uma situação do aluno: é derivada dos pagamentos.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
       <tr><td class="attr pk">ID_ALUNO</td><td>integer</td><td>Sim (PK)</td><td>Código de localização do registro; não sofre operação matemática.</td></tr>
-      <tr><td class="attr">CPF</td><td>varchar(11)</td><td>Sim</td><td>Apenas dígitos, sem pontuação — mesmo padrão do CPF em PROFESSOR. Não pode ser duplicado.</td></tr>
+      <tr><td class="attr">CPF</td><td>varchar(11)</td><td>Sim</td><td>Apenas dígitos, sem pontuação. Não pode ser duplicado.</td></tr>
       <tr><td class="attr">NM_COMPLETO</td><td>varchar(150)</td><td>Sim</td><td>Nome completo do aluno.</td></tr>
-      <tr><td class="attr">DT_NASCIMENTO</td><td>date</td><td>Sim</td><td>Usada para cálculo de idade.</td></tr>
-      <tr><td class="attr">DS_ENDERECO</td><td>varchar(200)</td><td>Não</td><td>Endereço residencial.</td></tr>
-      <tr><td class="attr">DS_EMAIL</td><td>varchar(100)</td><td>Não</td><td>E-mail de contato.</td></tr>
-      <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim</td><td>Telefone principal de contato.</td></tr>
-      <tr><td class="attr">NR_TELEFONE_RESERVA</td><td>varchar(15)</td><td>Não</td><td>Telefone alternativo/de emergência.</td></tr>
-      <tr><td class="attr">DS_PROBLEMA_SAUDE</td><td>text</td><td>Não</td><td>Dado sensível (RNF02); condições de saúde relevantes para emergências.</td></tr>
-      <tr><td class="attr">DS_ESPORTES_PRATICADOS</td><td>text</td><td>Não</td><td>Modalidades já praticadas; alimenta o histórico de treinos anteriores (RF01).</td></tr>
-      <tr><td class="attr">TP_ATIVO | TP_INATIVO | TP_TRANCADO</td><td>varchar(10)</td><td>Sim (escolha)</td><td>Situação cadastral; TP_TRANCADO exige lesão comprovada e motivo associado.</td></tr>
-      <tr><td class="attr">DS_MOTIVO_TRANCAMENTO</td><td>text</td><td>Não</td><td>Preenchido apenas quando a situação é TP_TRANCADO.</td></tr>
+      <tr><td class="attr">DT_NASCIMENTO</td><td>date</td><td>Sim</td><td>Usada para cálculo de idade e para exigir o responsável legal se menor de 18 anos.</td></tr>
+      <tr><td class="attr">DS_RUA</td><td>varchar(100)</td><td>Sim</td><td>Logradouro (aluno); parte do atributo composto ENDERECO.</td></tr>
+      <tr><td class="attr">NR_LOGRADOURO</td><td>varchar(10)</td><td>Sim</td><td>Número do endereço ("Numero" no DER); não sofre operação matemática.</td></tr>
+      <tr><td class="attr">NM_BAIRRO</td><td>varchar(60)</td><td>Sim</td><td>Bairro.</td></tr>
+      <tr><td class="attr">NR_CEP</td><td>varchar(8)</td><td>Sim</td><td>Apenas dígitos.</td></tr>
+      <tr><td class="attr">DS_EMAIL</td><td>varchar(100)</td><td>Sim (1,n)</td><td>E-mail de contato; multivalorado.</td></tr>
+      <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim (1,n)</td><td>Telefones de contato (principal, reserva, emergência); multivalorado.</td></tr>
+      <tr><td class="attr">DS_PROBLEMA_SAUDE</td><td>varchar(200)</td><td>Sim (1,n)</td><td>Dado sensível (RNF02); multivalorado. Sem problema de saúde, registrar "nenhum".</td></tr>
+      <tr><td class="attr">DS_HISTORICO_TREINO</td><td>text</td><td>Sim</td><td>Esportes já praticados, tempo de treino e se já é graduado.</td></tr>
+      <tr><td class="attr">TP_ATIVO | TP_INATIVO | TP_TRANCADO</td><td>varchar(10)</td><td>Sim (escolha)</td><td>Situação cadastral: Ativo (contrato vigente), Inativo (contrato terminado), Trancado (trancamento em curso).</td></tr>
+      <tr><td class="attr">IN_ACEITE_USO_IMAGEM</td><td>boolean</td><td>Sim</td><td>Autorização para uso de imagem em vídeos da academia; opcional para o aluno e revogável, não condiciona a matrícula.</td></tr>
+      <tr><td class="attr">DT_AUTORIZACAO_IMAGEM</td><td>date</td><td>Sim</td><td>Data da resposta sobre o uso de imagem.</td></tr>
+      <tr><td class="attr">DT_ENTREGA_ATESTADO</td><td>date</td><td>Não</td><td>Data de entrega do atestado de aptidão física; exigido apenas de menor de 18 anos.</td></tr>
+      <tr><td class="attr">ID_RESPONSAVEL</td><td>integer</td><td>Não (FK)</td><td>Responsável legal; preenchido só para menor de 18 anos.</td></tr>
+      <tr><td class="attr">ID_INTERESSADO</td><td>integer</td><td>Não (FK)</td><td>Pré-cadastro de origem, quando houve aula experimental.</td></tr>
     </tbody>
   </table>
-  <p class="indices">PK ID_ALUNO (clusterizado); índice único em CPF; índice secundário em NM_COMPLETO (busca por nome na recepção).</p>
+  <p class="indices">PK ID_ALUNO (clusterizado); índice único em CPF; índice secundário em NM_COMPLETO; índice em ID_RESPONSAVEL; índice único em ID_INTERESSADO (um interessado vira no máximo um aluno).</p>
 
-  <!-- PROFESSOR -->
+  <h3 class="entity">RESPONSÁVEL</h3>
+  <div class="notation">RESPONSAVEL = @ID_RESPONSAVEL + CPF + NM_RESPONSAVEL + NR_TELEFONE + DS_PARENTESCO</div>
+  <p class="leitura">Responsável legal do aluno menor de 18 anos (RE03); dá o consentimento do menor, inclusive o de uso de imagem. Um responsável pode representar vários alunos.</p>
+  <table>
+    <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
+    <tbody>
+      <tr><td class="attr pk">ID_RESPONSAVEL</td><td>integer</td><td>Sim (PK)</td><td>Identificador do responsável.</td></tr>
+      <tr><td class="attr">CPF</td><td>varchar(11)</td><td>Sim</td><td>Apenas dígitos. Não pode ser duplicado.</td></tr>
+      <tr><td class="attr">NM_RESPONSAVEL</td><td>varchar(150)</td><td>Sim</td><td>Nome do responsável.</td></tr>
+      <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim</td><td>Telefone de contato.</td></tr>
+      <tr><td class="attr">DS_PARENTESCO</td><td>varchar(30)</td><td>Sim</td><td>Grau de parentesco com o aluno.</td></tr>
+    </tbody>
+  </table>
+  <p class="indices">PK ID_RESPONSAVEL; índice único em CPF.</p>
+
+  <h3 class="entity">INTERESSADO</h3>
+  <div class="notation">INTERESSADO = @ID_INTERESSADO + ID_MODALIDADE + NM_INTERESSADO + NR_TELEFONE + DT_AULA + HR_AULA +
+[TP_CONVERTIDO | TP_ENCERRADO | TP_PENDENTE]</div>
+  <p class="leitura">Pré-cadastro de quem agenda a aula experimental gratuita; só pode haver uma por pessoa, conferida por nome e telefone. TP_CONVERTIDO indica que a pessoa virou aluno; TP_ENCERRADO, que decidiu não seguir.</p>
+  <table>
+    <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
+    <tbody>
+      <tr><td class="attr pk">ID_INTERESSADO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do pré-cadastro.</td></tr>
+      <tr><td class="attr">ID_MODALIDADE</td><td>integer</td><td>Sim (FK)</td><td>Modalidade escolhida para a aula experimental.</td></tr>
+      <tr><td class="attr">NM_INTERESSADO</td><td>varchar(150)</td><td>Sim</td><td>Nome do interessado.</td></tr>
+      <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim</td><td>Telefone para retorno.</td></tr>
+      <tr><td class="attr">DT_AULA</td><td>date</td><td>Sim</td><td>Data da aula experimental.</td></tr>
+      <tr><td class="attr">HR_AULA</td><td>time</td><td>Sim</td><td>Horário da aula experimental.</td></tr>
+      <tr><td class="attr">TP_CONVERTIDO | TP_ENCERRADO | TP_PENDENTE</td><td>varchar(15)</td><td>Sim (escolha)</td><td>Resultado do interesse; permite medir a conversão em matrículas.</td></tr>
+    </tbody>
+  </table>
+  <p class="indices">PK ID_INTERESSADO; índice único composto em (NM_INTERESSADO, NR_TELEFONE) (uma aula experimental por pessoa); índice em ID_MODALIDADE.</p>
+
   <h3 class="entity">PROFESSOR</h3>
-  <div class="notation">PROFESSOR = @ID_PROFESSOR + CPF + NM_COMPLETO + DT_NASCIMENTO + (DS_ENDERECO) + (DS_EMAIL) +
-NR_TELEFONE + (DS_PROBLEMA_SAUDE) + ID_MODALIDADE + TP_NIVEL_EXPERIENCIA + (DS_REGISTRO_QUALIFICACOES)</div>
-  <p class="leitura">ID_MODALIDADE é FK obrigatória — cada professor está vinculado a exatamente uma modalidade de especialização (RNF05), e só pode lecionar turmas dessa modalidade.</p>
+  <div class="notation">PROFESSOR = @ID_PROFESSOR + ID_MODALIDADE + CPF + NM_COMPLETO + DT_NASCIMENTO + ENDERECO + VL_POR_AULA +
+1{DS_EMAIL}n + 1{NR_TELEFONE}n + 1{DS_ESPECIALIZACAO}n + 1{DS_NIVEL_EXPERIENCIA}n + 1{DS_REGISTRO_QUALIFICACOES}n
+ENDERECO = DS_RUA + NR_LOGRADOURO + NM_BAIRRO + NR_CEP</div>
+  <p class="leitura">ID_MODALIDADE é FK obrigatória: o professor pode ter várias especializações (DS_ESPECIALIZACAO), mas só leciona turmas da modalidade a que está vinculado (RE05). Os professores são prestadores de serviço pagos por aula ministrada (VL_POR_AULA), não funcionários assalariados; o proprietário (Adalberto) também leciona.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
       <tr><td class="attr pk">ID_PROFESSOR</td><td>integer</td><td>Sim (PK)</td><td>Identificador do professor.</td></tr>
+      <tr><td class="attr">ID_MODALIDADE</td><td>integer</td><td>Sim (FK)</td><td>Modalidade em que o professor atua (RE05).</td></tr>
       <tr><td class="attr">CPF</td><td>varchar(11)</td><td>Sim</td><td>Mesmo padrão do CPF em ALUNO.</td></tr>
       <tr><td class="attr">NM_COMPLETO</td><td>varchar(150)</td><td>Sim</td><td>Nome completo do professor.</td></tr>
       <tr><td class="attr">DT_NASCIMENTO</td><td>date</td><td>Sim</td><td>—</td></tr>
-      <tr><td class="attr">DS_ENDERECO</td><td>varchar(200)</td><td>Não</td><td>—</td></tr>
-      <tr><td class="attr">DS_EMAIL</td><td>varchar(100)</td><td>Não</td><td>—</td></tr>
-      <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim</td><td>—</td></tr>
-      <tr><td class="attr">DS_PROBLEMA_SAUDE</td><td>text</td><td>Não</td><td>Dado sensível (RNF02).</td></tr>
-      <tr><td class="attr">ID_MODALIDADE</td><td>integer</td><td>Sim (FK)</td><td>Referencia a modalidade de especialização do professor (RNF05).</td></tr>
-      <tr><td class="attr">TP_NIVEL_EXPERIENCIA</td><td>varchar(50)</td><td>Sim</td><td>Nível de graduação/experiência do professor na modalidade; valida a aptidão a lecionar.</td></tr>
-      <tr><td class="attr">DS_REGISTRO_QUALIFICACOES</td><td>text</td><td>Não</td><td>Certificações e qualificações comprobatórias.</td></tr>
+      <tr><td class="attr">DS_RUA</td><td>varchar(100)</td><td>Sim</td><td>Logradouro (professor); parte do atributo composto ENDERECO.</td></tr>
+      <tr><td class="attr">NR_LOGRADOURO</td><td>varchar(10)</td><td>Sim</td><td>Número do endereço ("Numero" no DER); não sofre operação matemática.</td></tr>
+      <tr><td class="attr">NM_BAIRRO</td><td>varchar(60)</td><td>Sim</td><td>Bairro.</td></tr>
+      <tr><td class="attr">NR_CEP</td><td>varchar(8)</td><td>Sim</td><td>Apenas dígitos.</td></tr>
+      <tr><td class="attr">VL_POR_AULA</td><td>real/numeric</td><td>Sim</td><td>Valor pago por aula ministrada; base do repasse (igual para todos os professores).</td></tr>
+      <tr><td class="attr">DS_EMAIL</td><td>varchar(100)</td><td>Sim (1,n)</td><td>Multivalorado.</td></tr>
+      <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim (1,n)</td><td>Multivalorado.</td></tr>
+      <tr><td class="attr">DS_ESPECIALIZACAO</td><td>varchar(50)</td><td>Sim (1,n)</td><td>Especializações do professor; multivalorado.</td></tr>
+      <tr><td class="attr">DS_NIVEL_EXPERIENCIA</td><td>varchar(50)</td><td>Sim (1,n)</td><td>Nível de graduação/experiência; multivalorado.</td></tr>
+      <tr><td class="attr">DS_REGISTRO_QUALIFICACOES</td><td>varchar(200)</td><td>Sim (1,n)</td><td>Certificações, tempo de treino e mestres anteriores; multivalorado.</td></tr>
     </tbody>
   </table>
   <p class="indices">PK ID_PROFESSOR; índice único em CPF; índice em ID_MODALIDADE (listar professores por modalidade).</p>
 
-  <!-- MODALIDADE -->
   <h3 class="entity">MODALIDADE</h3>
-  <div class="notation">MODALIDADE = @ID_MODALIDADE + NM_MODALIDADE + DT_INICIO_AULAS + IN_POSSUI_SISTEMA_FAIXAS +
-[TP_ATIVA | TP_INATIVA] + (DS_MOTIVO_INATIVACAO) + QT_VAGAS_OCUPADAS</div>
-  <p class="leitura">IN_POSSUI_SISTEMA_FAIXAS define se a entidade GRADUAÇÃO usa faixa ou análise técnica (ex.: Boxe); DS_MOTIVO_INATIVACAO só é preenchido quando a escolha é TP_INATIVA.</p>
+  <div class="notation">MODALIDADE = @ID_MODALIDADE + NM_MODALIDADE + QT_MINIMA_REFERENCIA + [TP_ATIVA | TP_INATIVA] +
+IN_POSSUI_SISTEMA_FAIXAS + DT_INICIO_AULAS</div>
+  <p class="leitura">IN_POSSUI_SISTEMA_FAIXAS define se GRADUAÇÃO usa faixa ou análise técnica (Boxe, RO06). QT_MINIMA_REFERENCIA é o número de alunos de referência para abrir horário; o sistema só alerta quando a turma tem menos.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
       <tr><td class="attr pk">ID_MODALIDADE</td><td>integer</td><td>Sim (PK)</td><td>Identificador da modalidade.</td></tr>
       <tr><td class="attr">NM_MODALIDADE</td><td>varchar(50)</td><td>Sim</td><td>Domínio fechado às 6 modalidades oferecidas.</td></tr>
-      <tr><td class="attr">DT_INICIO_AULAS</td><td>date</td><td>Sim</td><td>Data em que a modalidade passou a ser oferecida.</td></tr>
-      <tr><td class="attr">IN_POSSUI_SISTEMA_FAIXAS</td><td>boolean</td><td>Sim</td><td>Define se GRADUAÇÃO usa sistema de faixas.</td></tr>
+      <tr><td class="attr">QT_MINIMA_REFERENCIA</td><td>integer</td><td>Sim</td><td>Quórum de referência (Muay Thai 4, Boxe 6, Jiu-Jitsu/Kickboxing/No-Gi 8, Capoeira 10).</td></tr>
       <tr><td class="attr">TP_ATIVA | TP_INATIVA</td><td>varchar(10)</td><td>Sim (escolha)</td><td>Controla se novas turmas podem ser abertas.</td></tr>
-      <tr><td class="attr">DS_MOTIVO_INATIVACAO</td><td>text</td><td>Não</td><td>Preenchido apenas quando TP_INATIVA.</td></tr>
-      <tr><td class="attr">QT_VAGAS_OCUPADAS</td><td>integer</td><td>Sim</td><td>Soma das vagas ocupadas nas turmas da modalidade; apoia o limite de 30/turma.</td></tr>
+      <tr><td class="attr">IN_POSSUI_SISTEMA_FAIXAS</td><td>boolean</td><td>Sim</td><td>Define se GRADUAÇÃO usa sistema de faixas.</td></tr>
+      <tr><td class="attr">DT_INICIO_AULAS</td><td>date</td><td>Sim</td><td>Data em que a modalidade passou a ser oferecida.</td></tr>
     </tbody>
   </table>
   <p class="indices">PK ID_MODALIDADE; índice único em NM_MODALIDADE.</p>
 
-  <!-- TURMA -->
   <h3 class="entity">TURMA</h3>
-  <div class="notation">TURMA = @ID_TURMA + ID_MODALIDADE + ID_PROFESSOR + DS_DIA_SEMANA + HR_INICIO + HR_FIM</div>
-  <p class="leitura">ID_MODALIDADE e ID_PROFESSOR são FKs obrigatórias — cada turma pertence a exatamente uma modalidade e tem exatamente um professor responsável; um professor pode lecionar N turmas.</p>
+  <div class="notation">TURMA = @ID_TURMA + ID_MODALIDADE + ID_PROFESSOR + DS_DIA_SEMANA + HR_INICIO + HR_FIM + QT_CAPACIDADE_MAXIMA</div>
+  <p class="leitura">ID_MODALIDADE e ID_PROFESSOR são FKs obrigatórias; o professor deve ser da modalidade da turma (RE05). QT_CAPACIDADE_MAXIMA é fixa em 30 (RE01), por restrição física de espaço no tatame. As vagas ocupadas não são guardadas: são a contagem de matrículas ativas da turma.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
       <tr><td class="attr pk">ID_TURMA</td><td>integer</td><td>Sim (PK)</td><td>Identificador da turma.</td></tr>
       <tr><td class="attr">ID_MODALIDADE</td><td>integer</td><td>Sim (FK)</td><td>Modalidade à qual a turma pertence.</td></tr>
       <tr><td class="attr">ID_PROFESSOR</td><td>integer</td><td>Sim (FK)</td><td>Professor responsável pela turma.</td></tr>
-      <tr><td class="attr">DS_DIA_SEMANA</td><td>varchar(20)</td><td>Sim</td><td>Dia(s) da semana em que a turma acontece.</td></tr>
-      <tr><td class="attr">HR_INICIO</td><td>time</td><td>Sim</td><td>Horário de início da aula.</td></tr>
-      <tr><td class="attr">HR_FIM</td><td>time</td><td>Sim</td><td>Horário de término da aula.</td></tr>
+      <tr><td class="attr">DS_DIA_SEMANA</td><td>varchar(20)</td><td>Sim</td><td>Dia da semana em que a turma acontece.</td></tr>
+      <tr><td class="attr">HR_INICIO</td><td>time</td><td>Sim</td><td>Horário de início.</td></tr>
+      <tr><td class="attr">HR_FIM</td><td>time</td><td>Sim</td><td>Horário de término.</td></tr>
+      <tr><td class="attr">QT_CAPACIDADE_MAXIMA</td><td>integer</td><td>Sim</td><td>Teto de alunos ativos; fixo em 30 (RE01).</td></tr>
     </tbody>
   </table>
   <p class="indices">PK ID_TURMA; índice em ID_MODALIDADE; índice em ID_PROFESSOR.</p>
 
-  <!-- MATRÍCULA -->
   <h3 class="entity">MATRÍCULA</h3>
-  <div class="notation">MATRÍCULA = @ID_MATRICULA + ID_ALUNO + ID_TURMA + DT_MATRICULA +
-[TP_ATIVA | TP_CANCELADA | TP_TRANCADA] + (IN_INSTRUTOR_AUXILIAR)</div>
-  <p class="leitura">ID_ALUNO e ID_TURMA resolvem a relação N:N entre ALUNO e TURMA — um aluno pode ter várias matrículas (em turmas diferentes) e uma turma reúne várias matrículas, respeitando o limite de 30. IN_INSTRUTOR_AUXILIAR fica entre ( ) porque o papel é normalmente identificado pelo aluno mais graduado da turma/modalidade, mas o campo permite registro/ajuste manual pela academia — não é uma entidade própria.</p>
+  <div class="notation">MATRÍCULA = @ID_MATRICULA + ID_ALUNO + ID_TURMA + DT_MATRICULA + [TP_ATIVA | TP_TRANCADA | TP_ENCERRADA | TP_CANCELADA]</div>
+  <p class="leitura">ID_ALUNO e ID_TURMA resolvem a relação N:N entre ALUNO e TURMA. Na troca de turma ou de modalidade a matrícula antiga fica TP_ENCERRADA e uma nova é criada; matrícula encerrada nunca é apagada. O sistema bloqueia a matrícula quando a turma chega a 30 ativas (RE01). Os esportes já praticados ficam em ALUNO (DS_HISTORICO_TREINO).</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
       <tr><td class="attr pk">ID_MATRICULA</td><td>integer</td><td>Sim (PK)</td><td>Identificador da matrícula.</td></tr>
       <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno vinculado à matrícula.</td></tr>
       <tr><td class="attr">ID_TURMA</td><td>integer</td><td>Sim (FK)</td><td>Turma vinculada à matrícula.</td></tr>
-      <tr><td class="attr">DT_MATRICULA</td><td>date</td><td>Sim</td><td>Substitui a ficha física, que não gerava número de matrícula.</td></tr>
-      <tr><td class="attr">TP_ATIVA | TP_CANCELADA | TP_TRANCADA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Reflete a situação do aluno na turma específica.</td></tr>
-      <tr><td class="attr">IN_INSTRUTOR_AUXILIAR</td><td>boolean</td><td>Não</td><td>Indica se, nessa turma, o aluno exerce o papel informal de instrutor auxiliar.</td></tr>
+      <tr><td class="attr">DT_MATRICULA</td><td>date</td><td>Sim</td><td>Data da matrícula (a ficha física não gerava número de matrícula).</td></tr>
+      <tr><td class="attr">TP_ATIVA | TP_TRANCADA | TP_ENCERRADA | TP_CANCELADA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Situação do aluno na turma; TP_ENCERRADA é usada na troca de turma.</td></tr>
     </tbody>
   </table>
-  <p class="indices">PK ID_MATRICULA; índice único composto em (ID_ALUNO, ID_TURMA); índice em ID_TURMA (checar limite de 30 alunos).</p>
+  <p class="indices">PK ID_MATRICULA; índice único composto em (ID_ALUNO, ID_TURMA, DT_MATRICULA), que permite renovar a matrícula na mesma turma (a regra de uma única matrícula ativa por par aluno–turma fica com o sistema); índice em ID_TURMA (checar o limite de 30 ativas, RE01).</p>
 
-  <!-- PRESENÇA -->
-  <h3 class="entity">PRESENÇA</h3>
-  <div class="notation">PRESENÇA = @ID_PRESENCA + ID_MATRICULA + DT_AULA + HR_AULA + IN_PRESENCA</div>
-  <p class="leitura">ID_MATRICULA é a FK que liga a presença ao vínculo aluno-turma; uma matrícula gera N presenças ao longo do tempo.</p>
+  <h3 class="entity">TRANCAMENTO</h3>
+  <div class="notation">TRANCAMENTO = @ID_TRANCAMENTO + ID_MATRICULA + [TP_LESAO | TP_RAZAO_MEDICA] + DS_MOTIVO + (NM_ATESTADO_POR) +
+DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
+  <p class="leitura">Só há trancamento por lesão ou razão médica (RE04); a justificativa vem pelo WhatsApp ou presencialmente, sem laudo formal obrigatório. Durante o trancamento a cobrança e a contagem de tempo do plano ficam suspensas, sem multa. Troca de modalidade não é trancamento.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
-      <tr><td class="attr pk">ID_PRESENCA</td><td>integer</td><td>Sim (PK)</td><td>Identificador do registro de presença.</td></tr>
-      <tr><td class="attr">ID_MATRICULA</td><td>integer</td><td>Sim (FK)</td><td>Matrícula (aluno + turma) à qual a presença se refere.</td></tr>
-      <tr><td class="attr">DT_AULA</td><td>date</td><td>Sim</td><td>Data em que a aula ocorreu (RF05).</td></tr>
-      <tr><td class="attr">HR_AULA</td><td>time</td><td>Sim</td><td>Horário em que a aula ocorreu.</td></tr>
-      <tr><td class="attr">IN_PRESENCA</td><td>boolean</td><td>Sim</td><td>Base para a elegibilidade a exames de faixa (RF06).</td></tr>
+      <tr><td class="attr pk">ID_TRANCAMENTO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do trancamento.</td></tr>
+      <tr><td class="attr">ID_MATRICULA</td><td>integer</td><td>Sim (FK)</td><td>Matrícula trancada.</td></tr>
+      <tr><td class="attr">TP_LESAO | TP_RAZAO_MEDICA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Tipo do trancamento.</td></tr>
+      <tr><td class="attr">DS_MOTIVO</td><td>text</td><td>Sim</td><td>Motivo registrado; dado sensível (saúde).</td></tr>
+      <tr><td class="attr">NM_ATESTADO_POR</td><td>varchar(100)</td><td>Não</td><td>Quem forneceu atestado ou justificativa, quando houver.</td></tr>
+      <tr><td class="attr">DT_INICIO</td><td>date</td><td>Sim</td><td>Início do afastamento.</td></tr>
+      <tr><td class="attr">DT_RETORNO_PREVISTA</td><td>date</td><td>Sim</td><td>Data de retorno combinada.</td></tr>
+      <tr><td class="attr">DT_RETORNO_EFETIVA</td><td>date</td><td>Não</td><td>Preenchida no retorno; a matrícula volta a TP_ATIVA.</td></tr>
     </tbody>
   </table>
-  <p class="indices">PK ID_PRESENCA; índice em ID_MATRICULA; índice composto em (ID_MATRICULA, DT_AULA) evitando presença duplicada no mesmo dia.</p>
+  <p class="indices">PK ID_TRANCAMENTO; índice em ID_MATRICULA.</p>
 
-  <!-- PAGAMENTO -->
-  <h3 class="entity">PAGAMENTO</h3>
-  <div class="notation">PAGAMENTO = @ID_PAGAMENTO + ID_ALUNO + ID_PLANO + DT_PAGAMENTO +
-[TP_PAGO | TP_ATRASADO | TP_PENDENTE]</div>
-  <p class="leitura">ID_ALUNO e ID_PLANO são FKs obrigatórias; um aluno tem N pagamentos e um plano é usado em N pagamentos de alunos diferentes.</p>
+  <h3 class="entity">AULA</h3>
+  <div class="notation">AULA = @ID_AULA + ID_TURMA + ID_PROFESSOR + DT_AULA + HR_INICIO + (ID_AULA_ORIGEM)</div>
+  <p class="leitura">AULA é a ocorrência real e datada de um treino. ID_PROFESSOR é quem de fato ministrou (base do repasse). ID_AULA_ORIGEM, quando preenchido, aponta a aula que esta repõe. A reposição concedida ao aluno por falta do professor é regra de negócio: o aluno assiste à aula e não tem presença registrada, mas ocupa uma das 30 vagas nessa aula.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
-      <tr><td class="attr pk">ID_PAGAMENTO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do recebimento.</td></tr>
-      <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno que realizou o pagamento.</td></tr>
-      <tr><td class="attr">ID_PLANO</td><td>integer</td><td>Sim (FK)</td><td>Plano ao qual o pagamento se refere.</td></tr>
-      <tr><td class="attr">DT_PAGAMENTO</td><td>date</td><td>Sim</td><td>Data em que o aluno realizou o pagamento.</td></tr>
-      <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Resolve a inadimplência hoje não registrada; vencimento padrão no 5º dia útil (RNF03); acesso é bloqueado se vencer sem confirmação (Seção 4).</td></tr>
+      <tr><td class="attr pk">ID_AULA</td><td>integer</td><td>Sim (PK)</td><td>Identificador da aula.</td></tr>
+      <tr><td class="attr">ID_TURMA</td><td>integer</td><td>Sim (FK)</td><td>Turma que recebe a aula.</td></tr>
+      <tr><td class="attr">ID_PROFESSOR</td><td>integer</td><td>Sim (FK)</td><td>Professor que ministrou a aula.</td></tr>
+      <tr><td class="attr">DT_AULA</td><td>date</td><td>Sim</td><td>Data da aula (RF05).</td></tr>
+      <tr><td class="attr">HR_INICIO</td><td>time</td><td>Sim</td><td>Horário de início.</td></tr>
+      <tr><td class="attr">ID_AULA_ORIGEM</td><td>integer</td><td>Não (FK)</td><td>Aula original, no caso de reposição.</td></tr>
     </tbody>
   </table>
-  <p class="indices">PK ID_PAGAMENTO; índice em ID_ALUNO; índice em ID_PLANO; índice em DT_PAGAMENTO (relatórios por período).</p>
+  <p class="indices">PK ID_AULA; índice composto em (ID_TURMA, DT_AULA, HR_INICIO); índice em ID_PROFESSOR (apuração do repasse).</p>
 
-  <!-- PLANO -->
+  <h3 class="entity">PRESENÇA (AULA × MATRÍCULA)</h3>
+  <div class="notation">PRESENCA = @ID_AULA + @ID_MATRICULA + IN_PRESENTE</div>
+  <p class="leitura">Tabela associativa do N:N entre AULA e MATRÍCULA; uma linha por matrícula ativa em cada aula. Alunos trancados ou bloqueados por atraso não têm presença registrada (RE07). O histórico alimenta a liberação para exame (RO05, RF06).</p>
+  <table>
+    <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
+    <tbody>
+      <tr><td class="attr pk">ID_AULA</td><td>integer</td><td>Sim (PK, FK)</td><td>Aula em que a presença foi registrada.</td></tr>
+      <tr><td class="attr pk">ID_MATRICULA</td><td>integer</td><td>Sim (PK, FK)</td><td>Matrícula a que a presença se refere.</td></tr>
+      <tr><td class="attr">IN_PRESENTE</td><td>boolean</td><td>Sim</td><td>Presente ou ausente (RF05).</td></tr>
+    </tbody>
+  </table>
+  <p class="indices">PK composta (ID_AULA, ID_MATRICULA), que impede presença duplicada; índice em ID_MATRICULA (frequência por aluno em menos de 2 s, RNF03).</p>
+
   <h3 class="entity">PLANO</h3>
-  <div class="notation">PLANO = @ID_PLANO + [TP_MENSAL | TP_TRIMESTRAL | TP_ANUAL | TP_FAMILIA] +
-VL_MENSALIDADE + (VL_DESCONTO) + (DS_CONDICOES)</div>
-  <p class="leitura">Cada plano tem preço e condições próprias; descontos são vinculados ao plano, nunca ao aluno isoladamente (Seção 4), por isso VL_DESCONTO mora aqui e não em ALUNO.</p>
+  <div class="notation">PLANO = @ID_PLANO + NM_PLANO + QT_DURACAO_MESES + VL_MENSALIDADE + PC_DESCONTO + (QT_MINIMA_PESSOAS) + (DS_CONDICAO)</div>
+  <p class="leitura">Cada plano tem duração, valor e desconto próprios (RO01); o desconto é do plano, nunca do aluno isoladamente. O Plano Família existe em cada duração e exige no mínimo duas pessoas (QT_MINIMA_PESSOAS). Os planos de mais de um mês definem só o ciclo e o desconto: o pagamento é sempre em parcelas mensais.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
       <tr><td class="attr pk">ID_PLANO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do plano.</td></tr>
-      <tr><td class="attr">TP_MENSAL | TP_TRIMESTRAL | TP_ANUAL | TP_FAMILIA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Domínio fechado aos 4 planos oferecidos.</td></tr>
-      <tr><td class="attr">VL_MENSALIDADE</td><td>real/numeric</td><td>Sim</td><td>Valor cobrado no plano.</td></tr>
-      <tr><td class="attr">VL_DESCONTO</td><td>real/numeric</td><td>Não</td><td>Desconto vinculado ao plano, nunca ao aluno isoladamente.</td></tr>
-      <tr><td class="attr">DS_CONDICOES</td><td>text</td><td>Não</td><td>Condições específicas do plano (ex.: fidelidade, forma de pagamento).</td></tr>
+      <tr><td class="attr">NM_PLANO</td><td>varchar(50)</td><td>Sim</td><td>Nome do plano (ex.: Mensal, Trimestral, Semestral, Anual, Família).</td></tr>
+      <tr><td class="attr">QT_DURACAO_MESES</td><td>integer</td><td>Sim</td><td>Duração do ciclo em meses.</td></tr>
+      <tr><td class="attr">VL_MENSALIDADE</td><td>real/numeric</td><td>Sim</td><td>Valor-base da mensalidade.</td></tr>
+      <tr><td class="attr">PC_DESCONTO</td><td>real/numeric</td><td>Sim</td><td>Percentual de desconto progressivo do ciclo.</td></tr>
+      <tr><td class="attr">QT_MINIMA_PESSOAS</td><td>integer</td><td>Não</td><td>Mínimo de pessoas; preenchido nos planos Família.</td></tr>
+      <tr><td class="attr">DS_CONDICAO</td><td>text</td><td>Não</td><td>Condições específicas do plano.</td></tr>
     </tbody>
   </table>
-  <p class="indices">PK ID_PLANO; índice único no tipo de plano (evita dois registros para o mesmo plano).</p>
+  <p class="indices">PK ID_PLANO; índice único em NM_PLANO.</p>
 
-  <!-- GRADUAÇÃO -->
-  <h3 class="entity">GRADUAÇÃO</h3>
-  <div class="notation">GRADUAÇÃO = @ID_GRADUACAO + ID_ALUNO + ID_MODALIDADE + (TP_NIVEL_FAIXA) + DT_GRADUACAO + (DS_OBSERVACAO)</div>
-  <p class="leitura">ID_ALUNO e ID_MODALIDADE são FKs; um aluno tem N graduações e uma modalidade gera N graduações. TP_NIVEL_FAIXA fica entre ( ) porque só se aplica nas modalidades com sistema de faixas (validado por MODALIDADE.IN_POSSUI_SISTEMA_FAIXAS); DS_OBSERVACAO complementa quando não há faixa (ex.: Boxe).</p>
+  <h3 class="entity">CONTRATO</h3>
+  <div class="notation">CONTRATO = @ID_CONTRATO + ID_ALUNO + ID_PLANO + DT_INICIO + DT_FIM + VL_MENSAL_ACORDADO + (VL_ACRESCIMO_MODALIDADE) +
+(TP_DOC_PARENTESCO) + (DT_CONFERENCIA_PARENTESCO) + (DT_CANCELAMENTO) + (VL_MULTA_RESCISORIA) + (NM_RESPONSAVEL_PLANO)</div>
+  <p class="leitura">Formaliza o acordo entre o aluno (titular) e a academia. VL_MENSAL_ACORDADO fica congelado: reajuste no PLANO não altera contratos nem parcelas já geradas. Cada modalidade extra entra no mesmo contrato como acréscimo. VL_MULTA_RESCISORIA só existe no cancelamento antecipado de planos de maior duração (RO04); o plano mensal cancela sem multa. O contrato só termina por cancelamento, e então o aluno passa a Inativo.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
-      <tr><td class="attr pk">ID_GRADUACAO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do registro de graduação.</td></tr>
-      <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno avaliado.</td></tr>
-      <tr><td class="attr">ID_MODALIDADE</td><td>integer</td><td>Sim (FK)</td><td>Modalidade referente à graduação.</td></tr>
-      <tr><td class="attr">TP_NIVEL_FAIXA</td><td>varchar(30)</td><td>Não</td><td>Obrigatório apenas nas modalidades com sistema de faixas (RF06).</td></tr>
-      <tr><td class="attr">DT_GRADUACAO</td><td>date</td><td>Sim</td><td>Data em que o exame/graduação ocorreu.</td></tr>
-      <tr><td class="attr">DS_OBSERVACAO</td><td>text</td><td>Não</td><td>Complementa a avaliação quando não há sistema de faixas.</td></tr>
+      <tr><td class="attr pk">ID_CONTRATO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do contrato.</td></tr>
+      <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno titular.</td></tr>
+      <tr><td class="attr">ID_PLANO</td><td>integer</td><td>Sim (FK)</td><td>Plano que serviu de base.</td></tr>
+      <tr><td class="attr">DT_INICIO</td><td>date</td><td>Sim</td><td>Início da vigência.</td></tr>
+      <tr><td class="attr">DT_FIM</td><td>date</td><td>Sim</td><td>Fim do ciclo; ajustada quando há trancamento.</td></tr>
+      <tr><td class="attr">VL_MENSAL_ACORDADO</td><td>real/numeric</td><td>Sim</td><td>Mensalidade combinada na contratação, já com o desconto.</td></tr>
+      <tr><td class="attr">VL_ACRESCIMO_MODALIDADE</td><td>real/numeric</td><td>Não</td><td>Acréscimo por modalidade além da primeira.</td></tr>
+      <tr><td class="attr">TP_DOC_PARENTESCO</td><td>varchar(20)</td><td>Não</td><td>Tipo do documento que comprova o parentesco (Plano Família); o número do RG não é guardado.</td></tr>
+      <tr><td class="attr">DT_CONFERENCIA_PARENTESCO</td><td>date</td><td>Não</td><td>Data da conferência do documento.</td></tr>
+      <tr><td class="attr">DT_CANCELAMENTO</td><td>date</td><td>Não</td><td>Data do pedido de cancelamento.</td></tr>
+      <tr><td class="attr">VL_MULTA_RESCISORIA</td><td>real/numeric</td><td>Não</td><td>Multa pelo cancelamento antecipado, calculada pelos meses que faltam (RO04).</td></tr>
+      <tr><td class="attr">NM_RESPONSAVEL_PLANO</td><td>varchar</td><td>Não</td><td>Nome da pessoa responsável pelo plano (ex.: Plano Família).</td></tr>
     </tbody>
   </table>
-  <p class="indices">PK ID_GRADUACAO; índice em ID_ALUNO; índice em ID_MODALIDADE.</p>
+  <p class="indices">PK ID_CONTRATO; índice em ID_ALUNO; índice em ID_PLANO.</p>
 
-  <div class="card-note">
-    <strong>Nota sobre dados sensíveis:</strong> CPF (ALUNO, PROFESSOR) e DS_PROBLEMA_SAUDE (ALUNO, PROFESSOR) são dados de identificação e de saúde, respectivamente — sujeitos à LGPD. O acesso a esses campos deve ficar restrito à administração da academia, conforme já indicado pelo RNF02 no README.
-  </div>
+  <h3 class="entity">PARTICIPA (CONTRATO × MODALIDADE)</h3>
+  <div class="notation">PARTICIPA = @ID_CONTRATO + @ID_MODALIDADE</div>
+  <p class="leitura">Tabela associativa do N:N entre CONTRATO e MODALIDADE: lista as modalidades cobertas pelo contrato. O plano regular cobre uma modalidade; cada modalidade extra gera acréscimo em CONTRATO.</p>
+  <table>
+    <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
+    <tbody>
+      <tr><td class="attr pk">ID_CONTRATO</td><td>integer</td><td>Sim (PK, FK)</td><td>Contrato.</td></tr>
+      <tr><td class="attr pk">ID_MODALIDADE</td><td>integer</td><td>Sim (PK, FK)</td><td>Modalidade coberta.</td></tr>
+    </tbody>
+  </table>
+  <p class="indices">PK composta (ID_CONTRATO, ID_MODALIDADE); índice em ID_MODALIDADE.</p>
+
+  <h3 class="entity">PAGAMENTO</h3>
+  <div class="notation">PAGAMENTO = @ID_PAGAMENTO + ID_CONTRATO + DT_VENCIMENTO + VL_DEVIDO + (DT_PAGAMENTO) + (VL_PAGO) +
+(TP_FORMA_PAGAMENTO) + (VL_MULTA) + (VL_TAXA_GRADUACAO) + [TP_PAGO | TP_ATRASADO | TP_PENDENTE]</div>
+  <p class="leitura">Cada parcela mensal do contrato, gerada mês a mês (meses de trancamento não geram parcela). DT_PAGAMENTO, VL_PAGO e TP_FORMA_PAGAMENTO (Pix, crédito ou débito) só são preenchidos na liquidação. Após o 5º dia útil a parcela fica TP_ATRASADO e, a partir do 6º, o aluno é bloqueado (RE07). VL_MULTA existe só nos planos de maior duração; no mensal há apenas o bloqueio, e não há juros. VL_TAXA_GRADUACAO é cobrada junto com a mensalidade.</p>
+  <table>
+    <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
+    <tbody>
+      <tr><td class="attr pk">ID_PAGAMENTO</td><td>integer</td><td>Sim (PK)</td><td>Identificador da parcela.</td></tr>
+      <tr><td class="attr">ID_CONTRATO</td><td>integer</td><td>Sim (FK)</td><td>Contrato que gerou a parcela.</td></tr>
+      <tr><td class="attr">DT_VENCIMENTO</td><td>date</td><td>Sim</td><td>Vencimento no 5º dia útil (RO02); base para detectar inadimplência (RF04).</td></tr>
+      <tr><td class="attr">VL_DEVIDO</td><td>real/numeric</td><td>Sim</td><td>Valor nominal da parcela.</td></tr>
+      <tr><td class="attr">DT_PAGAMENTO</td><td>date</td><td>Não</td><td>Data da liquidação (RF04); vazia enquanto pendente ou atrasada.</td></tr>
+      <tr><td class="attr">VL_PAGO</td><td>real/numeric</td><td>Não</td><td>Valor efetivamente recebido.</td></tr>
+      <tr><td class="attr">TP_FORMA_PAGAMENTO</td><td>varchar(15)</td><td>Não</td><td>Pix, cartão de crédito ou cartão de débito.</td></tr>
+      <tr><td class="attr">VL_MULTA</td><td>real/numeric</td><td>Não</td><td>Multa por atraso, só nos planos de maior duração.</td></tr>
+      <tr><td class="attr">VL_TAXA_GRADUACAO</td><td>real/numeric</td><td>Não</td><td>Taxa de graduação (exame de faixa), quando houver.</td></tr>
+      <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Situação da parcela; resolve a inadimplência hoje não registrada.</td></tr>
+    </tbody>
+  </table>
+  <p class="indices">PK ID_PAGAMENTO; índice em ID_CONTRATO; índice composto em (DT_VENCIMENTO, situação) para a consulta de inadimplentes em menos de 2 s (RNF03); índice em DT_PAGAMENTO (relatórios por período).</p>
+
+  <h3 class="entity">GRADUAÇÃO</h3>
+  <div class="notation">GRADUAÇÃO = @ID_GRADUACAO + ID_ALUNO + ID_MODALIDADE + ID_PROFESSOR + [TP_EXAME_FAIXA | TP_ANALISE_TECNICA] + (TP_NIVEL_FAIXA) +
+DT_GRADUACAO + [TP_APROVADO | TP_REPROVADO] + (DS_MOTIVO_REPROVACAO)</div>
+  <p class="leitura">TP_NIVEL_FAIXA só se aplica às modalidades com faixa (IN_POSSUI_SISTEMA_FAIXAS); no Boxe há TP_ANALISE_TECNICA, sem faixa (RO06). O aluno só faz exame com a frequência exigida pelo professor (RO05). A reprovação fica no histórico, com o motivo em palavras-chave.</p>
+  <table>
+    <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
+    <tbody>
+      <tr><td class="attr pk">ID_GRADUACAO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do registro.</td></tr>
+      <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno avaliado.</td></tr>
+      <tr><td class="attr">ID_MODALIDADE</td><td>integer</td><td>Sim (FK)</td><td>Modalidade avaliada.</td></tr>
+      <tr><td class="attr">ID_PROFESSOR</td><td>integer</td><td>Sim (FK)</td><td>Professor que avaliou.</td></tr>
+      <tr><td class="attr">TP_EXAME_FAIXA | TP_ANALISE_TECNICA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Tipo da avaliação.</td></tr>
+      <tr><td class="attr">TP_NIVEL_FAIXA</td><td>varchar(30)</td><td>Não</td><td>Faixa avaliada (RF06); vazia no Boxe.</td></tr>
+      <tr><td class="attr">DT_GRADUACAO</td><td>date</td><td>Sim</td><td>Data do exame ou da análise.</td></tr>
+      <tr><td class="attr">TP_APROVADO | TP_REPROVADO</td><td>varchar(15)</td><td>Sim (escolha)</td><td>Resultado.</td></tr>
+      <tr><td class="attr">DS_MOTIVO_REPROVACAO</td><td>varchar(100)</td><td>Não</td><td>Palavras-chave (ex.: condicionamento, técnica); só na reprovação.</td></tr>
+    </tbody>
+  </table>
+  <p class="indices">PK ID_GRADUACAO; índice em ID_ALUNO; índice em ID_MODALIDADE; índice em ID_PROFESSOR.</p>
+
+  <h3 class="entity">DESPESA</h3>
+  <div class="notation">DESPESA = @ID_DESPESA + (ID_PROFESSOR) + DS_CATEGORIA + DS_DESCRICAO + NM_CREDOR + DT_VENCIMENTO + (DT_PAGAMENTO) + VL_DESPESA + (VL_PAGO) +
+[TP_PAGO | TP_ATRASADO | TP_PENDENTE]</div>
+  <p class="leitura">Contas a pagar da academia: aluguel, água, luz, manutenção, compras e repasse aos professores. ID_PROFESSOR só é preenchido no repasse de aulas ministradas; nas demais despesas fica vazio. O credor é um nome anotado a cada lançamento, sem dados bancários nem cadastro fixo.</p>
+  <table>
+    <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
+    <tbody>
+      <tr><td class="attr pk">ID_DESPESA</td><td>integer</td><td>Sim (PK)</td><td>Identificador da despesa.</td></tr>
+      <tr><td class="attr">ID_PROFESSOR</td><td>integer</td><td>Não (FK)</td><td>Professor beneficiado, quando a despesa é repasse.</td></tr>
+      <tr><td class="attr">DS_CATEGORIA</td><td>varchar(40)</td><td>Sim</td><td>Categoria (aluguel, consumo, manutenção, compras, professores).</td></tr>
+      <tr><td class="attr">DS_DESCRICAO</td><td>varchar(200)</td><td>Sim</td><td>Descrição do lançamento.</td></tr>
+      <tr><td class="attr">NM_CREDOR</td><td>varchar(100)</td><td>Sim</td><td>Locador, concessionária, fornecedor ou professor.</td></tr>
+      <tr><td class="attr">DT_VENCIMENTO</td><td>date</td><td>Sim</td><td>Vencimento.</td></tr>
+      <tr><td class="attr">DT_PAGAMENTO</td><td>date</td><td>Não</td><td>Data do pagamento.</td></tr>
+      <tr><td class="attr">VL_DESPESA</td><td>real/numeric</td><td>Sim</td><td>Valor devido.</td></tr>
+      <tr><td class="attr">VL_PAGO</td><td>real/numeric</td><td>Não</td><td>Valor efetivamente pago.</td></tr>
+      <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Situação da despesa.</td></tr>
+    </tbody>
+  </table>
+  <p class="indices">PK ID_DESPESA; índice em ID_PROFESSOR; índice composto em (DT_VENCIMENTO, situação) (despesas a vencer e vencidas).</p>
+
+  <!-- 5. PAPÉIS -->
+  <h2 class="sec">5. Papéis por operação</h2>
+  <p>C = criar, R = ler, U = atualizar, D = excluir. Perfis: <strong>Administração</strong> (Adalberto, CEO, que hoje também faz a recepção) e <strong>Professor</strong>. Não há recepcionista separada; se a academia criar o cargo, a Recepção passa a ser um perfil próprio, sem leitura de CPF e DS_PROBLEMA_SAUDE após o cadastro (RNF02).</p>
+  <table>
+    <thead><tr><th>Entidade</th><th>Administração</th><th>Professor</th></tr></thead>
+    <tbody>
+      <tr><td>ALUNO</td><td>C R U D</td><td>R ¹</td></tr>
+      <tr><td>RESPONSÁVEL</td><td>C R U D</td><td>—</td></tr>
+      <tr><td>INTERESSADO</td><td>C R U D</td><td>C R U</td></tr>
+      <tr><td>PROFESSOR</td><td>C R U D</td><td>R (próprio registro)</td></tr>
+      <tr><td>MODALIDADE</td><td>C R U D</td><td>R</td></tr>
+      <tr><td>PLANO</td><td>C R U D</td><td>R</td></tr>
+      <tr><td>CONTRATO</td><td>C R U (sem D, por retenção)</td><td>—</td></tr>
+      <tr><td>TURMA</td><td>C R U D</td><td>R</td></tr>
+      <tr><td>MATRÍCULA</td><td>C R U D</td><td>R</td></tr>
+      <tr><td>TRANCAMENTO</td><td>C R U</td><td>—</td></tr>
+      <tr><td>AULA</td><td>C R U</td><td>C R U (só da própria turma)</td></tr>
+      <tr><td>PRESENÇA</td><td>C R U</td><td>C R U (só da própria turma)</td></tr>
+      <tr><td>PAGAMENTO</td><td>C R U (sem D, por retenção fiscal)</td><td>—</td></tr>
+      <tr><td>GRADUAÇÃO</td><td>R</td><td>C R U (só da própria modalidade)</td></tr>
+      <tr><td>DESPESA</td><td>C R U (sem D, por retenção fiscal)</td><td>—</td></tr>
+      <tr><td>LOG_ACESSO</td><td>R</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--muted);">¹ Apenas NM_COMPLETO, a situação cadastral e as restrições de DS_PROBLEMA_SAUDE, necessárias para conduzir o treino com segurança. A exclusão de ALUNO é lógica (situação Inativo); a exclusão física cabe só à Administração e respeita a retenção da Seção 7. O pré-cadastro do INTERESSADO pode ser feito pela Administração ou pelo professor da modalidade.</p>
+
+  <!-- 6. LOG -->
+  <h2 class="sec">6. Log de acesso</h2>
+  <p>Tabela de apoio de auditoria, fora do DER conceitual. Registra todo acesso a CPF e DS_PROBLEMA_SAUDE e toda operação de escrita, para rastrear quem acessou ou alterou dado pessoal (RNF02). É gravada apenas pelo sistema; só a Administração a consulta.</p>
+  <h3 class="entity">LOG_ACESSO</h3>
+  <div class="notation">LOG_ACESSO = @ID_LOG + NM_USUARIO + TP_PERFIL + DT_ACESSO +
+[TP_CRIACAO | TP_LEITURA | TP_ATUALIZACAO | TP_EXCLUSAO] + NM_TABELA + ID_REGISTRO + (NM_CAMPO)</div>
+  <table>
+    <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
+    <tbody>
+      <tr><td class="attr pk">ID_LOG</td><td>integer</td><td>Sim (PK)</td><td>Identificador do registro de log.</td></tr>
+      <tr><td class="attr">NM_USUARIO</td><td>varchar(50)</td><td>Sim</td><td>Login de quem acessou (ainda sem entidade de usuários nesta versão).</td></tr>
+      <tr><td class="attr">TP_PERFIL</td><td>varchar(20)</td><td>Sim</td><td>Administração ou Professor (Seção 5).</td></tr>
+      <tr><td class="attr">DT_ACESSO</td><td>timestamp</td><td>Sim</td><td>Data e hora do acesso.</td></tr>
+      <tr><td class="attr">TP_CRIACAO | TP_LEITURA | TP_ATUALIZACAO | TP_EXCLUSAO</td><td>varchar(15)</td><td>Sim (escolha)</td><td>Operação realizada.</td></tr>
+      <tr><td class="attr">NM_TABELA</td><td>varchar(30)</td><td>Sim</td><td>Entidade acessada.</td></tr>
+      <tr><td class="attr">ID_REGISTRO</td><td>integer</td><td>Sim</td><td>Registro acessado, sem copiar o dado sensível para o log.</td></tr>
+      <tr><td class="attr">NM_CAMPO</td><td>varchar(40)</td><td>Não</td><td>Campo sensível acessado (ex.: CPF).</td></tr>
+    </tbody>
+  </table>
+  <p class="indices">PK ID_LOG; índice em (NM_TABELA, ID_REGISTRO); índice em DT_ACESSO.</p>
+
+  <!-- 7. LGPD -->
+  <h2 class="sec">7. Privacidade e LGPD</h2>
+  <p>CPF, endereço e contatos (ALUNO, RESPONSÁVEL, PROFESSOR) são dados pessoais; DS_PROBLEMA_SAUDE e o motivo do trancamento (TRANCAMENTO) são dados de saúde, sensíveis. O acesso segue a Seção 5 e o RNF02.</p>
+  <table>
+    <thead><tr><th>Categoria</th><th>Campos</th><th>Base legal (LGPD)</th><th>Retenção</th></tr></thead>
+    <tbody>
+      <tr><td>Cadastrais</td><td>ALUNO, RESPONSÁVEL, INTERESSADO, PROFESSOR: nome, CPF, nascimento, endereço, contatos</td><td>Execução de contrato (art. 7º, V)</td><td>Durante o vínculo + 5 anos; depois eliminação ou anonimização. INTERESSADO não convertido: eliminar após o encerramento</td></tr>
+      <tr><td>Financeiros</td><td>CONTRATO, PAGAMENTO, PLANO, DESPESA</td><td>Obrigação legal/fiscal (art. 7º, II)</td><td>5 anos após o pagamento</td></tr>
+      <tr><td>Saúde (sensíveis)</td><td>DS_PROBLEMA_SAUDE, DS_MOTIVO e NM_ATESTADO_POR (TRANCAMENTO)</td><td>Consentimento específico e destacado (art. 11, I)</td><td>Durante o vínculo; eliminação ao fim ou na revogação do consentimento</td></tr>
+      <tr><td>Imagem</td><td>IN_ACEITE_USO_IMAGEM, DT_AUTORIZACAO_IMAGEM</td><td>Consentimento (art. 7º, I); opcional e revogável a qualquer momento, sem condicionar a matrícula</td><td>Até a revogação ou o fim do vínculo</td></tr>
+      <tr><td>Aulas, frequência e graduação</td><td>AULA, PRESENÇA, GRADUAÇÃO</td><td>Execução de contrato (art. 7º, V)</td><td>Durante o vínculo + 5 anos</td></tr>
+      <tr><td>Log de acesso</td><td>LOG_ACESSO</td><td>Legítimo interesse — segurança (art. 7º, IX)</td><td>12 meses</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12.5px;color:var(--muted);">Minimização: o sistema não guarda o número do RG do documento de parentesco (só o tipo e a data da conferência) nem dados bancários de credores. Para alunos menores de 18 anos, o consentimento e a autorização de imagem são dados pelo responsável legal, cujos dados são registrados em RESPONSÁVEL (art. 14; RE03). Os backups diários (RNF05) são rotacionados em até 30 dias, prazo em que a eliminação também se completa neles. Bases legais e prazos são propostas do grupo, a validar com orientação jurídica; o prazo de guarda ainda será definido com o CEO.</p>
 
   <footer class="doc-footer">
-    Dicionário de Dados — Sistema de Gestão Base Forte Leste · Entrega 1, Modelagem de Banco de Dados · Prof. Cid Rodrigues De Andrade
+    Dicionário de Dados — Sistema de Gestão Base Forte Leste · Modelagem de Banco de Dados · Prof. Cid Rodrigues De Andrade
   </footer>
 
 </div>
