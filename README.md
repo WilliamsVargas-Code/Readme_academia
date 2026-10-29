@@ -29,24 +29,25 @@
  ## Modelagem e Implementação de Banco de Dados Relacional para o Sistema de Gestão da Academia Base Forte Leste
 
 ## Introdução
-A academia de artes marciais Base Forte Leste enfrenta atualmente uma crise operacional decorrente da ausência de um sistema informatizado de gestão. Todo o controle administrativo é feito por meio de fichas de papel preenchidas manualmente no ato da matrícula e por tratativas informais via WhatsApp, sem qualquer padronização ou centralização das informações. Essa fragilidade estrutural gera três problemas críticos para o negócio: atrasos recorrentes no pagamento das mensalidades, que vencem todo 5º dia útil sem que a inadimplência seja formalmente registrada ou monitorada; total ausência de controle sobre a frequência dos alunos nas aulas, o que impede qualquer análise objetiva de assiduidade e dificuldade em rastrear o tempo real de treino de cada aluno, informação essencial para embasar a concessão de exames de faixa, hoje decidida apenas pela percepção visual do professor. Diante disso, evidencia-se a necessidade de estruturar um banco de dados relacional capaz de organizar e integrar essas informações.
+A academia de artes marciais Base Forte Leste enfrenta atualmente uma crise operacional decorrente da ausência de um sistema informatizado de gestão. Todo o controle administrativo é feito por meio de fichas de papel preenchidas manualmente no ato da matrícula e por tratativas informais via WhatsApp, sem qualquer padronização ou centralização das informações. Essa fragilidade estrutural gera problemas críticos para o negócio: atrasos recorrentes no pagamento das mensalidades, que vencem todo 5º dia útil sem que a inadimplência seja formalmente registrada ou monitorada; total ausência de controle sobre a frequência dos alunos nas aulas, o que impede qualquer análise objetiva de assiduidade e dificulta o rastreamento do tempo real de treino de cada aluno, informação essencial para embasar a concessão de exames de faixa, hoje decidida apenas pela percepção visual do professor. Diante disso, evidencia-se a necessidade de estruturar um banco de dados relacional capaz de organizar e integrar essas informações.
 
 ## Desenvolvimento
-O objetivo geral é fornecer a modelagem e a implementação física do banco de dados relacional da Academia Base Forte Leste, organizando os fluxos operacionais em uma estrutura normalizada e consistente. 
+O objetivo geral deste projeto é fornecer a modelagem conceitual, lógica e a implementação física do banco de dados relacional para a Academia Base Forte Leste, 
+estruturando os fluxos operacionais da instituição em um sistema normalizado e consistente.
 
-Os objetivos específicos incluem:
+#### Os objetivos específicos incluem:
 
-* Modelar os cadastros de alunos, vínculos de responsáveis e condições médicas; 
+* Modelar os cadastros de alunos, os vínculos com responsáveis legais e o registro de condições médicas e restritivas;
 
-* Integrar planos, contratos, aditivos de multimodalidade e faturas financeiras de mensalidades; 
+* Integrar a gestão de planos, contratos, aditivos de multi-modalidade e a geração de faturas financeiras de mensalidades;
 
-* Rastrear as turmas, horários e aulas ministradas pelo corpo técnico; 
+* Gerenciar as turmas, a grade de horários e o registro das aulas efetivamente ministradas pelo corpo docente;
 
-* Computar a frequência diária necessária aos exames de graduação e ao cálculo de honorários por aula; 
+* Computar a assiduidade diária dos alunos — dado fundamental para a elegibilidade aos exames de graduação — e apurar o cálculo de honorários devidos aos professores por aula;
 
-* Entregar os modelos conceitual e lógico, o script DDL/DML em MySQL e as consultas SQL gerenciais para tomada de decisão. 
+* Entregar os artefatos de modelagem (conceitual e lógico), o script DDL/DML para o SGBD MySQL e um conjunto de consultas SQL gerenciais e de auditoria para suporte à tomada de decisão.
 
-O projeto limita-se à arquitetura do banco de dados e suas consultas analíticas. Não contempla o desenvolvimento de sistemas visuais/aplicativos, módulos comerciais de venda de artigos esportivos nem a operação do hardware de catraca facial, cuja independência arquitetural permite acoplamento posterior sem modificações no esquema das tabelas.
+Delimitação de Escopo: O projeto limita-se estritamente à arquitetura do banco de dados relacional e às suas consultas analíticas. Não contempla o desenvolvimento de interfaces visuais (aplicativos ou sistemas web), módulos comerciais para venda de artigos esportivos, nem a operação direta de hardware (como catracas de reconhecimento facial); Embora a independência da arquitetura proposta permita o acoplamento futuro de tais recursos sem a necessidade de alteração estrutural nas tabelas.
 
 
 # 1. Caracterização da Organização
@@ -91,7 +92,7 @@ Empresa privada com fins lucrativos, atuante na prestação de serviços esporti
 
 ## 1.3 Problemas e necessidades identificados
   
-A Academia Base Forte Leste enfrenta atualmente uma crise operacional decorrente da dependência exclusiva de fichas impressas de papel e do controle informal de tratativas via WhatsApp, sem a integração de um sistema   informatizado central. A administração da unidade apoia-se na memória individual dos funcionários e em anotações descentralizadas, gerando descontinuidade de dados, insegurança jurídica, vulnerabilidades financeiras e falhas no planejamento das aulas.
+A Academia Base Forte Leste enfrenta atualmente uma crise operacional decorrente da dependência exclusiva de fichas impressas de papel e do controle informal de tratativas via WhatsApp, sem a integração de um sistema informatizado central. A administração da unidade apoia-se na memória individual dos funcionários e em anotações descentralizadas, gerando descontinuidade de dados, insegurança jurídica, vulnerabilidades financeiras e falhas no planejamento das aulas.
 
 Para solucionar esses gargalos e atender formalmente aos requisitos da disciplina, os problemas de gestão de informação foram catalogados e numerados de P1 a P7, conectando as rotinas operacionais observadas em campo às soluções estruturadas no banco de dados relacional:
 
@@ -101,7 +102,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** Os papéis estão sujeitos à degradação física e a riscos constantes de extravio, rasuras e umidade durante o expediente. Além da perda física das informações, manter pastas de formulários expostas sobre o balcão deixa registros de saúde e dados pessoais vulneráveis à visualização de terceiros, infringindo os requisitos de sigilo da LGPD. Qualquer atualização cadastral ou consulta de contato exige folhear fichas manualmente, tornando o atendimento lento e propenso a inconsistências.
 
-**Como o banco de dados resolve:** Substitui o uso do papel pelo armazenamento digital seguro nas tabelas ALUNO e RESPONSAVEL. Cada praticante recebe um identificador primário exclusivo (Id_Aluno), garantindo a preservação dos dados de saúde, eliminando o risco de perda física de cadastros e permitindo a recuperação instantânea das informações do aluno.
+**Como o banco de dados resolve:** Substitui o uso do papel pelo armazenamento digital seguro nas tabelas `ALUNO` e `RESPONSAVEL`. Cada praticante recebe um identificador primário exclusivo (`Id_Aluno`), garantindo a preservação dos dados de saúde, eliminando o risco de perda física de cadastros e permitindo a recuperação instantânea das informações do aluno.
 
 ### P2 - Inadimplência oculta e falta de controle sobre pagamentos de mensalidades
 
@@ -109,7 +110,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** A gestão não possui visibilidade em tempo real sobre quais alunos estão em atraso, qual é o saldo inadimplente total acumulado e deixa de aplicar as penalidades de multas previstas. Diversos praticantes permanecem com acesso liberado aos treinos mesmo com pendências financeiras prolongadas, devido à carência de rotinas automáticas de auditoria e cobrança.
 
-**Como o banco de dados resolve:** Estrutura a tabela PAGAMENTO, registrando o valor nominal devido, a data efetiva de liquidação, o montante liquidado, acréscimos moratórios (Valor_Multa) e os estados do título (Pendente, Pago, Atrasado), viabilizando relatórios imediatos de fluxo de caixa e inadimplência.
+**Como o banco de dados resolve:** Estrutura a tabela `PAGAMENTO`, registrando o valor nominal devido, a data efetiva de liquidação, o montante liquidado, acréscimos moratórios (`Valor_Multa`) e os estados do título (`Pendente, Pago, Atrasado`), viabilizando relatórios imediatos de fluxo de caixa e inadimplência.
 
 ### P3 - Acordos verbais na contratação de planos e descontrole no cálculo de multas rescisórias
 
@@ -117,7 +118,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** Na ocorrência de cancelamentos antecipados de pacotes com duração trimestral ou anual, a empresa não tem suporte em registros formais de vigência para cobrar as multas rescisórias devidas. Esse vácuo gera contestações por parte dos alunos e provoca perdas de receita previamente planejadas.
 
-**Como o banco de dados resolve:** Interliga as entidades PLANO e CONTRATO, assegurando o registro do período de vigência, do valor mensal fixado no ato da venda, das taxas de acréscimo de multimodalidade e dos parâmetros objetivos de cálculo de multa por rescisão antecipada.
+**Como o banco de dados resolve:** Interliga as entidades `PLANO` e `CONTRATO`, assegurando o registro do período de vigência, do valor mensal fixado no ato da venda, das taxas de acréscimo de multi-modalidade e dos parâmetros objetivos de cálculo de multa por rescisão antecipada.
 
 ### P4 - Troca de faixas e graduação sem comprovação de frequência mínima nas aulas
 
@@ -125,7 +126,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** A permissão para que o aluno se inscreva no exame de graduação apoia-se unicamente na memória dos instrutores, sem embasamento em dados históricos reais. Esse critério subjetivo compromete o rigor pedagógico e o nivelamento técnico esperado pela academia.
 
-**Como o banco de dados resolve:** Integra as tabelas AULA, MATRICULA e GRADUACAO, computando a assiduidade diária por modalidade e viabilizando consultas que atestam com precisão se a meta mínima de presença foi alcançada antes da emissão do certificado de faixa.
+**Como o banco de dados resolve:** Integra as tabelas `AULA`, `MATRICULA` e `GRADUACAO`, computando a assiduidade diária por modalidade e viabilizando consultas que atestam com precisão se a meta mínima de presença foi alcançada antes da emissão do certificado de faixa.
 
 ### P5 - Superlotação, descontrole de vagas por trancamento e transferências informais de modalidade
 
@@ -133,7 +134,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** A ausência de sincronização no sistema impede que a recepção saiba quantas vagas reais estão preenchidas nos horários. Autorizar transferências entre artes marciais sem conferência de dados pode provocar a superlotação do tatame acima de 30 alunos na modalidade de destino, além de manter indevidamente bloqueadas as vagas de quem já se afastou por questões médicas.
 
-**Como o banco de dados resolve:** Integra as tabelas TURMA, MATRICULA e a entidade dependente TRANCAMENTO, mantendo o histórico de transferências, a comprovação formal de afastamento por lesão (Atestado_Por, Motivo) e permitindo o cálculo dinâmico da ocupação das turmas em tempo real.
+**Como o banco de dados resolve:** Integra as tabelas `TURMA`, `MATRICULA` e a entidade dependente `TRANCAMENTO`, mantendo o histórico de transferências, a comprovação formal de afastamento por lesão (`Atestado_Por, Motivo`) e permitindo o cálculo dinâmico da ocupação das turmas em tempo real.
 
 ### P6 - Dificuldade no cálculo do repasse financeiro e controle das aulas lecionadas pelos professores
 
@@ -141,7 +142,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** Não há registro sistêmico sobre quais aulas foram ministradas, quais professores compareceram e como ocorreram as reposições de horários. Ao final do mês, a apuração dos valores a serem repassados aos docentes depende de negociações verbais e memória, gerando risco de erros contábeis e atritos operacionais.
 
-**Como o banco de dados resolve:** Modela o relacionamento entre as tabelas PROFESSOR e AULA (armazenando o atributo Valor_Por_Aula) em conjunto com a entidade DESPESA, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
+**Como o banco de dados resolve:** Modela o relacionamento entre as tabelas `PROFESSOR` e `AULA` (armazenando o atributo [`Valor_Por_Aula`]) em conjunto com a entidade `DESPESA`, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
 
 ### P7 - Desperdício de contatos e falta de acompanhamento de aulas experimentais
 
@@ -149,15 +150,16 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** O histórico desse primeiro contato fica restrito à lembrança pontual dos professores e gestores. Quando o visitante não formaliza a adesão no mesmo dia da aula, a academia perde os dados de contato, impedindo que a recepção faça ações de retorno e converta potenciais alunos em matrículas ativas.
 
-**Como o banco de dados resolve:** Cria a entidade INTERESSADO, capturando o nome, telefone, data do atendimento e o retorno da visita (Resultado_Interesse), fornecendo métricas sobre o índice de conversão de aulas experimentais em novos contratos.
+**Como o banco de dados resolve:** Cria a entidade `INTERESSADO`, capturando o nome, telefone, data do atendimento e o retorno da visita (`Resultado_Interesse`), fornecendo métricas sobre o índice de conversão de aulas experimentais em novos contratos.
 
 ### Conclusão 
 
-A implantação de um banco de dados relacional é indispensável para substituir as fichas de papel e centralizar o controle hoje dividido com planilhas e mensagens informais. O sistema unifica os dados cadastrais, financeiros e pedagógicos em uma base sólida e auditável. Paralelamente, o anseio da academia pela instalação futura de uma catraca com reconhecimento facial na entrada atua apenas como um hardware externo de consumo de dados: essa automação não interfere na modelagem do banco de dados, que opera de forma independente e pronta para fornecer
+A implantação de um banco de dados relacional é indispensável para substituir as fichas de papel e centralizar o controle hoje dividido com planilhas e mensagens informais. O sistema unifica os dados cadastrais, financeiros e pedagógicos em uma base sólida e auditável. Paralelamente, o anseio da academia pela instalação futura de uma catraca com reconhecimento facial na entrada atua apenas como um hardware externo de consumo de dados: essa automação não interfere na modelagem do banco de dados, que opera de forma independente e estruturalmente pronta para fornecer suporte a essa integração no futuro.
 
 ## 1.4 Justificativa da escolha:
 
-A escolha desta academia fundamenta-se em sua expressiva relevância comunitária na promoção da saúde e no ensino de defesa pessoal. A viabilidade e o aprofundamento dessa seleção decorrem do fato de um dos integrantes da equipe, Nickolas, ser aluno da instituição. Tal condição proporcionou acesso privilegiado à administração, permitindo uma análise precisa dos desafios vivenciados no controle discente, na gestão contratual e no acompanhamento da frequência. A pesquisa de campo, realizada por ele em conjunto com o gestor principal, Adalberto, evidenciou a dependência de formulários impressos para cadastro e a verificação de pagamentos via aplicativos de mensagens. Essa prática sujeita a operação a vulnerabilidades significativas, como a perda de dados essenciais e a ineficácia do controle financeiro. Portanto, o desenvolvimento de um banco de dados mostra-se uma medida imprescindível para assegurar o armazenamento centralizado e seguro das informações, além de prover a infraestrutura necessária para a futura automação do controle de acesso por catraca, conforme almejado pela direção.
+A escolha desta academia fundamenta-se em sua expressiva relevância comunitária na promoção da saúde e no ensino de defesa pessoal. A viabilidade e o aprofundamento dessa seleção decorrem do fato de um dos integrantes da equipe, Nickolas, ser aluno da instituição. Tal condição proporcionou acesso privilegiado à administração, permitindo uma análise precisa dos desafios vivenciados no controle discente, na gestão contratual e no acompanhamento da frequência. O desenvolvimento de um banco de dados mostra-se uma medida imprescindível para assegurar o armazenamento centralizado e seguro das informações, sanando as vulnerabilidades atuais.
+
   
 ## 1.5 Evidências da organização
 
@@ -166,9 +168,20 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 - Telefone: (11) 98495-5601 
 - E-mail: basefortelesteacademia@gmail.com
 - Rede social: Instagram @basefortelesteacademia
-- Levantamento de Requisitos feito pelo integrante Nickolas: [Levantamento de Requisitos](levantamento_requisitos.pdf)
 
-  * *Entrevista de Campo:* Realizada presencialmente em 01/09/2026 pelo aluno Nickolas Henrique Bezerra com o CEO Adalberto.
+### Relato da Entrevista
+- **Quem:** Entrevista conduzida presencialmente pelo aluno Nickolas Henrique Bezerra com o CEO e gestor técnico do espaço, Adalberto.
+
+- **Quando e Onde:** Realizada nas instalações da academia Base Forte Leste. Ocorreu em uma primeira fase no dia 01/09/2026 (diagnóstico inicial) e em uma segunda visita presencial no dia 13/10/2026 (refinamento da Regras de Negócio).
+
+- **Comprovação:** Fotografia da visita presencial anexada ao repositório.
+
+- **O que foi levantado (Resumo do Levantamento):** O documento completo com todas as perguntas e respostas encontra-se no repositório em [levantamento/levantamento.md](levantamento/levantamento.md). Abaixo, destacam-se os principais achados, rigorosamente separados entre as declarações do entrevistado e as constatações visuais da equipe no local:
+
+  - **Respostas do Entrevistado (Gestor Adalberto):** Confirmou que a inadimplência mensal é o problema operacional mais recorrente. Relatou que não há controle formal de presenças e que as aprovações nos exames de faixa dependem exclusivamente da sua análise de técnica e tempo de treino estimado. Esclareceu que conta com 5 professores terceirizados e instrutores auxiliares informais.
+  
+  - **Observações no Local (Equipe do Projeto):** Constatou-se fisicamente que o registro de novos alunos e seus dados médicos fica restrito a fichas de papel, guardadas de maneira vulnerável no balcão de atendimento, o que evidencia riscos de perda e falta de conformidade com a LGPD. Verificou-se a inexistência de catracas eletrônicas para controle de acesso. Observou-se, ainda, que o fluxo contínuo de alunos sobrecarrega o atendimento informal presencial, justificando a perda histórica do controle de transferências e trancamentos.
+
 
 
   <a href="./visita.jpeg"><img src="visita.jpeg" alt="Visita á academia" width="250"></a> <a href="./panfleto.jpeg"><img src="panfleto.jpeg" alt="Panfleto comercial da academia" width="320"><a/> <a href="./linkinsta.jpeg"><img src="./linkinsta.jpeg" alt="Link do Instagram da Academia" width="300"></a>
