@@ -214,7 +214,7 @@
 
   <!-- 3. CONVENÇÕES -->
   <h2 class="sec">3. Convenções do dicionário</h2>
-  <p>Nível de abstração: modelo conceitual com camada física de referência. <strong>SGBD:</strong> MySQL 8.0; <strong>mecanismo de armazenamento:</strong> InnoDB (transações e chaves estrangeiras); <strong>charset/collation:</strong> utf8mb4 / utf8mb4_unicode_ci (acentos do português e comparação sem distinção de maiúsculas). Tipos usados: Integer, Varchar(N), Date, Time, Timestamp, Text, Real/Numeric, Boolean — em MySQL, Numeric vira DECIMAL(10,2) e Boolean vira TINYINT(1). Backup diário automatizado, conforme RNF05.</p>
+  <p>Nível de abstração: modelo conceitual com camada física de referência. <strong>SGBD:</strong> MySQL 8.0; <strong>mecanismo de armazenamento:</strong> InnoDB (transações e chaves estrangeiras); <strong>charset/collation:</strong> utf8mb4 / utf8mb4_unicode_ci (acentos do português e comparação sem distinção de maiúsculas). Tipos usados: Integer, Varchar(N), Date, Time, Timestamp, Text, Decimal(p,s), Boolean — valores monetários (VL_) usam DECIMAL(10,2), por guardarem o valor exato, sem o erro de arredondamento do REAL/FLOAT; percentuais (PC_) usam DECIMAL(5,2); em MySQL, Boolean vira TINYINT(1). Backup diário automatizado, conforme RNF05.</p>
 
   <p><strong>Notação formal (símbolos usados neste dicionário):</strong></p>
   <table>
@@ -251,7 +251,7 @@
     </tbody>
   </table>
 
-  <p style="font-size:12.5px;color:var(--muted);">Versão deste dicionário: v2.2 — 29/10/2026. Conferência com o modelo lógico: nomes e tipos atualizados para ter 100% de acurácia com os tipos listados no modelo lógico.</p>
+  <p style="font-size:12.5px;color:var(--muted);">Versão deste dicionário: v2.3 — 30/10/2026. Conferência com o DER: removidos os atributos que não constam no DER (ver histórico de versões).</p>
 
   <!-- 4. DICIONÁRIO POR ENTIDADE -->
   <h2 class="sec">4. Dicionário de dados por entidade</h2>
@@ -337,7 +337,7 @@ ENDERECO = DS_RUA + NR_LOGRADOURO + NM_BAIRRO + NR_CEP</div>
       <tr><td class="attr">NR_LOGRADOURO</td><td>varchar(10)</td><td>Sim</td><td>Número do endereço ("Numero" no DER); não sofre operação matemática.</td></tr>
       <tr><td class="attr">NM_BAIRRO</td><td>varchar(60)</td><td>Sim</td><td>Bairro.</td></tr>
       <tr><td class="attr">NR_CEP</td><td>varchar(8)</td><td>Sim</td><td>Apenas dígitos.</td></tr>
-      <tr><td class="attr">VL_POR_AULA</td><td>real/numeric</td><td>Sim</td><td>Valor pago por aula ministrada; base do repasse (igual para todos os professores).</td></tr>
+      <tr><td class="attr">VL_POR_AULA</td><td>decimal(10,2)</td><td>Sim</td><td>Valor pago por aula ministrada; base do repasse (igual para todos os professores).</td></tr>
       <tr><td class="attr">DS_EMAIL</td><td>varchar(100)</td><td>Sim (1,n)</td><td>Multivalorado.</td></tr>
       <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim (1,n)</td><td>Multivalorado.</td></tr>
       <tr><td class="attr">DS_ESPECIALIZACAO</td><td>varchar(50)</td><td>Sim (1,n)</td><td>Especializações do professor; multivalorado.</td></tr>
@@ -397,7 +397,7 @@ IN_POSSUI_SISTEMA_FAIXAS + DT_INICIO_AULAS</div>
   <p class="indices">PK ID_MATRICULA; índice único composto em (ID_ALUNO, ID_TURMA, DT_MATRICULA), que permite renovar a matrícula na mesma turma (a regra de uma única matrícula ativa por par aluno–turma fica com o sistema); índice em ID_TURMA (checar o limite de 30 ativas, RE01).</p>
 
   <h3 class="entity">TRANCAMENTO</h3>
-  <div class="notation">TRANCAMENTO = @ID_TRANCAMENTO + ID_MATRICULA + [TP_LESAO | TP_RAZAO_MEDICA] + DS_MOTIVO + (NM_ATESTADO_POR) +
+  <div class="notation">TRANCAMENTO = @ID_TRANCAMENTO + ID_MATRICULA + [TP_LESAO | TP_RAZAO_MEDICA] + DS_MOTIVO +
 DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
   <p class="leitura">Só há trancamento por lesão ou razão médica (RE04); a justificativa vem pelo WhatsApp ou presencialmente, sem laudo formal obrigatório. Durante o trancamento a cobrança e a contagem de tempo do plano ficam suspensas, sem multa. Troca de modalidade não é trancamento.</p>
   <table>
@@ -407,7 +407,6 @@ DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
       <tr><td class="attr">ID_MATRICULA</td><td>integer</td><td>Sim (FK)</td><td>Matrícula trancada.</td></tr>
       <tr><td class="attr">TP_LESAO | TP_RAZAO_MEDICA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Tipo do trancamento.</td></tr>
       <tr><td class="attr">DS_MOTIVO</td><td>text</td><td>Sim</td><td>Motivo registrado; dado sensível (saúde).</td></tr>
-      <tr><td class="attr">NM_ATESTADO_POR</td><td>varchar(100)</td><td>Não</td><td>Quem forneceu atestado ou justificativa, quando houver.</td></tr>
       <tr><td class="attr">DT_INICIO</td><td>date</td><td>Sim</td><td>Início do afastamento.</td></tr>
       <tr><td class="attr">DT_RETORNO_PREVISTA</td><td>date</td><td>Sim</td><td>Data de retorno combinada.</td></tr>
       <tr><td class="attr">DT_RETORNO_EFETIVA</td><td>date</td><td>Não</td><td>Preenchida no retorno; a matrícula volta a TP_ATIVA.</td></tr>
@@ -453,8 +452,8 @@ DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
       <tr><td class="attr pk">ID_PLANO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do plano.</td></tr>
       <tr><td class="attr">NM_PLANO</td><td>varchar(50)</td><td>Sim</td><td>Nome do plano (ex.: Mensal, Trimestral, Semestral, Anual, Família).</td></tr>
       <tr><td class="attr">QT_DURACAO_MESES</td><td>integer</td><td>Sim</td><td>Duração do ciclo em meses.</td></tr>
-      <tr><td class="attr">VL_MENSALIDADE</td><td>real/numeric</td><td>Sim</td><td>Valor-base da mensalidade.</td></tr>
-      <tr><td class="attr">PC_DESCONTO</td><td>real/numeric</td><td>Sim</td><td>Percentual de desconto progressivo do ciclo.</td></tr>
+      <tr><td class="attr">VL_MENSALIDADE</td><td>decimal(10,2)</td><td>Sim</td><td>Valor-base da mensalidade.</td></tr>
+      <tr><td class="attr">PC_DESCONTO</td><td>decimal(5,2)</td><td>Sim</td><td>Percentual de desconto progressivo do ciclo.</td></tr>
       <tr><td class="attr">QT_MINIMA_PESSOAS</td><td>integer</td><td>Não</td><td>Mínimo de pessoas; preenchido nos planos Família.</td></tr>
       <tr><td class="attr">DS_CONDICAO</td><td>text</td><td>Não</td><td>Condições específicas do plano.</td></tr>
     </tbody>
@@ -463,7 +462,7 @@ DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
 
   <h3 class="entity">CONTRATO</h3>
   <div class="notation">CONTRATO = @ID_CONTRATO + ID_ALUNO + ID_PLANO + DT_INICIO + DT_FIM + VL_MENSAL_ACORDADO + (VL_ACRESCIMO_MODALIDADE) +
-(TP_DOC_PARENTESCO) + (DT_CONFERENCIA_PARENTESCO) + (DT_CANCELAMENTO) + (VL_MULTA_RESCISORIA) + (NM_RESPONSAVEL_PLANO)</div>
+(DT_CANCELAMENTO) + (VL_MULTA_RESCISORIA)</div>
   <p class="leitura">Formaliza o acordo entre o aluno (titular) e a academia. VL_MENSAL_ACORDADO fica congelado: reajuste no PLANO não altera contratos nem parcelas já geradas. Cada modalidade extra entra no mesmo contrato como acréscimo. VL_MULTA_RESCISORIA só existe no cancelamento antecipado de planos de maior duração (RO04); o plano mensal cancela sem multa. O contrato só termina por cancelamento, e então o aluno passa a Inativo.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
@@ -473,13 +472,10 @@ DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
       <tr><td class="attr">ID_PLANO</td><td>integer</td><td>Sim (FK)</td><td>Plano que serviu de base.</td></tr>
       <tr><td class="attr">DT_INICIO</td><td>date</td><td>Sim</td><td>Início da vigência.</td></tr>
       <tr><td class="attr">DT_FIM</td><td>date</td><td>Sim</td><td>Fim do ciclo; ajustada quando há trancamento.</td></tr>
-      <tr><td class="attr">VL_MENSAL_ACORDADO</td><td>real/numeric</td><td>Sim</td><td>Mensalidade combinada na contratação, já com o desconto.</td></tr>
-      <tr><td class="attr">VL_ACRESCIMO_MODALIDADE</td><td>real/numeric</td><td>Não</td><td>Acréscimo por modalidade além da primeira.</td></tr>
-      <tr><td class="attr">TP_DOC_PARENTESCO</td><td>varchar(20)</td><td>Não</td><td>Tipo do documento que comprova o parentesco (Plano Família); o número do RG não é guardado.</td></tr>
-      <tr><td class="attr">DT_CONFERENCIA_PARENTESCO</td><td>date</td><td>Não</td><td>Data da conferência do documento.</td></tr>
+      <tr><td class="attr">VL_MENSAL_ACORDADO</td><td>decimal(10,2)</td><td>Sim</td><td>Mensalidade combinada na contratação, já com o desconto.</td></tr>
+      <tr><td class="attr">VL_ACRESCIMO_MODALIDADE</td><td>decimal(10,2)</td><td>Não</td><td>Acréscimo por modalidade além da primeira.</td></tr>
       <tr><td class="attr">DT_CANCELAMENTO</td><td>date</td><td>Não</td><td>Data do pedido de cancelamento.</td></tr>
-      <tr><td class="attr">VL_MULTA_RESCISORIA</td><td>real/numeric</td><td>Não</td><td>Multa pelo cancelamento antecipado, calculada pelos meses que faltam (RO04).</td></tr>
-      <tr><td class="attr">NM_RESPONSAVEL_PLANO</td><td>varchar</td><td>Não</td><td>Nome da pessoa responsável pelo plano (ex.: Plano Família).</td></tr>
+      <tr><td class="attr">VL_MULTA_RESCISORIA</td><td>decimal(10,2)</td><td>Não</td><td>Multa pelo cancelamento antecipado, calculada pelos meses que faltam (RO04).</td></tr>
     </tbody>
   </table>
   <p class="indices">PK ID_CONTRATO; índice em ID_ALUNO; índice em ID_PLANO.</p>
@@ -506,12 +502,12 @@ DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
       <tr><td class="attr pk">ID_PAGAMENTO</td><td>integer</td><td>Sim (PK)</td><td>Identificador da parcela.</td></tr>
       <tr><td class="attr">ID_CONTRATO</td><td>integer</td><td>Sim (FK)</td><td>Contrato que gerou a parcela.</td></tr>
       <tr><td class="attr">DT_VENCIMENTO</td><td>date</td><td>Sim</td><td>Vencimento no 5º dia útil (RO02); base para detectar inadimplência (RF04).</td></tr>
-      <tr><td class="attr">VL_DEVIDO</td><td>real/numeric</td><td>Sim</td><td>Valor nominal da parcela.</td></tr>
+      <tr><td class="attr">VL_DEVIDO</td><td>decimal(10,2)</td><td>Sim</td><td>Valor nominal da parcela.</td></tr>
       <tr><td class="attr">DT_PAGAMENTO</td><td>date</td><td>Não</td><td>Data da liquidação (RF04); vazia enquanto pendente ou atrasada.</td></tr>
-      <tr><td class="attr">VL_PAGO</td><td>real/numeric</td><td>Não</td><td>Valor efetivamente recebido.</td></tr>
+      <tr><td class="attr">VL_PAGO</td><td>decimal(10,2)</td><td>Não</td><td>Valor efetivamente recebido.</td></tr>
       <tr><td class="attr">TP_FORMA_PAGAMENTO</td><td>varchar(15)</td><td>Não</td><td>Pix, cartão de crédito ou cartão de débito.</td></tr>
-      <tr><td class="attr">VL_MULTA</td><td>real/numeric</td><td>Não</td><td>Multa por atraso, só nos planos de maior duração.</td></tr>
-      <tr><td class="attr">VL_TAXA_GRADUACAO</td><td>real/numeric</td><td>Não</td><td>Taxa de graduação (exame de faixa), quando houver.</td></tr>
+      <tr><td class="attr">VL_MULTA</td><td>decimal(10,2)</td><td>Não</td><td>Multa por atraso, só nos planos de maior duração.</td></tr>
+      <tr><td class="attr">VL_TAXA_GRADUACAO</td><td>decimal(10,2)</td><td>Não</td><td>Taxa de graduação (exame de faixa), quando houver.</td></tr>
       <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Situação da parcela; resolve a inadimplência hoje não registrada.</td></tr>
     </tbody>
   </table>
@@ -551,8 +547,8 @@ DT_GRADUACAO + [TP_APROVADO | TP_REPROVADO] + (DS_MOTIVO_REPROVACAO)</div>
       <tr><td class="attr">NM_CREDOR</td><td>varchar(100)</td><td>Sim</td><td>Locador, concessionária, fornecedor ou professor.</td></tr>
       <tr><td class="attr">DT_VENCIMENTO</td><td>date</td><td>Sim</td><td>Vencimento.</td></tr>
       <tr><td class="attr">DT_PAGAMENTO</td><td>date</td><td>Não</td><td>Data do pagamento.</td></tr>
-      <tr><td class="attr">VL_DESPESA</td><td>real/numeric</td><td>Sim</td><td>Valor devido.</td></tr>
-      <tr><td class="attr">VL_PAGO</td><td>real/numeric</td><td>Não</td><td>Valor efetivamente pago.</td></tr>
+      <tr><td class="attr">VL_DESPESA</td><td>decimal(10,2)</td><td>Sim</td><td>Valor devido.</td></tr>
+      <tr><td class="attr">VL_PAGO</td><td>decimal(10,2)</td><td>Não</td><td>Valor efetivamente pago.</td></tr>
       <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Situação da despesa.</td></tr>
     </tbody>
   </table>
@@ -613,13 +609,13 @@ DT_GRADUACAO + [TP_APROVADO | TP_REPROVADO] + (DS_MOTIVO_REPROVACAO)</div>
     <tbody>
       <tr><td>Cadastrais</td><td>ALUNO, RESPONSÁVEL, INTERESSADO, PROFESSOR: nome, CPF, nascimento, endereço, contatos</td><td>Execução de contrato (art. 7º, V)</td><td>Durante o vínculo + 5 anos; depois eliminação ou anonimização. INTERESSADO não convertido: eliminar após o encerramento</td></tr>
       <tr><td>Financeiros</td><td>CONTRATO, PAGAMENTO, PLANO, DESPESA</td><td>Obrigação legal/fiscal (art. 7º, II)</td><td>5 anos após o pagamento</td></tr>
-      <tr><td>Saúde (sensíveis)</td><td>DS_PROBLEMA_SAUDE, DS_MOTIVO e NM_ATESTADO_POR (TRANCAMENTO)</td><td>Consentimento específico e destacado (art. 11, I)</td><td>Durante o vínculo; eliminação ao fim ou na revogação do consentimento</td></tr>
+      <tr><td>Saúde (sensíveis)</td><td>DS_PROBLEMA_SAUDE, DS_MOTIVO (TRANCAMENTO)</td><td>Consentimento específico e destacado (art. 11, I)</td><td>Durante o vínculo; eliminação ao fim ou na revogação do consentimento</td></tr>
       <tr><td>Imagem</td><td>IN_ACEITE_USO_IMAGEM, DT_AUTORIZACAO_IMAGEM</td><td>Consentimento (art. 7º, I); opcional e revogável a qualquer momento, sem condicionar a matrícula</td><td>Até a revogação ou o fim do vínculo</td></tr>
       <tr><td>Aulas, frequência e graduação</td><td>AULA, PRESENÇA, GRADUAÇÃO</td><td>Execução de contrato (art. 7º, V)</td><td>Durante o vínculo + 5 anos</td></tr>
       <tr><td>Log de acesso</td><td>LOG_ACESSO</td><td>Legítimo interesse — segurança (art. 7º, IX)</td><td>12 meses</td></tr>
     </tbody>
   </table>
-  <p style="font-size:12.5px;color:var(--muted);">Minimização: o sistema não guarda o número do RG do documento de parentesco (só o tipo e a data da conferência) nem dados bancários de credores. Para alunos menores de 18 anos, o consentimento e a autorização de imagem são dados pelo responsável legal, cujos dados são registrados em RESPONSÁVEL (art. 14; RE03). Os backups diários (RNF05) são rotacionados em até 30 dias, prazo em que a eliminação também se completa neles. Bases legais e prazos são propostas do grupo, a validar com orientação jurídica; o prazo de guarda ainda será definido com o CEO.</p>
+  <p style="font-size:12.5px;color:var(--muted);">Minimização: o sistema não guarda dados bancários de credores. Para alunos menores de 18 anos, o consentimento e a autorização de imagem são dados pelo responsável legal, cujos dados são registrados em RESPONSÁVEL (art. 14; RE03). Os backups diários (RNF05) são rotacionados em até 30 dias, prazo em que a eliminação também se completa neles. Bases legais e prazos são propostas do grupo, a validar com orientação jurídica; o prazo de guarda ainda será definido com o CEO.</p>
 
   <footer class="doc-footer">
     Dicionário de Dados — Sistema de Gestão Base Forte Leste · Modelagem de Banco de Dados · Prof. Cid Rodrigues De Andrade
