@@ -7,7 +7,7 @@
 | Nickolas Henrique Bezerra | 47685778 | Nickolashbezerra |
 | Pedro Henrique Ruola Coiado | 47589124 | PedroCoiado |
 | Raphaela Gonçalves Neves | 47656166 | RaphaelaSeven |
-| Williams Vargas Neves Paoli dos Santos | 47336820 | WilliansVargas-Code |
+| Williams Vargas Neves Paoli dos Santos | 47336820 | WilliamsVargas-Code |
 
 **Professor/Disciplina:** Cid Rodrigues De Andrade — Modelagem de Banco de Dados
 
@@ -17,7 +17,7 @@
 | :-- | :-- |
 | Levantamento de requisitos (texto do grupo) | [levantamento/levantamento.md](levantamento/levantamento.md)|
 | DER conceitual revisado | [diagrama_er.png](diagrama_er.png) |
-| Modelo lógico | [modelo_logico.png](modelo_logico.png) [PENDENTE: criar] |
+| Modelo lógico | [modelo_logico.png](<img/Modelo Logico V6.png>) |
 | Dicionário de dados (HTML) | [index.html](index.html) · [GitHub Pages](https://williamsvargas-code.github.io/Readme_academia/) |
 | Script SQL | [docs/script.sql](docs/script.sql) [PENDENTE: criar] |
 | Massa de dados | [docs/massa_de_dados.sql](docs/massa_de_dados.sql) [PENDENTE: criar] |
@@ -25,7 +25,6 @@
 
 ---
 
-# Título 
  ## Modelagem e Implementação de Banco de Dados Relacional para o Sistema de Gestão da Academia Base Forte Leste
 
 ## Introdução
