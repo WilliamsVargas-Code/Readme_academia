@@ -262,8 +262,8 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 1. O aluno escolhe a duração: Mensal, Trimestral, Semestral ou Anual. Cada duração tem uma faixa de desconto progressivo (percentuais confidenciais).
 2. O aluno escolhe a abrangência. O plano regular cobre uma única modalidade. Para mais de uma modalidade ou livre acesso a todas, aplica-se um acréscimo proporcional, mantida a tabela de desconto do ciclo. Cada aluno tem um único contrato (no Plano Família, o contrato é do titular e cobre os dependentes), que lista as modalidades cobertas; cada modalidade extra entra nesse mesmo contrato como um acréscimo.
-3. **Plano Família:** exige no mínimo duas pessoas com parentesco comprovado e existe em todas as durações, cada uma com seu desconto. O plano tem um responsável (titular) e pode ter até 4 dependentes. O titular tem um contrato único, que cobre os dependentes. A prova de parentesco exige, no mínimo, o RG: o sistema registra o tipo de documento apresentado e a data da conferência, sem guardar o número do RG.
-4. O sistema calcula a mensalidade (valor base + acréscimos por modalidade extra - desconto).
+3. **Plano Família:** exige no mínimo duas pessoas com parentesco comprovado e existe em todas as durações, cada uma com seu desconto. O plano tem um responsável (titular) e pode ter até 4 dependentes. O titular tem um contrato único, que cobre os dependentes. o sistema não armazena a prova de parentesco.
+4. O sistdade ema calcula a mensalidade (valor base + acréscimos por modaliextra - desconto).
 5. O contrato é registrado e o sistema gera as mensalidades (processo 4). Pagamento: os planos Trimestral, Semestral e Anual definem apenas o ciclo e o desconto. O pagamento é sempre em parcelas mensais, vencendo no 5º dia útil. Não existe quitação antecipada. Um plano anual gera 12 mensalidades.
 **Renovação:** o contrato não termina sozinho. No fim do ciclo, o aluno é contatado e avisado de possíveis alterações no desconto do seu plano. Se aceita, o contrato continua; se recusa, o contrato é cancelado e o aluno passa a Inativo.
  
