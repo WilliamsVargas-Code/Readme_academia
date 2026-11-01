@@ -609,7 +609,9 @@ Abaixo está o dicionário de dados completo em uma imagem **clicável**, com to
 
 ---
 
-## 6\. Diagrama Entidade-Relacionamento (DER)
+## 6\. Diagrama Entidade-Relacionamento (DER) e Evolução do Modelo
+
+### 6.2  Diagrama Entidade-Relacionamento (DER)
 
 O Diagrama Entidade-Relacionamento (DER) conceitual consolida a totalidade dos processos operacionais, pedagógicos e administrativos da Academia Base Forte Leste, estruturado a partir das entrevistas de campo e das correções apontadas na Entrega 01. O modelo adota a notação clássica de Peter Chen com especificação de cardinalidades mínimas e máximas (mín, máx) em ambas as extremidades das relações. Em estrita conformidade com as diretrizes teóricas de modelagem conceitual, o diagrama não contém chaves estrangeiras (FKs), as quais são derivadas formalmente apenas na etapa lógica. O esquema integra 14 entidades interdependentes, garantindo a rastreabilidade de aulas, frequência diária, contratos, controle de capacidade por turma (teto de 30 alunos), afastamentos médicos e salvaguardas da LGPD para menores de idade.
 
@@ -617,9 +619,25 @@ O Diagrama Entidade-Relacionamento (DER) conceitual consolida a totalidade dos p
 
 **Legenda:** O Diagrama Entidade-Relacionamento (DER) conceitual deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web (https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).
 
+
+### 6.2 Detalhamento das Mudanças (1º DER para o 2º DER)
+Em resposta à avaliação da Entrega 01 e à segunda entrevista de campo (13/10/2026), o modelo evoluiu de **9 para 14 entidades**, corrigindo todas as pendências estruturais:
+
+| Item Modificado | 1º DER (Entrega 01) | 2º DER Atualizado (Entrega 02) | Motivo da Mudança |
+| :--- | :--- | :--- | :--- |
+| **Turma e Modalidade** | Sem ligação direta entre `Turma` e `Modalidade`. | Criado relacionamento **`Oferece`** `(1,1) --- (1,n)`. | Corrige apontamento da E1: identifica qual luta é dada em cada turma. |
+| **Pagamento** | Tinha apenas vencimento e status. | Adicionados `Data_Pagamento`, `Valor_Devido`, `Valor_Pago`, `Forma_Pagamento` e `Valor_Multa_Juros`. | Corrige apontamento da E1: permite controlar a inadimplência após o 5º dia útil. |
+| **Contrato** | Inexistente (ligava direto ao Plano). | Nova entidade **`Contrato`** ligada a `Aluno`, `Plano` e `Modalidade`. | Congela o valor acordado (3FN), controla vigência, multimodalidade e multas. |
+| **Presença e Aulas** | `Presença` ligada apenas a `Matrícula`. | Nova entidade **`Aula`** ligada a `Turma`, `Professor` e `Matrícula`. | Permite apurar aulas dadas por professor terceirizado e controlar reposições. |
+| **Lotação de Turma** | Possuía o campo `Vagas_Ocupadas`. | Substituído por **`Capacidade_Maxima`** (teto de 30). | Adequação à 3FN: vagas ocupadas são calculadas via `COUNT(*)`. |
+| **Trancamento** | Era um atributo dentro de `Matrícula`. | Nova entidade **`Trancamento`** ligada a `Matrícula`. | Registra histórico de afastamentos por lesão com datas de início e retorno. |
+| **Graduação** | Ligada apenas a `Aluno` e `Modalidade`. | Ligada a `Professor` (`Avalia`), com `Resultado` e `Motivo_Reprovacao`. | Audita qual professor aplicou o exame e registra reprovações. |
+| **LGPD e Menores** | Sem responsável legal ou termos. | Nova entidade **`Responsavel`** e campos de imagem/atestado em `Aluno`. | Atende ao Art. 14 da LGPD para menores de 18 anos. |
+| **Captação e Despesas** | Processos ausentes no 1º DER. | Novas entidades **`Interessado`** (aula experimental) e **`Despesa`** (contas/repasse). | Eleva a cobertura dos processos de negócio de 55% para 100%. |
+
 ---
 
-## 6\. Conversão do Modelo Conceitual para o Modelo Lógico
+## 7\. Conversão do Modelo Conceitual para o Modelo Lógico
 
 A conversão do modelo conceitual para o modelo lógico relacional seguiu as regras formais de mapeamento relacional e normalização até a Terceira Forma Normal (1FN a 3FN), preparando a base de dados para implementação no SGBD MySQL 8.0 (Storage Engine InnoDB):
 
