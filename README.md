@@ -615,9 +615,25 @@ O Diagrama Entidade-Relacionamento (DER) conceitual consolida a totalidade dos p
 
 <img width="2082" height="1485" alt="diagrama_er" src="./img/Diagrama Entidade Relacionamento.png" />
 
-**Legenda:** O Diagrama Entidade-Relacionamento (DER) conceitual deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web ([https://app.brmodeloweb.com](https://app.brmodeloweb.com/publicview/6add53f7af2ec3e0c35bc0ef](https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).
+**Legenda:** O Diagrama Entidade-Relacionamento (DER) conceitual deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web (https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).
 
+---
 
+## 6\. Conversão do Modelo Conceitual para o Modelo Lógico
+
+A conversão do modelo conceitual para o modelo lógico relacional seguiu as regras formais de mapeamento relacional e normalização até a Terceira Forma Normal (1FN a 3FN), preparando a base de dados para implementação no SGBD MySQL 8.0 (Storage Engine InnoDB):
+
+* **Mapeamento de Entidades e Chaves Estrangeiras:** Cada entidade forte foi convertida em uma tabela relacional com sua respectiva Chave Primária (PK). Os relacionamentos do tipo 1:N propagaram a PK do lado forte como Chave Estrangeira (FK) na tabela dependente (ex.: propagação de id_modalidade e id_professor para TURMA).
+  
+* **Tratamento da Primeira Forma Normal (1FN):** Os atributos multivalorados identificados no DER conceitual foram desmembrados em tabelas associadas com integridade referencial ativa, eliminando repetições e garantindo atomicidade. Isso originou as tabelas EMAIL_ALUNO, TELEFONE_ALUNO, PROBLEMA_SAUDE_ALUNO, EMAIL_PROFESSOR, TELEFONE_PROFESSOR, ESPECIALIZACAO, NIVEL_DE_EXPERIENCIA e REGISTRO_QUALIFICACOES.
+  
+* **Entidades Associativas e Multimodalidade:** Relacionamentos N:M foram convertidos em tabelas associativas com chaves compostas, como PRESENCA (vinculando AULA e MATRICULA) e PARTICIPA (vinculando CONTRATO às MODALIDADES contratadas no pacote).
+  
+* **Governança e Auditoria:** Foi incorporada a tabela LOG_ACESSO para registro temporal e rastreabilidade de operações críticas realizadas por perfil de usuário, atendendo aos requisitos de conformidade e auditoria do sistema.
+
+<img width="2082" height="1485" alt="diagrama_er" src="./img/Modelo Logico V6.png" />
+
+**Legenda:** O Modelo Lógico deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web ([https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).](https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).)
 
 ---
 
