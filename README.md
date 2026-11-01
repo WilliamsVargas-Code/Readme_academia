@@ -655,7 +655,51 @@ A conversão do modelo conceitual para o modelo lógico relacional seguiu as reg
 
 ---
 
-## 8\. Justificativa Técnica
+## 8\. Proposta de Arquitetura Analítica para BI e IA
+
+
+
+
+
+
+
+
+---
+
+## 9\. Modelo Lógico Relacional
+
+
+
+
+
+
+
+
+
+---
+
+## 10\. Script em SQL
+
+
+
+
+
+
+
+
+
+
+---
+
+## 11\. Massa de Dados
+
+
+
+
+
+---
+
+## 12\. Justificativa Técnica
 ---
 Premissa do Modelo:
 Ao iniciarmos a estruturação deste projeto, a nossa principal premissa foi focar na resolução imediata das "Dores" mais urgentes da academia, evitando criar um sistema super complexo logo nesta primeira etapa. Como o nosso grupo ainda está a dar os primeiros passos na disciplina, decidimos que o modelo precisava ser direto, enxuto e, acima de tudo, funcional para o dia a dia do gestor Adalberto. O nosso ponto de partida foi construir uma base sólida que substituía o atual caos das pastas e fichas de papel por uma estrutura digital confiável, atacando de frente os dois maiores gargalos operacionais identificados no levantamento: o descontrole financeiro das mensalidades e a total falta de acompanhamento da assiduidade dos alunos.   
@@ -666,7 +710,7 @@ Com base nessa premissa, tomamos decisões arquiteturais focadas na realidade do
 
 Se guardássemos apenas a última data de comparecimento, o sistema sobrescreveria o passado e a academia continuaria "cega", sem o histórico necessário para basear e justificar os exames de graduação. Separar essas entidades foi a maneira mais lógica que encontramos para garantir que o banco de dados rastreie a jornada técnica do aluno aula a aula. Dessa forma, conseguimos resolver a desorganização atual de forma definitiva, entregando o valor que a academia precisa sem inflar a complexidade do nosso modelo nesta primeira entrega.
 
-## 9. Uso de Inteligência Artificial
+## 13. Uso de Inteligência Artificial
 
 *(Documentação obrigatória sobre o uso da IA para organizar o trabalho)*.
 
