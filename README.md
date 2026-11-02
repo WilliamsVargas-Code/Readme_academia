@@ -120,7 +120,7 @@ Empresa privada com fins lucrativos, atuante na prestação de serviços esporti
 
 * **Contratos:** Estimativa de 70 a 85 contratos ativos. O número de contratos é inferior ao total de alunos matriculados devido à adesão ao Plano Família, modalidade na qual um único contrato e responsável financeiro englobam dois ou mais dependentes/parentes com desconto progressivo.
 
-* **Movimentação Financeira Mensal:** Emissão recorrente de 70 a 85 faturas de mensalidade por mês (uma para cada contrato vigente, com vencimento no 5º dia útil), gerando no banco um histórico de liquidações pontuais, pagamentos com acréscimo de juros e registros de inadimplência para testes das consultas gerenciais.  
+* **Movimentação Financeira Mensal:** Emissão recorrente de 70 a 85 faturas de mensalidade por mês (uma para cada contrato vigente, com vencimento no 5º dia útil), gerando no banco um histórico de liquidações pontuais, pagamentos com acréscimo de uma multa (planos Trimestral, Semestral e Anual)  
 
 * **Aulas Experimentais:** Média observada de 2 a 4 atendimentos semanais de novos interessados para testes gratuitos (cerca de 8 a 16 por mês), que hoje dependem unicamente da memória dos instrutores.   
 
