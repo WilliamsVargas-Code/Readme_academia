@@ -200,7 +200,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 1. Captação e Aula Experimental
+### PN01. Captação e Aula Experimental
  
 **Hoje (AS-IS):** a academia não tem recepcionista. Quem recebe o interessado, combina o horário e acompanha a aula experimental é o CEO, que também faz a recepção durante as aulas das demais modalidades. O interessado agenda a aula presencialmente ou pelo WhatsApp. A academia prefere horários de menor movimento (sextas-feiras e turmas matutinas), mas não é regra rígida. Nada é registrado: se a pessoa já fez a aula experimental depende da memória dos professores e da gestão (P8).
  
@@ -221,7 +221,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 2. Cadastro e Matrícula
+### PN02. Cadastro e Matrícula
  
 **Hoje (AS-IS):** como a academia não tem recepcionista, o CEO faz o cadastro e a matrícula dos alunos novos presencialmente. O aluno preenche uma ficha de papel guardada em pasta física no balcão, com risco de extravio e deterioração (P5). A data da matrícula é anotada na ficha. Não existe número de matrícula: o aluno é identificado por nome ou CPF. A troca de turma não é registrada.
  
@@ -254,7 +254,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 3. Contratação de Planos
+### PNO3. Contratação de Planos
  
 **Hoje (AS-IS):** a academia trabalha com planos de diferentes durações, sem registro formal do que cada aluno contratou além da data de pagamento anotada no WhatsApp (P9).
  
@@ -275,7 +275,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 4. Cobrança e Recebimento de Mensalidades
+### PN04. Cobrança e Recebimento de Mensalidades
  
 **Hoje (AS-IS):** o controle é feito pelo WhatsApp e registra apenas a data em que o aluno pagou. Atrasos não são registrados. A inadimplência é o problema mais frequente da academia (P1).
  
@@ -296,7 +296,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 5. Trancamento, Troca de Modalidade e Cancelamento
+### PN05. Trancamento, Troca de Modalidade e Cancelamento
  
 **Hoje (AS-IS):** trancamentos e cancelamentos são tratados só pelo WhatsApp, sem registro (P6).
  
@@ -327,7 +327,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 6. Montagem de Turmas e Horários
+### PN06. Montagem de Turmas e Horários
  
 **Hoje (AS-IS):** as turmas são organizadas por cronograma de aulas, com horários definidos de acordo com a modalidade. Não há controle formal das vagas.
  
@@ -344,7 +344,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 7. Controle de Frequência
+### PN07. Controle de Frequência
  
 **Hoje (AS-IS):** a presença não é registrada de forma alguma. A liberação para exame depende da percepção visual do professor (P2).
  
@@ -369,7 +369,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 8. Graduação e Exames de Faixa
+### PN08. Graduação e Exames de Faixa
  
 **Hoje (AS-IS):** a evolução considera tempo de treino, técnica e resistência, mas depende da percepção visual do professor. A data da mudança de faixa fica só no certificado (P3).
  
@@ -388,7 +388,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 9. Equipamentos da Academia
+### PN09. Equipamentos da Academia
  
 **Hoje (AS-IS):** a academia tem luvas, capacetes, caneleiras e materiais de treino funcional, usados por todos os alunos durante as aulas. Não há registro nem cobrança.
  
@@ -396,7 +396,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 10. Compras
+### PN10. Compras
  
 **Hoje (AS-IS):** o CEO faz as compras de memória, sem inventário nem registro (P4).
  
@@ -413,7 +413,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 11. Gestão e Pagamento dos Professores
+### PN11. Gestão e Pagamento dos Professores
  
 **Hoje (AS-IS):** o CEO é professor de Muay Thai. Os demais 5 professores são prestadores de serviço, não assalariados, um por modalidade (6 professores no total). Reposições e acordos são verbais, sem registro. As aulas ministradas não são registradas, então o pagamento por aula não tem base confiável (P7). A qualificação (tempo de treino, faixa, mestres anteriores) é só conversada.
  
@@ -431,7 +431,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### 12. Contas a Pagar
+### PN12. Contas a Pagar
  
 **Hoje (AS-IS):** não há controle sistematizado. O CEO guarda de memória os valores e as datas de vencimento (P4).
  
