@@ -226,7 +226,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN01. Captação e Aula Experimental
  
-**Hoje (AS-IS):** a academia não tem recepcionista. Quem recebe o interessado, combina o horário e acompanha a aula experimental é o CEO, que também faz a recepção durante as aulas das demais modalidades. O interessado agenda a aula presencialmente ou pelo WhatsApp. A academia prefere horários de menor movimento (sextas-feiras e turmas matutinas), mas não é regra rígida. Nada é registrado: se a pessoa já fez a aula experimental depende da memória dos professores e da gestão (P8).
+**Hoje (AS-IS):** a academia não tem recepcionista. Quem recebe o interessado, combina o horário e acompanha a aula experimental é o CEO, que também faz a recepção durante as aulas das demais modalidades. O interessado agenda a aula presencialmente ou pelo WhatsApp. A academia prefere horários de menor movimento (sextas-feiras e turmas matutinas), mas não é regra rígida. Nada é registrado: se a pessoa já fez a aula experimental depende da memória dos professores e da gestão (P7).
  
 **No sistema (TO-BE):**
  
@@ -247,7 +247,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN02. Cadastro e Matrícula
  
-**Hoje (AS-IS):** como a academia não tem recepcionista, o CEO faz o cadastro e a matrícula dos alunos novos presencialmente. O aluno preenche uma ficha de papel guardada em pasta física no balcão, com risco de extravio e deterioração (P5). A data da matrícula é anotada na ficha. Não existe número de matrícula: o aluno é identificado por nome ou CPF. A troca de turma não é registrada.
+**Hoje (AS-IS):** como a academia não tem recepcionista, o CEO faz o cadastro e a matrícula dos alunos novos presencialmente. O aluno preenche uma ficha de papel guardada em pasta física no balcão, com risco de extravio e deterioração (P1). A data da matrícula é anotada na ficha. Não existe número de matrícula: o aluno é identificado por nome ou CPF. A troca de turma não é registrada.
  
 **No sistema (TO-BE):**
  
@@ -269,7 +269,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 - **Acesso por perfil:** o CEO acessa todos os dados. O professor acessa apenas os dados necessários para a aula (nome, turma, presença e restrições de saúde informadas). Os dados financeiros do aluno ficam restritos ao CEO.
 - **Guarda e eliminação:** os dados são mantidos enquanto o aluno tiver contrato e, depois, pelo prazo necessário para o histórico de matrículas, pagamentos e graduações [prazo a definir com o CEO]. Após esse prazo, ou a pedido do titular quando não houver obrigação de guarda, os dados são eliminados ou anonimizados.
 - **Direitos do titular:** o aluno (ou o responsável legal) pode pedir ao CEO a confirmação do tratamento, o acesso, a correção e a eliminação dos seus dados, e revogar a autorização de imagem.
-- **Fim do papel:** as fichas físicas deixam de existir, o que elimina a exposição dos dados no balcão (P5).
+- **Fim do papel:** as fichas físicas deixam de existir, o que elimina a exposição dos dados no balcão.
 **Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco) e data de entrega do atestado, quando menor; autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
  
 **Regras:** situação do aluno restrita a Ativo (contrato vigente), Inativo (contrato terminado) ou Trancado (trancamento em curso); um aluno pode ter várias matrículas (várias modalidades) e um único contrato; menor de 18 anos exige responsável legal e atestado de aptidão física; CPF único; problemas de saúde e CPF são dados sensíveis, tratados conforme a regra de LGPD acima; a autorização de uso de imagem é opcional e fica registrada com a data; matrícula encerrada nunca é apagada.
@@ -280,7 +280,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PNO3. Contratação de Planos
  
-**Hoje (AS-IS):** a academia trabalha com planos de diferentes durações, sem registro formal do que cada aluno contratou além da data de pagamento anotada no WhatsApp (P9).
+**Hoje (AS-IS):** a academia trabalha com planos de diferentes durações, sem registro formal do que cada aluno contratou além da data de pagamento anotada no WhatsApp (P3).
  
 **No sistema (TO-BE):**
  
@@ -301,7 +301,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN04. Cobrança e Recebimento de Mensalidades
  
-**Hoje (AS-IS):** o controle é feito pelo WhatsApp e registra apenas a data em que o aluno pagou. Atrasos não são registrados. A inadimplência é o problema mais frequente da academia (P1).
+**Hoje (AS-IS):** o controle é feito pelo WhatsApp e registra apenas a data em que o aluno pagou. Atrasos não são registrados. A inadimplência é o problema mais frequente da academia (P2).
  
 **No sistema (TO-BE):**
  
@@ -322,7 +322,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN05. Trancamento, Troca de Modalidade e Cancelamento
  
-**Hoje (AS-IS):** trancamentos e cancelamentos são tratados só pelo WhatsApp, sem registro (P6).
+**Hoje (AS-IS):** trancamentos e cancelamentos são tratados só pelo WhatsApp, sem registro (P5 P3).
  
 **No sistema (TO-BE):**
  
@@ -370,7 +370,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN07. Controle de Frequência
  
-**Hoje (AS-IS):** a presença não é registrada de forma alguma. A liberação para exame depende da percepção visual do professor (P2).
+**Hoje (AS-IS):** a presença não é registrada de forma alguma. A liberação para exame depende da percepção visual do professor (P4 P6).
  
 **No sistema (TO-BE):**
  
@@ -395,7 +395,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN08. Graduação e Exames de Faixa
  
-**Hoje (AS-IS):** a evolução considera tempo de treino, técnica e resistência, mas depende da percepção visual do professor. A data da mudança de faixa fica só no certificado (P3).
+**Hoje (AS-IS):** a evolução considera tempo de treino, técnica e resistência, mas depende da percepção visual do professor. A data da mudança de faixa fica só no certificado (P3 P4).
  
 **No sistema (TO-BE):**
  
@@ -422,7 +422,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN10. Compras
  
-**Hoje (AS-IS):** o CEO faz as compras de memória, sem inventário nem registro (P4).
+**Hoje (AS-IS):** o CEO faz as compras de memória, sem inventário nem registro 
  
 **No sistema (TO-BE):**
  
@@ -439,7 +439,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN11. Gestão e Pagamento dos Professores
  
-**Hoje (AS-IS):** o CEO é professor de Muay Thai. Os demais 5 professores são prestadores de serviço, não assalariados, um por modalidade (6 professores no total). Reposições e acordos são verbais, sem registro. As aulas ministradas não são registradas, então o pagamento por aula não tem base confiável (P7). A qualificação (tempo de treino, faixa, mestres anteriores) é só conversada.
+**Hoje (AS-IS):** o CEO é professor de Muay Thai. Os demais 5 professores são prestadores de serviço, não assalariados, um por modalidade (6 professores no total). Reposições e acordos são verbais, sem registro. As aulas ministradas não são registradas, então o pagamento por aula não tem base confiável (P6). A qualificação (tempo de treino, faixa, mestres anteriores) é só conversada.
  
 **No sistema (TO-BE):**
  
@@ -457,7 +457,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ### PN12. Contas a Pagar
  
-**Hoje (AS-IS):** não há controle sistematizado. O CEO guarda de memória os valores e as datas de vencimento (P4).
+**Hoje (AS-IS):** não há controle sistematizado. O CEO guarda de memória os valores e as datas de vencimento 
  
 **No sistema (TO-BE):**
  
