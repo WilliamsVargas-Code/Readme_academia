@@ -52,6 +52,50 @@ Delimitação de Escopo: O projeto limita-se estritamente à arquitetura do banc
 
 ## 1.1 Revisão do Modelo Conceitual
 
+# — Revisão dos Processos de Negócio: apontamentos da Entrega 1
+ 
+### Apontamentos da correção sobre Processos de Negócio (Critério 5)
+ 
+| Apontamento da correção da E1 | O que mudou no trabalho | Por quê |
+| :---- | :---- | :---- |
+| Três processos descritos só no estado atual (ficha de papel, WhatsApp), sem fluxo | Cada processo passou a ter a mesma estrutura: **Hoje (AS-IS)**, **No sistema (TO-BE)** em passos numerados com o responsável, **Dados registrados**, **Regras** e **Integração** | O AS-IS mostra o problema; o TO-BE mostra o fluxo que o banco precisa suportar. Os "Dados registrados" de cada processo são a origem dos atributos do DER e do dicionário |
+| Processos sem integração entre si | Cada processo tem o item **Integração** e foi criada a tabela **Integração entre os processos** (origem, destino, o que passa, efeito) | A integração mostra quais entidades se ligam: por exemplo, Contratação → Cobrança vira o relacionamento CONTRATO–PAGAMENTO, e Frequência → Pagamento dos Professores vira PROFESSOR–AULA |
+| Captação / aula experimental — **ausente** | Criado o **PN01 – Captação e Aula Experimental**, com pré-cadastro, verificação de aula já realizada e resultado (convertido ou encerrado) | Confirmado na 2ª visita (13/10/2026, Q1.1–1.2): a aula é gratuita, só pode ser feita uma vez e hoje depende da memória dos professores. Sem registro, a regra "uma por interessado" não pode ser verificada |
+| Contratação de plano — **parcial** | Criado o **PN03 – Contratação de Planos**: duração (Mensal, Trimestral, **Semestral**, Anual), abrangência (modalidade extra com acréscimo), Plano Família (titular e até 4 dependentes, contrato único), cálculo da mensalidade e renovação no fim do ciclo | Na E1 o plano contratado só aparecia através do pagamento. O processo justifica a entidade CONTRATO sugerida na correção do DER. O plano Semestral e as regras do Família vieram da 2ª visita (Q2.1–2.2) |
+| Cobrança e recebimento — coberto, mas o DER não tinha data de pagamento nem valor | **PN04** detalha o que cada mensalidade registra: competência, vencimento, data de pagamento, forma de pagamento, valor, multa por atraso, taxa de exame, situação e recibo; e o bloqueio a partir do 6º dia útil | A inadimplência (problema mais citado pelo CEO) só pode ser medida comparando vencimento com data de pagamento. Sem esses dados o RF de cobrança não é atendível |
+| Trancamento e cancelamento — **parcial (só nas regras)** | Criado o **PN05**, dividido em 5.1 Trancamento por lesão, 5.2 Troca de modalidade e 5.3 Cancelamento | Cada caso tem efeito diferente nos dados: o trancamento suspende cobrança e ajusta o fim do ciclo; a troca encerra uma matrícula e cria outra sem mexer na cobrança; o cancelamento encerra o contrato e pode gerar multa rescisória |
+| Montagem de turmas e horários — **parcial (só no RF03)** | Criado o **PN06**: turma com modalidade, professor, dia e horário; validação professor × modalidade; limite de 30; quórum de referência por modalidade (só alerta) | Corrige também o DER, em que TURMA não se ligava a MODALIDADE. O quórum veio da 2ª visita (Q3.3) |
+| Compra de equipamentos e materiais — **ausente** | Criado o **PN10 – Compras**, em quatro grupos (treino, higiene e limpeza, proteção, água), com nota/comprovante e fornecedor anotado a cada compra | 2ª visita (Q4.1–4.2): o CEO compra de memória, sem registro. Não há fornecedor fixo, por isso o fornecedor é um atributo da compra e não uma entidade |
+| Contas a pagar — **ausente** | Criado o **PN12 – Contas a Pagar**: uma despesa por vencimento, com categoria, credor, valor, vencimento, pagamento e situação | 2ª visita (Q5.1): despesas e vencimentos são controlados de memória. Compras e pagamento de professores alimentam esta tabela |
+| Gestão e pagamento dos professores — **parcial** | Criado o **PN11**: cadastro com qualificações e apuração do valor por **aulas ministradas**, pago no 5º dia útil por Pix | 2ª visita (Q5.3): professores são prestadores pagos por aula. O valor só é confiável se a aula ministrada for registrada (PN07) |
+| Controle de frequência — coberto | **PN07** separa a **aula ministrada** (turma, data, professor) da **presença** (aula, matrícula, presente/ausente) e passa a registrar a **reposição** | A aula serve ao pagamento do professor; a presença serve à graduação. A reposição era só verbal (Q5.3) |
+| Graduação / exames de faixa — coberto | **PN08** inclui tempo mínimo por faixa, taxa de exame por faixa, reprovação com motivo e o Boxe sem faixa (análise técnica) | O Boxe sem faixa justifica a cardinalidade (0,n) de MODALIDADE–FAIXA apontada na correção do DER |
+| Cadastro e matrícula — coberto | **PN02** passou a incluir vários telefones, endereço composto, menor de idade (responsável legal e atestado), autorização de uso de imagem, troca de turma registrada e regras de LGPD | Cobre regras dadas como ausentes no Critério 8 (menores, atestado) e o item de LGPD do Critério 9 (base legal, acesso por perfil, guarda) |
+| Nenhum processo tem fluxo descrito / processos prováveis não cobertos | Criada a tabela **Processos não incluídos e justificativa** (venda de produtos, folha de pagamento, estoque, empréstimo de equipamentos, instrutor auxiliar, marketing) | O esqueleto da E2 exige justificar processos típicos de academia que ficaram de fora |
+| Porte sem número de alunos ou funcionários (Critério 4) | Papéis e porte informados no início da seção: 80 a 100 alunos, 1 contratado (CEO), 5 professores prestadores, 6 modalidades, 4 turmas por dia, até 30 alunos por turma | O porte justifica o volume da massa de dados (seção 4) |
+
+### Mudanças que vieram da entrevista, e não da correção
+ 
+| O que estava na E1 / no levantamento | O que mudou | Por quê |
+| :---- | :---- | :---- |
+| Trancamento "mediante atestado médico" (RE02 da E1) | Trancamento por lesão sem laudo formal | Resposta do CEO na 2ª visita (Q2.4) |
+| CEO tratou a troca de modalidade como um tipo de trancamento (Q2.4) | A troca virou processo próprio (5.2), separado do trancamento | Não suspende cobrança nem contagem do contrato; tratar como trancamento geraria dados errados |
+| Instrutor auxiliar como papel na turma (RO04 da E1, Q3.3–3.4 da 1ª visita) | Não é registrado no sistema | Não é funcionário, não é escolhido por regra e não gera pagamento |
+| Questionário de 13/10 (Q5.2 e Q6.1): 4 professores e 1 colaborador na recepção | 5 professores prestadores (inclusive Capoeira) e nenhum recepcionista; o CEO faz a recepção | Corrigido com o CEO depois da visita — ver "Esclarecimentos posteriores" no levantamento |
+| Planos Mensal, Trimestral, Anual e Família | Inclui Semestral; Família existe em todas as durações | 2ª visita (Q2.1) |
+ 
+ ### Processos não incluídos e justificativa
+ 
+| Processo comum em academias | Situação | Justificativa |
+|---|---|---|
+| Venda de produtos e suplementos | Não incluído | Não faz parte da demanda da academia; descartado no levantamento. |
+| Folha de pagamento com encargos trabalhistas | Não incluído | O único contratado é o CEO e os demais professores são prestadores pagos por aula (processo 11). O CEO retira seu ganho das mensalidades e das taxas de exame, sem salário, então não há folha de pagamento. |
+| Controle de estoque e durabilidade de equipamentos | Não incluído | A academia compra sob demanda e não tem esse controle; o registro de compras cobre o necessário. |
+| Empréstimo de equipamentos | Não incluído | Os equipamentos são de uso livre nas aulas, sem registro nem cobrança. |
+| Registro do instrutor auxiliar | Não incluído | O professor escolhe o aluno informalmente, sem regra fixa; não há necessidade de dado. |
+| Marketing e divulgação | Não incluído | A divulgação é feita no Instagram, com vídeos produzidos sem custo e sem fluxo formal. Não há despesa, contrato ou pagamento a registrar. A aula experimental entra como processo (pré-cadastro) e preserva o primeiro contato do interessado. |
+ 
+
 # Caracterização da Organização
 
 ## Nome e natureza da organização
@@ -189,16 +233,6 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 ---
 
 ## Processos de Negócio
- 
-Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/10/2026 com o CEO Adalberto e dos esclarecimentos do grupo. Cada processo segue a mesma estrutura: Hoje (AS-IS), No sistema (TO-BE) em passos numerados com o responsável por cada um, Dados registrados, Regras e Integração com os outros processos.
- 
-**Valores confidenciais:** mensalidades, percentuais de desconto, acréscimo por modalidade extra, multas, fórmula da multa rescisória e taxas de exame existem na academia, mas são dados confidenciais do negócio e não são divulgados neste documento. O sistema tem os campos para guardá-los, e a massa de dados usa valores fictícios.
- 
-**Papéis:** CEO (Adalberto, gestor, professor de Muay Thai e único contratado; a academia não tem recepcionista, então ele também faz a recepção); professores (5 prestadores de serviço, um responsável por modalidade); aluno; interessado (quem ainda não é aluno); responsável legal (de aluno menor de idade).
- 
-**Porte:** cerca de 80 a 100 alunos, 6 modalidades (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira, No-Gi), 4 turmas por dia em horários diferentes, turmas de até 30 alunos.
- 
----
  
 ### PN01. Captação e Aula Experimental
  
@@ -466,16 +500,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
  
 ---
  
-### Processos não incluídos e justificativa
- 
-| Processo comum em academias | Situação | Justificativa |
-|---|---|---|
-| Venda de produtos e suplementos | Não incluído | Não faz parte da demanda da academia; descartado no levantamento. |
-| Folha de pagamento com encargos trabalhistas | Não incluído | O único contratado é o CEO e os demais professores são prestadores pagos por aula (processo 11). O CEO retira seu ganho das mensalidades e das taxas de exame, sem salário, então não há folha de pagamento. |
-| Controle de estoque e durabilidade de equipamentos | Não incluído | A academia compra sob demanda e não tem esse controle; o registro de compras cobre o necessário. |
-| Empréstimo de equipamentos | Não incluído | Os equipamentos são de uso livre nas aulas, sem registro nem cobrança. |
-| Registro do instrutor auxiliar | Não incluído | O professor escolhe o aluno informalmente, sem regra fixa; não há necessidade de dado. |
-| Marketing e divulgação | Não incluído | A divulgação é feita no Instagram, com vídeos produzidos sem custo e sem fluxo formal. Não há despesa, contrato ou pagamento a registrar. A aula experimental entra como processo (pré-cadastro) e preserva o primeiro contato do interessado. |
+
 ---
 
 ##  Requisitos do Sistema
