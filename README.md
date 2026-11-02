@@ -108,7 +108,7 @@ Empresa privada com fins lucrativos, atuante na prestação de serviços esporti
 
 * **Modalidades Ofertadas:** 6 artes marciais ativas (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira e No-Gi).   
 
-* **Grade Semanal:** 18 turmas regulares distribuídas de segunda a sábado nos períodos matutino, vespertino e noturno.   
+* **Grade Semanal:** 21 turmas regulares distribuídas de segunda a sábado nos períodos matutino, vespertino e noturno.   
 
 * **Capacidade Física:** Limite estrito de segurança de até 30 alunos por turma simultaneamente no tatame.   
 
