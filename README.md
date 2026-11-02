@@ -697,16 +697,25 @@ A conversão do modelo conceitual para o modelo lógico relacional seguiu as reg
 ---
 
 ## 12\. Justificativa Técnica
----
-Premissa do Modelo:
-Ao iniciarmos a estruturação deste projeto, a nossa principal premissa foi focar na resolução imediata das "Dores" mais urgentes da academia, evitando criar um sistema super complexo logo nesta primeira etapa. Como o nosso grupo ainda está a dar os primeiros passos na disciplina, decidimos que o modelo precisava ser direto, enxuto e, acima de tudo, funcional para o dia a dia do gestor Adalberto. O nosso ponto de partida foi construir uma base sólida que substituía o atual caos das pastas e fichas de papel por uma estrutura digital confiável, atacando de frente os dois maiores gargalos operacionais identificados no levantamento: o descontrole financeiro das mensalidades e a total falta de acompanhamento da assiduidade dos alunos.   
+### Premissa do Modelo e Evolução da 1.ª para a 2.ª Entrega
 
+#### * Na concepção inicial do projeto (1.ª Entrega), a modelagem concentrou-se nas entidades nucleares de cadastro, matrícula, presença e pagamento. Contudo, a partir da devolutiva docente e da segunda etapa de levantamento de campo realizada em 13/10/2026 junto ao gestor Adalberto, constatou-se a necessidade de expandir a arquitetura de 8 para **14 entidades** (acrescidas das tabelas associativas `PRESENCA` e `PARTICIPA`, das 8 tabelas de atributos multivalorados em 1FN e da estrutura de auditoria `LOG_ACESSO`). Essa evolução permitiu cobrir integralmente o ciclo de vida operacional da Base Forte Leste: desde a captação em aulas experimentais (`INTERESSADO`) até à escrituração de despesas e folha de repasse dos instrutores (`DESPESA`). 
 
-Decisões de Modelagem:
-Com base nessa premissa, tomamos decisões arquiteturais focadas na realidade do negócio. A principal delas foi a criação da entidade **PRESENCA** de forma totalmente separada da entidade **ALUNO**. Num primeiro momento, para simplificar, poderia parecer mais fácil colocar apenas um campo de "última presença" dentro do próprio cadastro do aluno. No entanto, percebemos que o histórico acumulado de aulas é o dado vital que os professores utilizam para avaliar se o praticante tem o tempo de tatame exigido para a troca de faixa.
+### Decisões de Modelagem e Normalização
 
-Se guardássemos apenas a última data de comparecimento, o sistema sobrescreveria o passado e a academia continuaria "cega", sem o histórico necessário para basear e justificar os exames de graduação. Separar essas entidades foi a maneira mais lógica que encontramos para garantir que o banco de dados rastreie a jornada técnica do aluno aula a aula. Dessa forma, conseguimos resolver a desorganização atual de forma definitiva, entregando o valor que a academia precisa sem inflar a complexidade do nosso modelo nesta primeira entrega.
+1. **Separação entre `TURMA`, `AULA` e `PRESENCA` (Rastreabilidade Pedagógica e Financeira):**
 
+   > Em vez de vincular a presença diretamente ao aluno ou à turma abstrata, modelou-se a entidade `AULA` para representar cada sessão real e datada de treino ministrada por um professor específico. A tabela associativa `PRESENCA` (`AULA` × `MATRICULA`) registra o comparecimento individual em cada treino. Essa decisão resolve simultaneamente dois problemas críticos: fornece o histórico exato de assiduidade por modalidade para validar a aptidão nos exames de `GRADUACAO` e comprova a quantidade exata de aulas lecionadas por cada professor para o cálculo de honorários em `DESPESA`.
+
+2. **Desacoplamento entre `PLANO`, `CONTRATO` e `PAGAMENTO`:**
+
+   > Na versão preliminar, o pagamento relacionava-se diretamente com o aluno e o plano. A introdução da entidade `CONTRATO` (e da associativa `PARTICIPA` para multimodalidade) garante que o valor acordado no ato da contratação (`VL_MENSAL_ACORDADO`) permaneça congelado durante a vigência, impedindo que reajustes futuros na tabela `PLANO` corrompam o histórico financeiro de parcelas já emitidas em `PAGAMENTO`, além de acomodar a regra do Plano Família e o cálculo de multas rescisórias.
+
+3. **Decomposição de Atributos Compostos e Multivalorados (1.ª Forma Normal):**
+
+   > Para assegurar a atomicidade exigida pela 1FN no modelo lógico, o atributo composto `ENDERECO` foi decomposto em colunas atômicas (`DS_RUA`, `NR_LOGRADOURO`, `NM_BAIRRO`, `NR_CEP`), e os atributos multivalorados de `ALUNO` e `PROFESSOR` (e-mails, telefones, problemas de saúde, especializações, níveis de experiência e qualificações) foram isolados em 8 tabelas de apoio com chave primária composta.
+
+ ---
 ## 13. Uso de Inteligência Artificial
 
 *(Documentação obrigatória sobre o uso da IA para organizar o trabalho)*.
