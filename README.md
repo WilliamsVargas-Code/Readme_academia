@@ -83,6 +83,37 @@ Delimitação de Escopo: O projeto limita-se estritamente à arquitetura do banc
 | Instrutor auxiliar como papel na turma (RO04 da E1, Q3.3–3.4 da 1ª visita) | Não é registrado no sistema | Não é funcionário, não é escolhido por regra e não gera pagamento |
 | Questionário de 13/10 (Q5.2 e Q6.1): 4 professores e 1 colaborador na recepção | 5 professores prestadores (inclusive Capoeira) e nenhum recepcionista; o CEO faz a recepção | Corrigido com o CEO depois da visita — ver "Esclarecimentos posteriores" no levantamento |
 | Planos Mensal, Trimestral, Anual e Família | Inclui Semestral; Família existe em todas as durações | 2ª visita (Q2.1) |
+
+
+## Apontamentos da correção sobre o Dicionário de Dados (Critério 9)
+
+| Apontamento da correção da E1 | O que mudou no trabalho | Por quê |
+| :---- | :---- | :---- |
+| Faltam cardinalidades mínimas (só 1:N / N:1) | A Seção 1 traz **(mín,máx)** nos 20 relacionamentos, lidos pelo lado oposto (Look-Across), com nota para cada mínimo em zero. As cardinalidades são as mesmas do DER | É a mesma convenção do DER no brModelo Web. Os zeros têm razão de negócio: histórico de matrículas encerradas (TURMA–MATRÍCULA), Boxe sem faixas (MODALIDADE–GRADUAÇÃO, RO06), aluno maior de idade sem responsável (RE03), aluno cadastrado sem aula experimental e despesa sem professor |
+| Faltam SGBD, mecanismo de armazenamento e collation (o texto adiava a escolha) | A Seção 3 define **MySQL 8.0, InnoDB e utf8mb4 / utf8mb4_unicode_ci**. Valores monetários ficam em DECIMAL(10,2) e percentuais em DECIMAL(5,2) | InnoDB dá transação e chave estrangeira, e utf8mb4 cobre os acentos do português. A escolha é a mesma do RNF04. DECIMAL guarda o valor exato, sem o erro de arredondamento do ponto flutuante |
+| Falta a data da versão | A Seção 3 tem a linha de versão (**v2.5 — 02/11/2026**), e o histórico de versões registra de v1.0 a v2.5 | Mostra o que mudou em cada rodada e por quê |
+| Falta log de acesso | A Seção 6 descreve a tabela **LOG_ACESSO**: usuário, perfil, data, operação, tabela, registro e campo sensível acessado. Só o sistema grava e só a Administração lê. A tabela também existe no modelo lógico; não aparece no DER, assim como as chaves estrangeiras | Atende o RNF02, que exige rastrear quem lê CPF e DS_PROBLEMA_SAUDE e quem escreve. O log guarda o ID do registro, não o dado sensível |
+| Falta tabela de papéis por operação | A Seção 5 traz a matriz CRUD de **Administração e Professor** para todas as entidades. Não há exclusão em CONTRATO, PAGAMENTO e DESPESA | Só existem dois perfis porque o CEO faz a recepção. O professor lê apenas o necessário do aluno (nome, situação e restrições de saúde). A exclusão fica bloqueada por retenção fiscal |
+| LGPD só como nota, sem base legal nem retenção | A Seção 7 traz uma tabela por categoria (cadastrais, financeiros, saúde, imagem, aulas, log) com **base legal e prazo de retenção**. Também trata menores (art. 14) e a rotação de backup | Os prazos seguem o RNF05 (5 anos fiscais, backup de 30 dias). Bases legais e prazos são propostas do grupo, a validar com orientação jurídica |
+| (Critério 10, mas depende do dicionário) TURMA sem ligação com MODALIDADE; PAGAMENTO sem data de pagamento e valor; plano só aparecia através do pagamento | MODALIDADE (1,1)·TURMA (0,n). PAGAMENTO tem DT_VENCIMENTO, DT_PAGAMENTO, VL_DEVIDO e VL_PAGO. CONTRATO é entidade entre ALUNO, PLANO e PAGAMENTO | O dicionário e o RF03 já diziam que a turma pertence a uma modalidade. Sem data de pagamento não se mede a inadimplência (RF04). O contrato justifica a entidade CONTRATO sugerida na correção do DER |
+
+Itens que a correção já aprovava e foram mantidos: tabela conceitual, MATRÍCULA como entidade associativa, definições, fluxo de dados, notação, prefixos, expressões com leitura, tipos físicos e índices.
+
+### Mudanças que vieram do MER, do DER, do modelo lógico e das decisões do grupo, e não da correção
+
+| O que estava antes | O que mudou | Por quê |
+| :---- | :---- | :---- |
+| Cardinalidades pela outra leitura (v1.3) | Look-Across (v2.0) | Segue a convenção do DER no brModelo Web |
+| 9 entidades (v1.1) | 14 entidades. PRESENÇA e PARTICIPA viraram tabelas associativas | Reescrita sobre o MER e o DER atualizados (v2.0). Onde o modelo lógico divergia dos documentos, valeu o documento |
+| PAGAMENTO ligado a aluno e plano | PAGAMENTO é parcela do CONTRATO | O plano contratado passa a existir como contrato, e não só através do pagamento |
+| Trancamento por lesão **ou** troca de modalidade (v1.3) | Só lesão ou razão médica. A troca encerra a matrícula antiga e cria outra | README, Processo 5 |
+| Multivalorados mapeados só no modelo físico | 8 tabelas de apoio com chave primária composta (v2.1) | O modelo lógico já as tem |
+| NM_RESPONSAVEL_PLANO, TP_DOC_PARENTESCO, DT_CONFERENCIA_PARENTESCO, NM_ATESTADO_POR, QT_TEMPO_MINIMO_FAIXA e DS_OBSERVACAO | Removidos (v2.1 e v2.3) | Não constam no MER nem no modelo lógico. O Plano Família com dependentes ficou fora por ora |
+| VL_MULTA_ATRASO e VL_TAXA_EXAME | VL_MULTA e VL_TAXA_GRADUACAO (v2.1). "Taxa Graduação" é o nome definitivo do projeto | Nomes do MER, do DER e do modelo lógico; "Taxa Exame" é o nome antigo |
+| real/numeric | decimal (v2.3) | Alinhado ao modelo lógico, que já usa DECIMAL |
+| Campos de tamanho fixo em varchar | char para CPF e NR_CEP (v2.2); CPF char(11) e NR_CEP char(8), só dígitos, em ALUNO, RESPONSÁVEL e PROFESSOR (v2.4) | Os tamanhos antigos davam espaço para pontuação e eram diferentes entre as entidades, o que impedia comparar o mesmo CPF entre as tabelas com índice único |
+| Prazo de guarda "a definir com o CEO" na Seção 7 (v1.2) | Frase retirada (v2.5). Os prazos ficam como propostas do grupo | Mantém o projeto no tamanho atual. O prazo de 5 anos dos dados financeiros já é o do RNF05 |
+
  
 
 
