@@ -1,5 +1,7 @@
 # 2ª Entrega (Adição de Sistema Conceitual, Lógico e SQL) 
 
+## 1. Relatório Técnico Final
+
 ## Metadados
 
 | Nome completo do aluno | RGM | Usuário do GitHub |
@@ -48,6 +50,7 @@ estruturando os fluxos operacionais da instituição em um sistema normalizado e
 
 Delimitação de Escopo: O projeto limita-se estritamente à arquitetura do banco de dados relacional e às suas consultas analíticas. Não contempla o desenvolvimento de interfaces visuais (aplicativos ou sistemas web), módulos comerciais para venda de artigos esportivos, nem a operação direta de hardware (como catracas de reconhecimento facial); Embora a independência da arquitetura proposta permita o acoplamento futuro de tais recursos sem a necessidade de alteração estrutural nas tabelas.
 
+## 1.1 Revisão do Modelo Conceitual
 
 # Caracterização da Organização
 
