@@ -634,18 +634,270 @@ Em resposta à avaliação da Entrega 01 e à segunda entrevista de campo (13/10
 
 ---
 
-## 1.2 Conversão do Modelo Conceitual para o Modelo Lógico
+### 1.2 Conversão do Modelo Conceitual para o Modelo Lógico
 
-A conversão do modelo conceitual para o modelo lógico relacional seguiu as regras formais de mapeamento relacional e normalização até a Terceira Forma Normal (1FN a 3FN), preparando a base de dados para implementação no SGBD MySQL 8.0 (Storage Engine InnoDB):
+A conversão partiu do DER revisado (criado no **brModelo Web**, seção 1.1) e usou o conversor da própria ferramenta, seguido de ajustes manuais no modelo lógico (tipos de dados, nomes e restrições). O resultado são **25 tabelas**: 14 vindas de entidades, 2 de relacionamentos N:N, 8 de atributos multivalorados e 1 tabela de auditoria independente do DER (`LOG_ACESSO`).
 
-* **Mapeamento de Entidades e Chaves Estrangeiras:** Cada entidade forte foi convertida em uma tabela relacional com sua respectiva Chave Primária (PK). Os relacionamentos do tipo 1:N propagaram a PK do lado forte como Chave Estrangeira (FK) na tabela dependente (ex.: propagação de id_modalidade e id_professor para TURMA).
-  
-* **Tratamento da Primeira Forma Normal (1FN):** Os atributos multivalorados identificados no DER conceitual foram desmembrados em tabelas associadas com integridade referencial ativa, eliminando repetições e garantindo atomicidade. Isso originou as tabelas EMAIL_ALUNO, TELEFONE_ALUNO, PROBLEMA_SAUDE_ALUNO, EMAIL_PROFESSOR, TELEFONE_PROFESSOR, ESPECIALIZACAO, NIVEL_DE_EXPERIENCIA e REGISTRO_QUALIFICACOES.
-  
-* **Entidades Associativas e Multimodalidade:** Relacionamentos N:M foram convertidos em tabelas associativas com chaves compostas, como PRESENCA (vinculando AULA e MATRICULA) e PARTICIPA (vinculando CONTRATO às MODALIDADES contratadas no pacote).
-  
-* **Governança e Auditoria:** Foi incorporada a tabela LOG_ACESSO para registro temporal e rastreabilidade de operações críticas realizadas por perfil de usuário, atendendo aos requisitos de conformidade e auditoria do sistema.
+Os nomes foram padronizados em maiúsculas, sem acentos e sem espaços (`MATRICULA`, `GRADUACAO`, `PRESENCA`). As colunas seguem os prefixos do dicionário de dados: `ID_` (identificador), `NM_` (nome), `DT_` (data), `HR_` (horário), `DS_` (descrição, texto livre ou domínio textual como `DS_DIA_SEMANA`), `NR_` (número que não sofre operação matemática), `QT_` (quantidade), `VL_` (valor monetário), `PC_` (percentual), `TP_` (tipo ou situação) e `IN_` (indicador booleano). As colunas FK têm o mesmo nome da PK que referenciam (ex.: `MATRICULA.ID_ALUNO` referencia `ALUNO.ID_ALUNO`). A única exceção é `AULA.ID_AULA_ORIGEM`, que referencia a própria tabela `AULA` e por isso tem nome distinto da PK.
 
+* **Entidades → Tabelas:**
+  * Cada uma das 14 entidades do DER virou uma tabela com **PK sintética própria** (`INT AUTO_INCREMENT`): `ALUNO`, `RESPONSAVEL`, `INTERESSADO`, `MODALIDADE`, `PROFESSOR`, `TURMA`, `MATRICULA`, `TRANCAMENTO`, `AULA`, `GRADUACAO`, `PLANO`, `CONTRATO`, `PAGAMENTO` e `DESPESA`.
+  * `RESPONSAVEL`, `MODALIDADE` e `PLANO` não recebem nenhuma FK. As demais tabelas carregam FKs para as tabelas das quais dependem (seção 1.3).
+  * Nenhuma entidade é fraca no sentido formal, porque todas têm identificador próprio. A dependência entre elas aparece apenas nas FKs.
+  * `MATRICULA` resolve a relação entre `ALUNO` e `TURMA` (um aluno pode estar em várias turmas e uma turma tem vários alunos). Ela virou tabela própria, e não apenas tabela associativa, porque tem atributos (`DT_MATRICULA`, `TP_SITUACAO_MATRICULA`) e se relaciona com outras tabelas (`TRANCAMENTO` e `PRESENCA`).
+  * Os 2 relacionamentos N:N viraram as tabelas associativas `PRESENCA` e `PARTICIPA`.
+  * Os atributos multivalorados viraram 8 tabelas dedicadas (ver abaixo).
+  * `LOG_ACESSO` não vem de nenhuma entidade do DER: é a tabela de auditoria que registra quem leu ou alterou dados pessoais (**RNF02**). Ela não tem FK para as demais tabelas (justificativa na seção 1.5) e não entra nas contagens de entidades e relacionamentos.
+
+* **Atributos → Colunas:**
+  * Atributos simples viraram colunas com os tipos do brModelo Web: `INT`, `VARCHAR`, `CHAR`, `DATE`, `TIME`, `TIMESTAMP`, `BOOLEAN`, `DECIMAL` e `ENUM`. Os valores monetários (`VL_`) e o percentual `PC_DESCONTO` usam `DECIMAL`, que guarda o valor exato, sem o erro de arredondamento do `FLOAT`. O dicionário de dados define a precisão (`DECIMAL(10,2)` para valores monetários e `DECIMAL(5,2)` para o percentual), os tamanhos de `VARCHAR`/`CHAR` e os valores dos `ENUM`. Os três campos de texto longo (`DS_HISTORICO_TREINO`, `DS_MOTIVO` e `DS_CONDICAO`) são `TEXT` no dicionário.
+  * **Atributo composto:** `Endereco` foi desmembrado nas colunas `DS_RUA`, `NR_LOGRADOURO`, `NM_BAIRRO` e `NR_CEP` em `ALUNO` e em `PROFESSOR`. `RESPONSAVEL` não guarda endereço.
+  * **Atributos multivalorados:** cada um virou uma tabela própria, com PK composta formada pela FK do dono e pelo valor:
+
+    | Dono | Atributo no DER | Tabela | Coluna do valor |
+    | --- | --- | --- | --- |
+    | `ALUNO` | Problema_Saude | `PROBLEMA_SAUDE_ALUNO` | `DS_PROBLEMA_SAUDE` |
+    | `ALUNO` | Email | `EMAIL_ALUNO` | `DS_EMAIL` |
+    | `ALUNO` | Telefone | `TELEFONE_ALUNO` | `NR_TELEFONE` |
+    | `PROFESSOR` | Registro_Qualificacoes | `REGISTRO_QUALIFICACOES` | `DS_REGISTRO_QUALIFICACOES` |
+    | `PROFESSOR` | Especializacao | `ESPECIALIZACAO` | `DS_ESPECIALIZACAO` |
+    | `PROFESSOR` | Nivel_De_Experiencia | `NIVEL_DE_EXPERIENCIA` | `DS_NIVEL_EXPERIENCIA` |
+    | `PROFESSOR` | Email | `EMAIL_PROFESSOR` | `DS_EMAIL` |
+    | `PROFESSOR` | Telefone | `TELEFONE_PROFESSOR` | `NR_TELEFONE` |
+
+    O problema de saúde existe apenas para o aluno: o MER não o prevê para o professor, e por isso não há tabela equivalente para ele.
+  * **Atributo de relacionamento:** `Presenca` pertence ao relacionamento Aula–Matrícula, e por isso fica na tabela associativa `PRESENCA`, na coluna `IN_PRESENTE`.
+  * **Atributo derivado:** as vagas ocupadas de uma turma não são armazenadas. A ocupação é calculada por contagem das matrículas ativas.
+  * **Identificadores:** cada atributo identificador do DER virou a PK da tabela. O `CPF` não é PK: ele é chave alternativa (`UNIQUE`) em `ALUNO`, `PROFESSOR` e `RESPONSAVEL`.
+  * **Colunas de conformidade e auditoria:** `IN_ACEITE_USO_IMAGEM`, `DT_AUTORIZACAO_IMAGEM`, `DT_ENTREGA_ATESTADO`, `ID_AULA_ORIGEM`, `TP_RESULTADO`, `DS_MOTIVO_REPROVACAO`, `DT_INICIO`, `DT_RETORNO_PREVISTA` e `DT_RETORNO_EFETIVA`.
+
+* **Relacionamentos → Chaves:**
+  * **1:N:** a PK do lado "1" é propagada como FK para a tabela do lado "N".
+  * **1:1:** a PK de uma das entidades vira FK na outra, com restrição `UNIQUE`.
+  * **N:N:** é criada uma tabela associativa, cuja PK composta é formada pelas FKs das duas entidades.
+  * As cardinalidades são lidas na convenção *Look-Across*, adotada pelo brModelo Web e pela disciplina. Na revisão do DER, 10 relações estavam com os rótulos trocados de lado e foram corrigidas. Sem essa correção, o conversor teria colocado as FKs na tabela errada.
+
+  | Relacionamento no DER | Cardinalidade | FK criada |
+  | --- | --- | --- |
+  | Responsável Legal (`RESPONSAVEL`–`ALUNO`) | 1:N, opcional | `ALUNO.ID_RESPONSAVEL` |
+  | Torna-se (`INTERESSADO`–`ALUNO`) | 1:1, opcional | `ALUNO.ID_INTERESSADO` (+ `UNIQUE`) |
+  | Escolhe (`MODALIDADE`–`INTERESSADO`) | 1:N | `INTERESSADO.ID_MODALIDADE` |
+  | Domina (`MODALIDADE`–`PROFESSOR`) | 1:N | `PROFESSOR.ID_MODALIDADE` |
+  | Oferece (`MODALIDADE`–`TURMA`) | 1:N | `TURMA.ID_MODALIDADE` |
+  | Leciona (`PROFESSOR`–`TURMA`) | 1:N | `TURMA.ID_PROFESSOR` |
+  | Realiza (`ALUNO`–`MATRICULA`) | 1:N | `MATRICULA.ID_ALUNO` |
+  | Vincula (`TURMA`–`MATRICULA`) | 1:N | `MATRICULA.ID_TURMA` |
+  | Trancamento (`MATRICULA`–`TRANCAMENTO`) | 1:N | `TRANCAMENTO.ID_MATRICULA` |
+  | Realiza (`TURMA`–`AULA`) | 1:N | `AULA.ID_TURMA` |
+  | Ministra (`PROFESSOR`–`AULA`) | 1:N | `AULA.ID_PROFESSOR` |
+  | Obtém (`ALUNO`–`GRADUACAO`) | 1:N | `GRADUACAO.ID_ALUNO` |
+  | Avalia (`PROFESSOR`–`GRADUACAO`) | 1:N | `GRADUACAO.ID_PROFESSOR` |
+  | Referencia (`MODALIDADE`–`GRADUACAO`) | 1:N | `GRADUACAO.ID_MODALIDADE` |
+  | Possui (`ALUNO`–`CONTRATO`) | 1:N | `CONTRATO.ID_ALUNO` |
+  | Define (`PLANO`–`CONTRATO`) | 1:N | `CONTRATO.ID_PLANO` |
+  | Gera (`CONTRATO`–`PAGAMENTO`) | 1:N | `PAGAMENTO.ID_CONTRATO` |
+  | Gera (`PROFESSOR`–`DESPESA`) | 1:N, opcional | `DESPESA.ID_PROFESSOR` |
+  | Reposição (`AULA`–`AULA`, auto-relacionamento) | 1:N, opcional | `AULA.ID_AULA_ORIGEM` |
+  | Registra Presença (`AULA`–`MATRICULA`) | N:N | tabela `PRESENCA` |
+  | Participa (`CONTRATO`–`MODALIDADE`) | N:N | tabela `PARTICIPA` |
+
+* **Cardinalidades:**
+  * **1:1 (`ALUNO`–`INTERESSADO`):** a FK `ID_INTERESSADO` fica em `ALUNO`, é opcional e tem `UNIQUE`. Nem todo interessado vira aluno, e nem todo aluno passou por aula experimental. A FK fica em `ALUNO` porque o aluno é criado depois da conversão do interessado.
+  * **1:N (18 relações, tabela acima):** a FK fica sempre na tabela do lado "N". Exemplos: `MATRICULA.ID_ALUNO`, `AULA.ID_TURMA`, `PAGAMENTO.ID_CONTRATO`. A opcionalidade da FK segue a cardinalidade mínima: `(0, …)` gera coluna sem `NOT NULL` e `(1, …)` gera coluna `NOT NULL`.
+  * **N:N (2 relações):** `PRESENCA` (`ID_AULA` + `ID_MATRICULA`, com o atributo `IN_PRESENTE`) e `PARTICIPA` (`ID_MODALIDADE` + `ID_CONTRATO`, que permite várias modalidades em um único contrato).
+  * `ALUNO`–`RESPONSAVEL` **não** é N:N: um responsável pode responder por vários alunos, mas cada aluno tem no máximo um responsável (aluno maior de idade não tem). Por isso a FK fica em `ALUNO`.
+  * `TRANCAMENTO`–`MATRICULA` também é 1:N: uma matrícula pode ter vários trancamentos ao longo do tempo.
+  * `AULA`–`AULA` (reposição) é um auto-relacionamento 1:N opcional: no DER a aula de origem é o atributo `Aula_Origem`, e no modelo lógico ele virou a FK `ID_AULA_ORIGEM`, que aponta para a aula original que a reposição repõe. A aula regular fica com a coluna nula.
+
+* **Generalização/especialização:**
+  * O DER não utiliza generalização/especialização.
+  * **Estratégia adotada:** uma tabela por entidade independente.
+  * **Justificativa:** `ALUNO`, `PROFESSOR` e `RESPONSAVEL` têm papéis jurídicos, ciclos de vida, fluxos financeiros e atributos distintos. Uni-los em uma tabela genérica geraria colunas nulas em excesso e violaria o princípio de minimização de dados da LGPD (**RNF02**).
+
+---
+
+### 1.3 Definição de Chaves Primárias e Estrangeiras
+
+Listagem das PKs e FKs das **25 tabelas** do modelo lógico. Total: 25 PKs e 31 colunas FK (19 de relacionamentos 1:N e 1:1, incluindo o auto-relacionamento de `AULA`, 4 das tabelas N:N e 8 dos multivalorados). `LOG_ACESSO` não tem FK.
+
+| # | Tabela | Chave Primária (PK) | Chave Estrangeira (FK) | Origem da FK |
+| --- | --- | --- | --- | --- |
+| 1 | `ALUNO` | `ID_ALUNO` | `ID_RESPONSAVEL` *(opcional)*<br>`ID_INTERESSADO` *(opcional, `UNIQUE`)* | `RESPONSAVEL(ID_RESPONSAVEL)`<br>`INTERESSADO(ID_INTERESSADO)` |
+| 2 | `RESPONSAVEL` | `ID_RESPONSAVEL` | *Nenhuma* | — |
+| 3 | `INTERESSADO` | `ID_INTERESSADO` | `ID_MODALIDADE` | `MODALIDADE(ID_MODALIDADE)` |
+| 4 | `MODALIDADE` | `ID_MODALIDADE` | *Nenhuma* | — |
+| 5 | `PROFESSOR` | `ID_PROFESSOR` | `ID_MODALIDADE` | `MODALIDADE(ID_MODALIDADE)` |
+| 6 | `TURMA` | `ID_TURMA` | `ID_MODALIDADE`<br>`ID_PROFESSOR` | `MODALIDADE(ID_MODALIDADE)`<br>`PROFESSOR(ID_PROFESSOR)` |
+| 7 | `MATRICULA` | `ID_MATRICULA` | `ID_ALUNO`<br>`ID_TURMA` | `ALUNO(ID_ALUNO)`<br>`TURMA(ID_TURMA)` |
+| 8 | `TRANCAMENTO` | `ID_TRANCAMENTO` | `ID_MATRICULA` | `MATRICULA(ID_MATRICULA)` |
+| 9 | `AULA` | `ID_AULA` | `ID_PROFESSOR`<br>`ID_TURMA`<br>`ID_AULA_ORIGEM` *(opcional)* | `PROFESSOR(ID_PROFESSOR)`<br>`TURMA(ID_TURMA)`<br>`AULA(ID_AULA)` |
+| 10 | `GRADUACAO` | `ID_GRADUACAO` | `ID_ALUNO`<br>`ID_PROFESSOR`<br>`ID_MODALIDADE` | `ALUNO(ID_ALUNO)`<br>`PROFESSOR(ID_PROFESSOR)`<br>`MODALIDADE(ID_MODALIDADE)` |
+| 11 | `PLANO` | `ID_PLANO` | *Nenhuma* | — |
+| 12 | `CONTRATO` | `ID_CONTRATO` | `ID_ALUNO`<br>`ID_PLANO` | `ALUNO(ID_ALUNO)`<br>`PLANO(ID_PLANO)` |
+| 13 | `PAGAMENTO` | `ID_PAGAMENTO` | `ID_CONTRATO` | `CONTRATO(ID_CONTRATO)` |
+| 14 | `DESPESA` | `ID_DESPESA` | `ID_PROFESSOR` *(opcional)* | `PROFESSOR(ID_PROFESSOR)` |
+| 15 | `PRESENCA` | `ID_AULA`, `ID_MATRICULA` *(composta)* | `ID_AULA`<br>`ID_MATRICULA` | `AULA(ID_AULA)`<br>`MATRICULA(ID_MATRICULA)` |
+| 16 | `PARTICIPA` | `ID_MODALIDADE`, `ID_CONTRATO` *(composta)* | `ID_MODALIDADE`<br>`ID_CONTRATO` | `MODALIDADE(ID_MODALIDADE)`<br>`CONTRATO(ID_CONTRATO)` |
+| 17 | `PROBLEMA_SAUDE_ALUNO` | `ID_ALUNO`, `DS_PROBLEMA_SAUDE` *(composta)* | `ID_ALUNO` | `ALUNO(ID_ALUNO)` |
+| 18 | `EMAIL_ALUNO` | `ID_ALUNO`, `DS_EMAIL` *(composta)* | `ID_ALUNO` | `ALUNO(ID_ALUNO)` |
+| 19 | `TELEFONE_ALUNO` | `ID_ALUNO`, `NR_TELEFONE` *(composta)* | `ID_ALUNO` | `ALUNO(ID_ALUNO)` |
+| 20 | `REGISTRO_QUALIFICACOES` | `ID_PROFESSOR`, `DS_REGISTRO_QUALIFICACOES` *(composta)* | `ID_PROFESSOR` | `PROFESSOR(ID_PROFESSOR)` |
+| 21 | `ESPECIALIZACAO` | `ID_PROFESSOR`, `DS_ESPECIALIZACAO` *(composta)* | `ID_PROFESSOR` | `PROFESSOR(ID_PROFESSOR)` |
+| 22 | `NIVEL_DE_EXPERIENCIA` | `ID_PROFESSOR`, `DS_NIVEL_EXPERIENCIA` *(composta)* | `ID_PROFESSOR` | `PROFESSOR(ID_PROFESSOR)` |
+| 23 | `EMAIL_PROFESSOR` | `ID_PROFESSOR`, `DS_EMAIL` *(composta)* | `ID_PROFESSOR` | `PROFESSOR(ID_PROFESSOR)` |
+| 24 | `TELEFONE_PROFESSOR` | `ID_PROFESSOR`, `NR_TELEFONE` *(composta)* | `ID_PROFESSOR` | `PROFESSOR(ID_PROFESSOR)` |
+| 25 | `LOG_ACESSO` | `ID_LOG` | *Nenhuma* | — |
+
+---
+
+### 1.4 Processo de Normalização (1FN, 2FN e 3FN)
+
+O modelo relacional foi submetido às três primeiras Formas Normais para eliminar redundâncias e evitar anomalias de inclusão, alteração e exclusão.
+
+* **1FN (Primeira Forma Normal — Atomicidade e Eliminação de Repetições):**
+  * Todos os atributos guardam valores atômicos.
+  * O atributo composto `Endereco` foi desmembrado em `DS_RUA`, `NR_LOGRADOURO`, `NM_BAIRRO` e `NR_CEP`.
+  * Os atributos multivalorados (telefones, e-mails e problemas de saúde dos alunos; telefones, e-mails, qualificações, especializações e níveis de experiência dos professores) foram isolados em 8 tabelas próprias. Assim não há colunas repetidas como `Telefone1` e `Telefone2`, e não há limite artificial de quantidade.
+  * As relações N:N (frequência por aula e modalidades por contrato) foram isoladas em `PRESENCA` e `PARTICIPA`.
+
+* **2FN (Segunda Forma Normal — Dependência Funcional Total):**
+  * O modelo está na 1FN, e nenhum atributo não-chave depende de apenas parte da PK.
+  * As 14 tabelas de entidade e `LOG_ACESSO` têm PK de uma única coluna, o que elimina por construção a possibilidade de dependência parcial.
+  * Nas tabelas de PK composta, a verificação foi feita uma a uma:
+    * `PRESENCA`: `IN_PRESENTE` só existe para o par `(ID_AULA, ID_MATRICULA)`. Saber se o aluno estava presente exige as duas informações.
+    * `PARTICIPA`: não tem atributos além da chave.
+    * As 8 tabelas de multivalorados têm apenas a FK do dono e o valor, ambos na chave.
+
+* **3FN (Terceira Forma Normal — Eliminação de Dependências Transitivas):**
+  * O modelo está na 2FN e, exceto pelas três dependências residuais mantidas de propósito (descritas abaixo), nenhum atributo não-chave depende de outro atributo não-chave. Pontos tratados:
+    * **Modalidade em `MATRICULA`:** no DER antigo, a matrícula guardava o esporte praticado. Esse dado depende da turma, não da matrícula. O atributo foi removido, e a modalidade é obtida por `MATRICULA → TURMA → MODALIDADE`.
+    * **Vagas ocupadas em `TURMA`:** é um dado derivado, calculado por contagem de matrículas ativas. Foi substituído por `QT_CAPACIDADE_MAXIMA`, que é um limite fixo.
+    * **Valor do contrato:** `VL_MENSAL_ACORDADO` fica em `CONTRATO`. Ele é um fato do contrato, definido na assinatura, e não pode ser recalculado a partir de `PLANO.VL_MENSALIDADE`. Assim, reajustes futuros no plano não alteram contratos nem parcelas já geradas em `PAGAMENTO`.
+    * **Valor da taxa de graduação:** `PAGAMENTO.VL_TAXA_GRADUACAO` guarda o valor cobrado naquele pagamento, sem depender de tabelas de preços posteriores.
+    * **Remuneração docente:** `VL_POR_AULA` fica somente em `PROFESSOR`. `TURMA` e `AULA` guardam apenas `ID_PROFESSOR`, evitando que o valor varie por registro.
+  * **Dependência transitiva residual, mantida de forma deliberada:** como cada professor atua em uma única modalidade (`PROFESSOR.ID_MODALIDADE`), a modalidade de uma `TURMA` e a de uma `GRADUACAO` poderiam ser deduzidas a partir do `ID_PROFESSOR` (regra **RE05**). As colunas `TURMA.ID_MODALIDADE` e `GRADUACAO.ID_MODALIDADE` foram mantidas porque:
+    * a modalidade define a grade de turmas e o histórico de faixas, e esses relacionamentos pertencem ao domínio por si mesmos, e não só como consequência do professor;
+    * as consultas por modalidade ficam diretas, sem junção adicional com `PROFESSOR`;
+    * a consistência entre as duas informações será verificada por consulta de auditoria no script SQL (seção 3).
+  * **Dependência residual do CEP, também deliberada:** em `ALUNO` e `PROFESSOR`, `NR_CEP` determinaria rua e bairro (`DS_RUA`, `NM_BAIRRO`). As três colunas foram mantidas porque o endereço é digitado no cadastro (processo 2), a academia não dispõe de uma base de logradouros para consultar e um CEP pode cobrir vários endereços (CEP geral de bairro ou cidade), o que impede deduzir a rua com segurança.
+  * **Dependência residual em `LOG_ACESSO`, também deliberada:** `TP_PERFIL` poderia ser deduzido de `NM_USUARIO`, mas o log guarda o perfil usado em cada acesso (um retrato do momento), e esta versão não tem tabela de usuários. `NM_TABELA` e `ID_REGISTRO` formam uma referência lógica, não uma FK.
+
+* **Justificativa do Processo:**
+  * **1FN:** sem ela, o cadastro de um aluno com vários telefones ou e-mails exigiria colunas fixas ou texto concatenado, o que impede buscas e validações.
+  * **2FN:** garante que a frequência (`PRESENCA`) e a participação em modalidades (`PARTICIPA`) sejam registradas sempre pelo par de chaves completo, sem informação solta.
+  * **3FN:** os dados financeiros e contratuais precisam ser alterados em um único ponto e nunca retroativamente (reajuste de plano, taxa de graduação, honorários). Isso assegura a auditabilidade exigida pela gestão da academia.
+
+---
+
+### 1.5 Justificativas Técnicas das Decisões
+
+#### 1. Justificativa das Chaves Primárias (PKs)
+
+* As 14 tabelas de entidade e `LOG_ACESSO` usam **chaves primárias sintéticas** do tipo `INT AUTO_INCREMENT`.
+  * **Motivo técnico:** inteiros curtos tornam os índices e as junções mais rápidos e ocupam menos espaço do que chaves naturais.
+  * **Motivo de privacidade:** o `CPF` não foi usado como PK porque ele seria copiado para todas as tabelas filhas como FK, espalhando um dado sensível pelo banco e contrariando a minimização de dados da LGPD (**RNF02**). Ele permanece como chave alternativa (`UNIQUE`).
+* As tabelas de N:N (`PRESENCA`, `PARTICIPA`) e as 8 de atributos multivalorados usam **PK composta** formada pelas FKs ou pelo valor. A própria combinação identifica o registro e impede duplicidade (o mesmo aluno não é registrado duas vezes na mesma aula, o mesmo e-mail não é repetido para o mesmo aluno).
+
+#### 2. Justificativa das Chaves Estrangeiras (FKs) e Relacionamentos
+
+* **`ALUNO` → `RESPONSAVEL` (`ID_RESPONSAVEL`, opcional):** vincula o aluno menor de idade ao responsável legal, conforme o Art. 14 da LGPD. É opcional porque o aluno maior de idade não tem responsável.
+* **`ALUNO` → `INTERESSADO` (`ID_INTERESSADO`, opcional, `UNIQUE`):** registra a origem do aluno que fez aula experimental e permite medir a conversão. É opcional para permitir cadastro direto, sem aula experimental (**P7**, **RF01**).
+* **`INTERESSADO` → `MODALIDADE`:** cada aula experimental é agendada para uma única modalidade.
+* **`PROFESSOR` → `MODALIDADE`:** cada professor atua em uma única modalidade, e uma modalidade tem um ou mais docentes.
+* **`TURMA` → `MODALIDADE` e `PROFESSOR`:** cada turma pertence a uma modalidade e tem um professor titular responsável.
+* **`MATRICULA` → `ALUNO` e `TURMA`:** a relação 1:N entre aluno e matrícula preserva o histórico, pois o aluno pode ter várias matrículas ao longo do tempo (definido na visita de 13/10). A FK para a turma impõe o limite de capacidade (**RE01**).
+* **`TRANCAMENTO` → `MATRICULA`:** uma matrícula pode ter vários trancamentos históricos (**RE04**, **P5**).
+* **`AULA` → `TURMA` e `PROFESSOR`:** cada aula pertence a uma turma e guarda o professor que de fato a conduziu, o que permite calcular honorários e rastrear reposições (**Processo 7**).
+* **`AULA` → `AULA` (`ID_AULA_ORIGEM`, opcional, auto-relacionamento):** a aula de reposição aponta para a aula original que ela repõe, e a aula regular fica com a coluna nula (**Processo 7**, **P6**). Foi modelada como FK, e não como `ENUM` (regular ou reposição), por três motivos:
+  * o `ENUM` diria apenas que a aula é uma reposição, sem dizer de qual aula, e esse vínculo é o que permite rastrear a reposição;
+  * o tipo da aula já se deduz da própria FK (`ID_AULA_ORIGEM` nulo é aula regular), então um `ENUM` guardaria a mesma informação duas vezes e poderia ficar em desacordo com ela;
+  * a integridade referencial garante que a aula de origem exista.
+  * O vínculo é entre aulas, e não entre alunos: a concessão individual de reposição ao aluno é regra de negócio e não gera presença (Processo 7). Por isso a vaga que esse aluno ocupa na aula de reposição (contada no limite de 30, **RE01**) é controlada pela aplicação, e não pelo banco: é uma limitação assumida do modelo.
+* **`PRESENCA` → `AULA` e `MATRICULA`:** liga o aluno matriculado a cada sessão de treino, base para a frequência exigida nos exames de faixa (**P4**, **RO05**).
+* **`GRADUACAO` → `ALUNO`, `PROFESSOR` e `MODALIDADE`:** cada exame pertence a um aluno, é avaliado por um professor e se refere a uma modalidade (**Processo 8**).
+* **`CONTRATO` → `ALUNO` e `PLANO`:** o contrato tem um titular e é baseado em um único plano. Ele fixa a vigência e as condições comerciais pactuadas (**P3**, **RO01**).
+* **FKs das 8 tabelas de multivalorados (`ID_ALUNO` ou `ID_PROFESSOR`):** cada valor (e-mail, telefone, problema de saúde, especialização, nível de experiência, qualificação) pertence a um único aluno ou professor e não existe sem ele. A FK faz parte da PK composta, o que impede valor órfão e repetição do mesmo valor para o mesmo dono (**RF01**, **RF02**).
+* **`PARTICIPA` → `CONTRATO` e `MODALIDADE`:** permite que um único contrato cubra mais de uma modalidade.
+* **`PAGAMENTO` → `CONTRATO`:** cada parcela pertence a um contrato, o que torna possível gerar as cobranças e apurar inadimplência por contrato (**P2**, **RO01**).
+* **`DESPESA` → `PROFESSOR` (opcional):** liga os honorários dos professores prestadores de serviço à despesa. É opcional porque aluguel, contas de consumo e suprimentos não têm professor (**P6**, **Processo 11**).
+* **`LOG_ACESSO` (sem FK, de propósito):** `NM_TABELA` e `ID_REGISTRO` apontam para qualquer tabela do banco, e uma FK só referencia uma tabela. Além disso, o log precisa sobreviver à eliminação ou à anonimização do registro acessado (prevista na LGPD): com FK, apagar um aluno apagaria ou bloquearia o seu histórico de acessos. `NM_USUARIO` guarda o login como texto porque ainda não há tabela de usuários; se ela for criada, vira `ID_USUARIO` com FK (**RNF02**).
+
+#### 3. Justificativa das Restrições Aplicadas (Mapeamento de Regras de Negócio)
+
+Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições. Os valores permitidos (`ENUM`) e as verificações (`CHECK`) são definidos no script SQL e documentados no dicionário de dados.
+
+| Restrição | Onde | Regra de negócio | Justificativa |
+| --- | --- | --- | --- |
+| `UNIQUE` em `CPF` | `ALUNO`, `PROFESSOR`, `RESPONSAVEL` | **P1**, **RF01** | Garante identificação civil única para contratos e cobranças e impede cadastros duplicados. |
+| `UNIQUE` em `ID_INTERESSADO` | `ALUNO` | **P7**, **RF01** | Relação 1:1: cada interessado origina no máximo um aluno. |
+| `UNIQUE` composto em (`NM_INTERESSADO`, `NR_TELEFONE`) | `INTERESSADO` | **RO03**, **P7** | Garante uma única aula experimental gratuita por pessoa, conferida por nome e telefone. |
+| `UNIQUE` em `NM_MODALIDADE` e `NM_PLANO` | `MODALIDADE`, `PLANO` | — | Impede catálogo duplicado. |
+| `NOT NULL` em nome, CPF, data de nascimento e endereço | `ALUNO`, `PROFESSOR` (e `RESPONSAVEL`, nos campos de contato) | **P1**, **RF01** | Cadastro mínimo exigido para contrato, cobrança e contato. |
+| `NOT NULL` em `VL_POR_AULA` e `ID_MODALIDADE` | `PROFESSOR` | — | Sem valor da aula não há honorário a apurar, e todo professor atua em uma modalidade. |
+| `NOT NULL` em `IN_ACEITE_USO_IMAGEM` e `DT_AUTORIZACAO_IMAGEM` | `ALUNO` | **RNF02**, **Processo 2 (LGPD)** | O consentimento (sim ou não) e a data da resposta precisam estar sempre registrados. O aceite é opcional para o aluno e revogável, e não condiciona a matrícula. |
+| `NOT NULL` nas FKs de dependência | `MATRICULA`, `AULA`, `TURMA`, `GRADUACAO`, `CONTRATO`, `PAGAMENTO`, `TRANCAMENTO`, `INTERESSADO.ID_MODALIDADE` | — | Cada registro depende do pai: não existe matrícula sem aluno e turma, nem pagamento sem contrato. |
+| `NOT NULL` em `IN_POSSUI_SISTEMA_FAIXAS` | `MODALIDADE` | **RO06**, **Processo 8** | Isola a regra do Boxe, que não tem graduação por faixas, e habilita o módulo de exames só para modalidades com faixas. |
+| `NOT NULL` em `IN_PRESENTE` | `PRESENCA` | **P4**, **RO05** | Cada registro precisa dizer se o aluno esteve presente ou não, para o controle da frequência exigida nos exames. |
+| `NOT NULL` em `DT_VENCIMENTO`, `VL_DEVIDO` e `TP_STATUS_PAGAMENTO` | `PAGAMENTO` | **RO02**, **RE07**, **P2** | Toda parcela tem vencimento padronizado (5º dia útil), valor e estado, necessários para o bloqueio por inadimplência. |
+| `NOT NULL` em `TP_TRANCAMENTO`, `DS_MOTIVO`, `DT_INICIO` e `DT_RETORNO_PREVISTA` | `TRANCAMENTO` | **P5**, **RE04**, **Processo 5.1** | Regula a suspensão do plano. Sem tipo, motivo, início e previsão de retorno não há como congelar a cobrança nem ajustar o fim do contrato. |
+| `NOT NULL` em `TP_AVALIACAO`, `DT_GRADUACAO` e `TP_RESULTADO` | `GRADUACAO` | **Processo 8** | Todo exame ou análise técnica precisa ter tipo, data e resultado (aprovado ou reprovado). |
+| `NOT NULL` em `QT_CAPACIDADE_MAXIMA` | `TURMA` | **P5**, **RE01** | Base do bloqueio ao atingir o limite de alunos no tatame. |
+| Coluna **sem** `NOT NULL` em `ID_RESPONSAVEL` | `ALUNO` | **Art. 14 da LGPD** | Aluno maior de idade não tem responsável. |
+| Coluna sem `NOT NULL` em `ID_INTERESSADO` | `ALUNO` | **P7**, **RF01** | Aluno cadastrado direto, sem aula experimental. |
+| Coluna sem `NOT NULL` em `ID_PROFESSOR` | `DESPESA` | **P6**, **Processo 11** | Despesas como aluguel, consumo e suprimentos não têm professor. |
+| Colunas sem `NOT NULL` em `DT_CANCELAMENTO` e `VL_MULTA_RESCISORIA` | `CONTRATO` | **RO04** | Ficam nulas enquanto o contrato está vigente. A multa rescisória só existe nos planos mais longos. |
+| Colunas sem `NOT NULL` em `DT_PAGAMENTO`, `VL_PAGO` e `TP_FORMA_PAGAMENTO` | `PAGAMENTO` | **P2** | Ficam nulas até a quitação da parcela. |
+| Colunas sem `NOT NULL` em `VL_MULTA` e `VL_TAXA_GRADUACAO` | `PAGAMENTO` | **RO02** | `VL_MULTA` (multa por atraso) só existe nos planos de maior duração, e `VL_TAXA_GRADUACAO` só quando a parcela inclui a taxa do exame de faixa. |
+| Coluna sem `NOT NULL` em `DT_RETORNO_EFETIVA` | `TRANCAMENTO` | **RE04**, **P5** | O retorno efetivo só é preenchido depois que ocorre; até lá o trancamento segue em curso. |
+| Coluna sem `NOT NULL` em `DS_MOTIVO_REPROVACAO` | `GRADUACAO` | **Processo 8** | Preenchida somente quando o resultado é reprovado. |
+| `ENUM` em colunas de situação | `TP_STATUS_ALUNO` (`ALUNO`), `TP_SITUACAO_MATRICULA` (`MATRICULA`), `TP_STATUS_PAGAMENTO` (`PAGAMENTO`), `TP_SITUACAO_DESPESA` (`DESPESA`), `TP_SITUACAO_MODALIDADE` (`MODALIDADE`) | **P2**, **RE04**, **RE06**, **RE07**, **RO02**, **RF01** | Restringe os estados aos valores válidos: `ALUNO` (`Ativo`, `Inativo`, `Trancado`), `MATRICULA` (`Ativa`, `Trancada`, `Encerrada`, `Cancelada`), `PAGAMENTO` (`Pendente`, `Pago`, `Atrasado`), `DESPESA` (`Pendente`, `Pago`, `Atrasado`) e `MODALIDADE` (`Ativa`, `Inativa`). A inadimplência não é um estado do aluno: é derivada dos pagamentos em atraso. |
+| `ENUM` em `TP_TRANCAMENTO` | `TRANCAMENTO` | **RE04**, **Processo 5.1** | Dois tipos: lesão e razão médica. A troca de modalidade não é trancamento: a matrícula antiga é encerrada e uma nova é criada. |
+| `ENUM` em `TP_AVALIACAO`, `TP_RESULTADO`, `TP_STATUS`, `DS_DIA_SEMANA`, `TP_FORMA_PAGAMENTO` e `TP_OPERACAO` | `GRADUACAO`, `INTERESSADO`, `TURMA`, `PAGAMENTO`, `LOG_ACESSO` | **Processo 8**, **RNF02** | Domínios fechados (exame de faixa ou análise técnica; `Aprovado`/`Reprovado`; `Convertido`/`Encerrado`/`Pendente`; dias da semana; Pix, cartão de crédito ou cartão de débito; operação registrada no log: criação, leitura, atualização ou exclusão). |
+| Coluna sem `NOT NULL` em `ID_AULA_ORIGEM` | `AULA` | **Processo 7** | Só é preenchida na aula de reposição, que aponta para a aula original; a aula regular fica com a coluna nula. A reposição em si não gera presença para o aluno que apenas assiste. |
+| `CHECK` em `QT_CAPACIDADE_MAXIMA` (entre 1 e 30) | `TURMA` | **P5**, **RE01** | Teto físico do tatame, aplicado pelo próprio banco. |
+| `CHECK` em valores numéricos | `VL_POR_AULA`, `VL_MENSALIDADE`, `VL_MENSAL_ACORDADO`, `VL_DEVIDO`, `VL_DESPESA`, `QT_DURACAO_MESES` (> 0); `PC_DESCONTO` (0 a 100); `QT_MINIMA_PESSOAS` em `PLANO` (≥ 1); `QT_MINIMA_REFERENCIA` em `MODALIDADE` (≥ 1) | **RE02** (quórum), demais sem regra própria | Impede valores negativos ou sem sentido nas regras financeiras e comerciais. |
+
+#### 4. Justificativa de Decisões Arquiteturais Gerais
+
+1. **Controle diário de frequência (`PRESENCA`):**
+   * *Decisão:* a presença é registrada por sessão de `AULA` vinculada à `MATRICULA`, e não direto ao aluno.
+   * *Justificativa:* a aula conhece a turma e, portanto, a modalidade. Isso permite o controle da frequência exigida para liberar exames de faixa (**P4**, **RO05**) e o cálculo da remuneração dos professores por aula ministrada.
+
+2. **Contrato entre `ALUNO` e `PLANO`; cobrança em `PAGAMENTO`:**
+   * *Decisão:* o contrato guarda as condições pactuadas e gera as parcelas individuais em `PAGAMENTO`.
+   * *Justificativa:* reajustes na tabela de planos não alteram contratos nem faturas passadas. O modelo suporta o vencimento padronizado no 5º dia útil (**RO02**), o bloqueio por inadimplência e a suspensão de parcelas em períodos de trancamento (**P5**).
+
+3. **Multimodalidade por tabela associativa (`PARTICIPA`):**
+   * *Decisão:* relação N:N entre `CONTRATO` e `MODALIDADE`.
+   * *Justificativa:* o aluno mantém um único contrato mesmo praticando mais de uma arte marcial.
+
+4. **Histórico de matrículas e trancamentos:**
+   * *Decisão:* `ALUNO` 1:N `MATRICULA` e `MATRICULA` 1:N `TRANCAMENTO`.
+   * *Justificativa:* preserva o histórico completo do aluno na academia, incluindo mudanças de turma e afastamentos médicos, sem apagar registros anteriores.
+
+5. **Atributos multivalorados em tabelas próprias:**
+   * *Decisão:* telefones, e-mails, problemas de saúde do aluno e dados profissionais do professor ficam em 8 tabelas separadas.
+   * *Justificativa:* não limita a quantidade de contatos por pessoa, permite consultar e validar cada valor e mantém o modelo em 1FN.
+
+6. **Separação entre `INTERESSADO` e `ALUNO`:**
+   * *Decisão:* o visitante que faz a aula experimental é registrado em `INTERESSADO`, e a conversão é ligada por `ALUNO.ID_INTERESSADO`.
+   * *Justificativa:* mantém o contato dos visitantes que não se matriculam e permite medir a taxa de conversão em matrículas definitivas.
+
+7. **`DESPESA` como tabela única das saídas financeiras:**
+   * *Decisão:* despesas operacionais e honorários de professores ficam na mesma tabela, com o professor opcional.
+   * *Justificativa:* centraliza as contas a pagar da academia e dispensa uma tabela separada de repasses.
+
+8. **Dados derivados não armazenados:**
+   * *Decisão:* vagas ocupadas por turma e outros totais são calculados por consulta (`COUNT`, `SUM`), e não gravados.
+   * *Justificativa:* evita valores desatualizados em relação às matrículas e aos pagamentos.
+
+9. **Prontidão para integração biométrica (RNF01):**
+   * *Decisão:* a situação financeira do aluno pode ser consultada em tempo real pelo `ID_ALUNO`, a partir de `CONTRATO`, `PAGAMENTO` e `ALUNO.TP_STATUS_ALUNO`.
+   * *Justificativa:* fornece resposta imediata para liberar ou bloquear a catraca biométrica.
+
+10. **Notação das cardinalidades (Look-Across):**
+    * *Decisão:* todas as cardinalidades do DER foram padronizadas na convenção Look-Across, em que o rótulo ao lado de uma entidade indica quantas dela se relacionam com uma da outra.
+    * *Justificativa:* é a convenção do brModelo Web e da disciplina. O conversor usa essa leitura para decidir em qual tabela fica cada FK. Misturar convenções num mesmo DER inverte as chaves no modelo lógico.
 <img width="2082" height="1485" alt="diagrama_er" src="./img/Modelo Logico V6.png" />
 
 **Legenda:** O Modelo Lógico deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web ([https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).](https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).)
