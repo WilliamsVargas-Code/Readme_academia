@@ -479,120 +479,120 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
 
 ### 3.1 Requisitos funcionais
 
-- RF01 - Gestão de Cadastro de Alunos: 
+* **RF01 - Gestão de Alunos, Responsáveis e Interessados:**
 
-        O sistema deve permitir o cadastro e a manutenção dos dados dos alunos, armazenando o nome, CPF, 
-        data de nascimento, problemas de saúde, histórico de treinos anteriores e o status de vínculo (Ativo, Inativo ou Trancado).
 
-- RF02 - Cadastro e Especialização de Professores: 
+  > O sistema deve permitir o registro e a manutenção dos dados de interessados (aulas experimentais), alunos e responsáveis legais (obrigatório para menores de 18 anos), armazenando dados civis, endereço completo, múltiplos contatos, problemas de saúde, histórico de treino, data de entrega do atestado de aptidão física, autorização de uso de imagem e situação cadastral (Ativo, Inativo ou Trancado).
+  
+* **RF02 - Gestão e Qualificação de Professores:**
 
-        O sistema deve permitir o cadastro dos professores da academia, vinculando obrigatoriamente cada docente à sua respetiva modalidade de atuação.
+  > O sistema deve permitir o registro dos professores prestadores de serviço e do gestor técnico, vinculando cada docente à sua modalidade de atuação e registrando o valor de honorários por aula (VL_POR_AULA), especializações, nível de experiência e qualificações.
 
-- RF03 - Estruturação de Turmas e Horários: 
+* **RF03 - Estruturação de Modalidades, Turmas e Matrículas:**
 
-        O sistema deve permitir a criação de turmas, definindo a qual modalidade pertencem, 
-        os dias e horários das aulas, e associando um professor responsável.
+  > O sistema deve gerenciar o catálogo das seis modalidades esportivas (indicando o quórum mínimo de referência e a presença de sistema de faixas), a grade de turmas por dia e horário (respeitando o limite físico de 30 alunos ativos) e o histórico de matrículas e transferências de turma.
 
-- RF04 - Gestão Financeira e Mensalidades: 
+* **RF04 - Gestão de Planos, Contratos, Mensalidades e Despesas:**
 
-        O sistema deve registar a geração e o pagamento das faturas de mensalidade, identificando qual
-        foi o plano contratado pelo aluno (Mensal, trimestral, anual ou família) e a data exata da liquidação.
+  > O sistema deve formalizar contratos vinculados aos planos comerciais (Mensal, Trimestral, Semestral, Anual e Família), gerenciar as modalidades cobertas (PARTICIPA), gerar parcelas mensais em PAGAMENTO (com vencimento no 5.º dia útil, controle de atrasos, multas e taxas de exame) e escriturar as contas a pagar e repasses docentes na entidade DESPESA.
 
-- RF05 - Controle Diário de Presença:
+* **RF05 - Controle de Aulas Ministradas, Reposições e Presenças:**
 
-        O sistema deve registar a frequência (presença) dos alunos de forma diária em cada aula que frequentam.
+  > O sistema deve registrar cada ocorrência datada de treino (AULA), identificando o professor efetivo, eventuais reposições (ID_AULA_ORIGEM) e a lista de chamada por matrícula ativa (PRESENCA), servindo de base para o cálculo de assiduidade e de honorários docentes.
 
-- RF06 - Registo Histórico de Graduação: 
-        
-        O sistema deve permitir documentar o avanço dos alunos através do registo do histórico de
-        graduações e exames de faixa, guardando as datas de cada conquista.
+* **RF06 - Registro de Exames de Graduação e Trancamentos:**
 
-### 3.2 Requisitos não funcionais:
+  > O sistema deve documentar o histórico de avaliações técnicas e exames de faixa em GRADUACAO (incluindo aprovações, reprovações e motivos), bem como controlar os períodos de afastamento médico em TRANCAMENTO, suspendendo o faturamento e ajustando o ciclo contratual.
 
-- RNF01 - Integração Biométrica (Escalabilidade): 
-        
-        O banco de dados deve ser arquitetado de forma a suportar uma futura integração com hardware de
-        catraca de acesso acionado por reconhecimento facial.
+### 3.2 Requisitos Não Funcionais
 
-- RNF02 - Segurança e Privacidade (LGPD): 
-    
-        O sistema deve garantir o sigilo de dados sensíveis dos alunos (especificamente o CPF e os registos de problemas de saúde).
+* **RNF01 - Independência Arquitetural e Escalabilidade Biométrica:**
 
-- RNF03 - Vencimento Fixo Padronizado:    
-       
-        Independentemente da data de matrícula, o motor financeiro deve padronizar o vencimento de todas as mensalidades
-        para o quinto dia útil de cada mês.
+  > A base de dados deve operar de forma desacoplada da camada de aplicação, mantendo chaves e índices preparados para integração futura com hardware de catraca eletrônica por reconhecimento facial.
 
-- RNF04 - Limite Operacional de Alunos : 
-    
-        O sistema deve impedir tecnicamente que uma turma ultrapasse o teto máximo de 30 (trinta) alunos simultâneos.
+* **RNF02 - Segurança, Privacidade e Conformidade com a LGPD:**
 
-- RNF05 - Exclusividade de Ensino do Professor : 
-    
-       Uma barreira sistémica deve garantir que um professor seja associado apenas a turmas da modalidade na qual é especialista.
+  > O sistema deve assegurar o controle de acesso baseado em perfis (Administração e Professor), a minimização de dados sensíveis e a rastreabilidade de operações e consultas a CPF e DS_PROBLEMA_SAUDE por meio da tabela de auditoria LOG_ACESSO.
 
-- RNF06 - Regras Estritas de Trancamento : 
-    
-        O sistema só deve permitir a alteração do status do aluno para 'Trancado' mediante o preenchimento de uma
-        justificativa médica (lesão), bloqueando a cobrança e a contagem de tempo do plano atual.
----
+* **RNF03 - Desempenho e Tempo de Resposta em Consultas Críticas:**
 
-## 4\. Regras de Negócio (Restrições e regras de funcionamento)
+  > A estrutura de indexação secundária e composta deve garantir que a apuração de frequência acumulada por matrícula e a listagem de alunos inadimplentes sejam processadas em tempo inferior a 2 segundos.
+
+* **RNF04 - Integridade Transacional e Padronização de Codificação:**
+
+  > A implementação física deve utilizar o SGBD MySQL 8.0 sob o motor de armazenamento InnoDB (assegurando suporte transacional ACID e integridade referencial por chaves estrangeiras) e codificação utf8mb4 / utf8mb4_unicode_ci.
+
+* **RNF05 - Disponibilidade, Retenção e Cópias de Segurança (Backup):**
+
+  > A arquitetura de armazenamento deve contemplar rotinas automatizadas de backup diário com rotação em ciclos de até 30 dias, preservando a retenção fiscal de 5 anos para registros contratuais e financeiros.
+
+## 4. Regras de Negócio (Restrições e Diretrizes Operacionais)
+
+*(Numeração estritamente sincronizada com as referências cruzadas do Dicionário de Dados v2.1)*
 
 ### 4.1 Regras Operacionais
-(Condições e processos de funcionamento estipulados pela administração da academia)
 
-RO01 - Composição e Tipos de Planos Financeiros
+*(Condições e processos de funcionamento estipulados pela administração da academia)*
 
-    A academia de artes marciais oferece planos de adesão nas modalidades: Mensal, Trimestral, Anual e Familiar, 
-    vinculados às aulas de artes marciais (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira e No-Gi.).
+* **RO01 - Estrutura de Planos, Abrangência e Plano Família**
 
-RO02 - Padronização do Vencimento de Mensalidades
+  > A academia comercializa planos nas durações Mensal, Trimestral, Semestral e Anual, aplicando descontos progressivos exclusivos do plano (nunca individuais). O plano regular contempla uma modalidade, permitindo a adição de modalidades extras no mesmo contrato (PARTICIPA) mediante acréscimo financeiro. O Plano Família aplica-se a qualquer duração para grupos a partir de duas pessoas com parentesco comprovado (titular e até 4 dependentes sob contrato único).
 
-    Para todos os alunos matriculados, o vencimento das mensalidades ocorre sempre no 5º dia útil do mês,
-    garantindo uniformidade na cobrança e evitando datas variáveis de pagamento.
+* **RO02 - Padronização do Vencimento no 5.º Dia Útil**
 
-RO03 - Obrigatoriedade de Frequência para Graduação
+  > Independentemente da data de assinatura da matrícula ou da duração do plano, todas as mensalidades são geradas mês a mês com valor integral (sem cálculo proporcional na adesão) e vencimento fixo no 5.º dia útil de cada mês.
 
-    O aluno só poderá realizar exames de graduação (troca de faixa ou nível) se tiver frequência mínima comprovada nas aulas da modalidade, 
-    registrada na tabela de presença, assegurando que a evolução técnica esteja alinhada ao tempo de prática.
+* **RO03 - Concessão Única de Aula Experimental Gratuita**
 
-RO04 - Papel do Instrutor Auxiliar (Sem Entidade Própria)
+  > Cada interessado tem direito a realizar apenas uma aula experimental gratuita, agendada previamente e validada pela combinação única de nome e telefone (NM_INTERESSADO, NR_TELEFONE), ficando o registro classificado como Pendente, Convertido ou Encerrado.
 
-    Nas turmas de artes marciais, o instrutor auxiliar será sempre um aluno graduado que apoia o professor titular. 
+* **RO04 - Multa Rescisória e Multa Moratória em Planos de Fidelidade**
 
+  > O cancelamento antecipado ou o atraso mensal em contratos Trimestrais, Semestrais ou Anuais (inclusive na modalidade Família) acarreta a cobrança de multa contratual proporcional (VL_MULTA_RESCISORIA no contrato ou VL_MULTA na parcela). Os planos de ciclo Mensal estão isentos de multas rescisórias e moratórias, sofrendo apenas bloqueio operacional em caso de atraso.
 
-RO05 - Exceção no Sistema de Avaliação (Regra do Boxe)
+* **RO05 - Critério de Assiduidade e Tempo Mínimo para Exames de Graduação**
 
-    Na modalidade de Boxe, não há exames de graduação por faixas. A evolução é medida por tempo de prática e avaliação técnica do professor. 
+  > A aptidão do aluno para prestar exame de faixa condiciona-se ao cumprimento do tempo mínimo exigido na graduação atual e à frequência mínima comprovada nos registros da tabela PRESENCA, segundo o critério pedagógico do professor titular da modalidade.
 
-### 4.2 Restrições Organizacionais
-(Limitações físicas, lógicas e políticas que impõem barreiras ao modelo de dados)
+* **RO06 - Exceção Avaliativa da Modalidade Boxe**
 
-RE01 - Capacidade Máxima e Teto Operacional de Turmas
+  > Nas modalidades com sistema de graduação formal (Muay Thai, Jiu-Jitsu, Kickboxing, Capoeira e No-Gi), a progressão ocorre via exame de faixa (TP_EXAME_FAIXA) mediante pagamento de taxa de exame integrada na mensalidade. Na modalidade de Boxe (IN_POSSUI_SISTEMA_FAIXAS = false), não há faixas nem cobrança de taxa, sendo a evolução registrada como análise técnica (TP_ANALISE_TECNICA).
 
-    Cada turma de artes marciais terá limite máximo de 30 alunos ativos, garantindo qualidade no ensino e segurança durante os treinos.
-    O sistema deve bloquear novas matrículas quando esse limite for atingido.
+* **RO07 - Apuração de Repasse Docente e Papel do Instrutor Auxiliar**
 
-RE02 - Condicionalidade Médica para Trancamento
+  > Os cinco professores prestadores de serviço recebem valor fixo por aula efetivamente ministrada (VL_POR_AULA), apurado a partir das ocorrências registradas na entidade AULA e liquidado no 5.º dia útil via lançamento em DESPESA. O apoio eventual de alunos mais graduados como instrutores auxiliares durante os treinos não gera vínculo formal, remuneração nem registro próprio no sistema.
 
-    O aluno só poderá trancar sua matrícula em artes marciais mediante apresentação de atestado médico ou justificativa de lesão. 
-    O sistema deve exigir o motivo registrado para validar o status "Trancado".
+### 4.2 Restrições Organizacionais e de Integridade
 
-RE03 - Exclusividade de Especialização Docente
+*(Limitações físicas, jurídicas e lógicas que impõem barreiras ao modelo de dados)*
 
-    Professores de artes marciais só poderão ser vinculados a turmas da modalidade em que possuem graduação reconhecida 
-    (ex.: faixa preta em Jiu-Jitsu, instrutor certificado em Muay Thai). O sistema deve validar a correspondência entre professor e modalidade.
+* **RE01 - Capacidade Física Máxima de 30 Alunos por Turma**
 
-RE04 - Integridade do Domínio de Status Cadastral
+  > Cada turma possui limite operacional estrito de 30 matrículas ativas simultâneas (QT_CAPACIDADE_MAXIMA = 30). O sistema deve impedir novas matrículas na turma quando esse teto for atingido e contabilizar eventuais alunos em reposição de aula dentro do limite físico do tatame.
 
-    O vínculo do aluno com a academia de artes marciais deve estar restrito aos estados: Ativo (pagante regular), 
-    Inativo (inadimplente ou cancelado) ou Trancado (afastado por lesão). O sistema deve impedir registros fora desses três valores.
+* **RE02 - Quórum Mínimo de Referência por Modalidade**
 
-RE05 - Bloqueio Automatizado de Catraca por Inadimplência
+  > A abertura e manutenção de horários observa o parâmetro mínimo de referência de cada modalidade (QT_MINIMA_REFERENCIA: Muay Thai = 4; Boxe = 6; Jiu-Jitsu, Kickboxing e No-Gi = 8; Capoeira = 10). Quando a ocupação ativa for inferior ao parâmetro, o sistema emite um alerta gerencial, sem bloquear a realização da aula.
 
-    O sistema de catraca da academia de artes marciais deve bloquear automaticamente o acesso do aluno inadimplente após o 5º dia útil do mês. 
-    O cruzamento entre “ID_Aluno” e Pagamento devem retornar "Bloqueado" e impedir registro de presença.
+* **RE03 - Obrigatoriedade de Responsável Legal e Atestado para Menores de 18 Anos**
+
+  > Para o registro de alunos com idade inferior a 18 anos (calculada a partir de DT_NASCIMENTO), o sistema exige obrigatoriamente a vinculação a um registro válido na entidade RESPONSAVEL (ID_RESPONSAVEL), a entrega prévia do atestado de aptidão física (DT_ENTREGA_ATESTADO) e o consentimento formal do responsável para tratamento de dados e uso de imagem (Art. 14.º da LGPD).
+
+* **RE04 - Condicionalidade para Trancamento de Matrícula**
+
+  > O trancamento de matrícula (TRANCAMENTO) é permitido exclusivamente por motivo de lesão esportiva ou razão médica (TP_LESAO | TP_RAZAO_MEDICA), comunicado presencialmente ou via WhatsApp sem exigência de laudo formal obrigatório. Durante a vigência do trancamento, suspendem-se a geração de mensalidades e a contagem de prazo do contrato, ajustando-se a data de término (DT_FIM).
+
+* **RE05 - Exclusividade de Especialização Docente por Modalidade**
+
+  > Cada professor atua exclusivamente numa única modalidade esportiva (ID_MODALIDADE em PROFESSOR). O sistema deve validar a compatibilidade referencial de modo que o docente só possa ser alocado a turmas, aulas e avaliações de graduação pertencentes à sua modalidade de especialização.
+
+* **RE06 - Domínio de Situação Cadastral e Preservação de Histórico**
+
+  > O estado cadastral do aluno restringe-se a TP_ATIVO (contrato vigente), TP_INATIVO (contrato encerrado/cancelado) ou TP_TRANCADO (afastamento médico em curso). Na entidade MATRICULA, o estado admite TP_ATIVA, TP_TRANCADA, TP_ENCERRADA (utilizada na transferência de turma/modalidade) e TP_CANCELADA. Registros de matrículas encerradas, contratos, pagamentos e despesas nunca sofrem exclusão física, preservando a rastreabilidade histórica e fiscal.
+
+* **RE07 - Bloqueio Operacional e de Frequência por Inadimplência**
+
+  > A inadimplência é derivada das parcelas em PAGAMENTO. Caso a fatura não seja liquidada até o 5.º dia útil, o título assume o estado TP_ATRASADO e, a partir do 6.º dia útil, o aluno fica bloqueado operacionalmente, impedindo a inserção de registros de presença na tabela PRESENCA até a regularização financeira.
 
 
 ---
