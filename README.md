@@ -49,13 +49,13 @@ estruturando os fluxos operacionais da instituição em um sistema normalizado e
 Delimitação de Escopo: O projeto limita-se estritamente à arquitetura do banco de dados relacional e às suas consultas analíticas. Não contempla o desenvolvimento de interfaces visuais (aplicativos ou sistemas web), módulos comerciais para venda de artigos esportivos, nem a operação direta de hardware (como catracas de reconhecimento facial); Embora a independência da arquitetura proposta permita o acoplamento futuro de tais recursos sem a necessidade de alteração estrutural nas tabelas.
 
 
-# 1. Caracterização da Organização
+# Caracterização da Organização
 
-## 1.1 Nome e natureza da organização
+## Nome e natureza da organização
 
 Base Forte Leste - Academia de Artes Marciais (Gerida pelo CEO Adalberto). É uma organização com fins lucrativos voltada para a prestação de serviços esportivos e ensino de lutas.
   
-## 1.2 Contexto e porte
+## Contexto e porte
 
 ### Natureza Jurídica e Atuação
 
@@ -89,7 +89,7 @@ Empresa privada com fins lucrativos, atuante na prestação de serviços esporti
 
 * **Rotina de Compras e Despesas:** Reposição presencial semanal de insumos de higiene/limpeza realizada pelo gestor, além do lançamento mensal das despesas fixas da academia (locação, água, luz e pagamento de docentes). 
 
-## 1.3 Problemas e necessidades identificados
+## Problemas e necessidades identificados
   
 A Academia Base Forte Leste enfrenta atualmente uma crise operacional decorrente da dependência exclusiva de fichas impressas de papel e do controle informal de tratativas via WhatsApp, sem a integração de um sistema informatizado central. A administração da unidade apoia-se na memória individual dos funcionários e em anotações descentralizadas, gerando descontinuidade de dados, insegurança jurídica, vulnerabilidades financeiras e falhas no planejamento das aulas.
 
@@ -155,12 +155,12 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 A implantação de um banco de dados relacional é indispensável para substituir as fichas de papel e centralizar o controle hoje dividido com planilhas e mensagens informais. O sistema unifica os dados cadastrais, financeiros e pedagógicos em uma base sólida e auditável. Paralelamente, o anseio da academia pela instalação futura de uma catraca com reconhecimento facial na entrada atua apenas como um hardware externo de consumo de dados: essa automação não interfere na modelagem do banco de dados, que opera de forma independente e estruturalmente pronta para fornecer suporte a essa integração no futuro.
 
-## 1.4 Justificativa da escolha:
+## Justificativa da escolha:
 
 A escolha desta academia fundamenta-se em sua expressiva relevância comunitária na promoção da saúde e no ensino de defesa pessoal. A viabilidade e o aprofundamento dessa seleção decorrem do fato de um dos integrantes da equipe, Nickolas, ser aluno da instituição. Tal condição proporcionou acesso privilegiado à administração, permitindo uma análise precisa dos desafios vivenciados no controle discente, na gestão contratual e no acompanhamento da frequência. O desenvolvimento de um banco de dados mostra-se uma medida imprescindível para assegurar o armazenamento centralizado e seguro das informações, sanando as vulnerabilidades atuais.
 
   
-## 1.5 Evidências da organização
+## Evidências da organização
 
 - Endereço completo: Rua Itinguçu, 2345A, Vila Ré, São Paulo – SP
 - Responsável: Adalberto (CEO)
@@ -185,7 +185,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
 ---
 
-## 2. Processos de Negócio
+## Processos de Negócio
  
 Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/10/2026 com o CEO Adalberto e dos esclarecimentos do grupo. Cada processo segue a mesma estrutura: Hoje (AS-IS), No sistema (TO-BE) em passos numerados com o responsável por cada um, Dados registrados, Regras e Integração com os outros processos.
  
@@ -475,9 +475,9 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
 | Marketing e divulgação | Não incluído | A divulgação é feita no Instagram, com vídeos produzidos sem custo e sem fluxo formal. Não há despesa, contrato ou pagamento a registrar. A aula experimental entra como processo (pré-cadastro) e preserva o primeiro contato do interessado. |
 ---
 
-## 3\. Requisitos do Sistema
+##  Requisitos do Sistema
 
-### 3.1 Requisitos funcionais
+###  Requisitos funcionais
 
 * **RF01 - Gestão de Alunos, Responsáveis e Interessados:**
 
@@ -504,7 +504,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
 
   > O sistema deve documentar o histórico de avaliações técnicas e exames de faixa em GRADUACAO (incluindo aprovações, reprovações e motivos), bem como controlar os períodos de afastamento médico em TRANCAMENTO, suspendendo o faturamento e ajustando o ciclo contratual.
 
-### 3.2 Requisitos Não Funcionais
+###  Requisitos Não Funcionais
 
 * **RNF01 - Independência Arquitetural e Escalabilidade Biométrica:**
 
@@ -526,11 +526,11 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
 
   > A arquitetura de armazenamento deve contemplar rotinas automatizadas de backup diário com rotação em ciclos de até 30 dias, preservando a retenção fiscal de 5 anos para registros contratuais e financeiros.
 
-## 4. Regras de Negócio (Restrições e Diretrizes Operacionais)
+##  Regras de Negócio (Restrições e Diretrizes Operacionais)
 
 *(Numeração estritamente sincronizada com as referências cruzadas do Dicionário de Dados v2.1)*
 
-### 4.1 Regras Operacionais
+###  Regras Operacionais
 
 *(Condições e processos de funcionamento estipulados pela administração da academia)*
 
@@ -562,7 +562,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
 
   > Os cinco professores prestadores de serviço recebem valor fixo por aula efetivamente ministrada (VL_POR_AULA), apurado a partir das ocorrências registradas na entidade AULA e liquidado no 5.º dia útil via lançamento em DESPESA. O apoio eventual de alunos mais graduados como instrutores auxiliares durante os treinos não gera vínculo formal, remuneração nem registro próprio no sistema.
 
-### 4.2 Restrições Organizacionais e de Integridade
+###  Restrições Organizacionais e de Integridade
 
 *(Limitações físicas, jurídicas e lógicas que impõem barreiras ao modelo de dados)*
 
@@ -597,7 +597,7 @@ Os processos abaixo foram mapeados a partir das entrevistas de 01/09/2026 e 13/1
 
 ---
 
-## 5\. Dicionário de Dados Conceitual
+##  Dicionário de Dados Conceitual
 
 Abaixo está o dicionário de dados completo em uma imagem **clicável**, com todas as entidades e atributos que constam no Diagrama:
 
@@ -606,9 +606,9 @@ Abaixo está o dicionário de dados completo em uma imagem **clicável**, com to
 
 ---
 
-## 6\. Diagrama Entidade-Relacionamento (DER) e Evolução do Modelo
+##  Diagrama Entidade-Relacionamento (DER) e Evolução do Modelo
 
-### 6.2  Diagrama Entidade-Relacionamento (DER)
+###   Diagrama Entidade-Relacionamento (DER)
 
 O Diagrama Entidade-Relacionamento (DER) conceitual consolida a totalidade dos processos operacionais, pedagógicos e administrativos da Academia Base Forte Leste, estruturado a partir das entrevistas de campo e das correções apontadas na Entrega 01. O modelo adota a notação clássica de Peter Chen com especificação de cardinalidades mínimas e máximas (mín, máx) em ambas as extremidades das relações. Em estrita conformidade com as diretrizes teóricas de modelagem conceitual, o diagrama não contém chaves estrangeiras (FKs), as quais são derivadas formalmente apenas na etapa lógica. O esquema integra 14 entidades interdependentes, garantindo a rastreabilidade de aulas, frequência diária, contratos, controle de capacidade por turma (teto de 30 alunos), afastamentos médicos e salvaguardas da LGPD para menores de idade.
 
@@ -617,7 +617,7 @@ O Diagrama Entidade-Relacionamento (DER) conceitual consolida a totalidade dos p
 **Legenda:** O Diagrama Entidade-Relacionamento (DER) conceitual deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web (https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).
 
 
-### 6.2 Detalhamento das Mudanças (1º DER para o 2º DER)
+###  Detalhamento das Mudanças (1º DER para o 2º DER)
 Em resposta à avaliação da Entrega 01 e à segunda entrevista de campo (13/10/2026), o modelo evoluiu de **9 para 14 entidades**, corrigindo todas as pendências estruturais:
 
 | Item Modificado | 1º DER (Entrega 01) | 2º DER Atualizado (Entrega 02) | Motivo da Mudança |
@@ -634,7 +634,7 @@ Em resposta à avaliação da Entrega 01 e à segunda entrevista de campo (13/10
 
 ---
 
-## 7\. Conversão do Modelo Conceitual para o Modelo Lógico
+## 1.2 Conversão do Modelo Conceitual para o Modelo Lógico
 
 A conversão do modelo conceitual para o modelo lógico relacional seguiu as regras formais de mapeamento relacional e normalização até a Terceira Forma Normal (1FN a 3FN), preparando a base de dados para implementação no SGBD MySQL 8.0 (Storage Engine InnoDB):
 
@@ -652,7 +652,7 @@ A conversão do modelo conceitual para o modelo lógico relacional seguiu as reg
 
 ---
 
-## 8\. Proposta de Arquitetura Analítica para BI e IA
+## 1.6 Proposta de Arquitetura Analítica para BI e IA
 
 
 
@@ -663,20 +663,7 @@ A conversão do modelo conceitual para o modelo lógico relacional seguiu as reg
 
 ---
 
-## 9\. Modelo Lógico Relacional
-
-
-
-
-
-
-
-
-
----
-
-## 10\. Script em SQL
-
+## 2 Modelo Lógico Relacional
 
 
 
@@ -688,7 +675,12 @@ A conversão do modelo conceitual para o modelo lógico relacional seguiu as reg
 
 ---
 
-## 11\. Massa de Dados
+## 3 Script em SQL
+
+
+
+
+
 
 
 
@@ -696,7 +688,15 @@ A conversão do modelo conceitual para o modelo lógico relacional seguiu as reg
 
 ---
 
-## 12\. Justificativa Técnica
+## 4 Massa de Dados
+
+
+
+
+
+---
+
+## 5 Justificativa Técnica
 ### Premissa do Modelo e Evolução da 1.ª para a 2.ª Entrega
 
 #### * Na concepção inicial do projeto (1.ª Entrega), a modelagem concentrou-se nas entidades nucleares de cadastro, matrícula, presença e pagamento. Contudo, a partir da devolutiva docente e da segunda etapa de levantamento de campo realizada em 13/10/2026 junto ao gestor Adalberto, constatou-se a necessidade de expandir a arquitetura de 8 para **14 entidades** (acrescidas das tabelas associativas `PRESENCA` e `PARTICIPA`, das 8 tabelas de atributos multivalorados em 1FN e da estrutura de auditoria `LOG_ACESSO`). Essa evolução permitiu cobrir integralmente o ciclo de vida operacional da Base Forte Leste: desde a captação em aulas experimentais (`INTERESSADO`) até à escrituração de despesas e folha de repasse dos instrutores (`DESPESA`). 
@@ -716,7 +716,7 @@ A conversão do modelo conceitual para o modelo lógico relacional seguiu as reg
    > Para assegurar a atomicidade exigida pela 1FN no modelo lógico, o atributo composto `ENDERECO` foi decomposto em colunas atômicas (`DS_RUA`, `NR_LOGRADOURO`, `NM_BAIRRO`, `NR_CEP`), e os atributos multivalorados de `ALUNO` e `PROFESSOR` (e-mails, telefones, problemas de saúde, especializações, níveis de experiência e qualificações) foram isolados em 8 tabelas de apoio com chave primária composta.
 
  ---
-## 13. Uso de Inteligência Artificial
+## 6 Uso de Inteligência Artificial
 
 *(Documentação obrigatória sobre o uso da IA para organizar o trabalho)*.
 
