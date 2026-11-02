@@ -84,17 +84,7 @@ Delimitação de Escopo: O projeto limita-se estritamente à arquitetura do banc
 | Questionário de 13/10 (Q5.2 e Q6.1): 4 professores e 1 colaborador na recepção | 5 professores prestadores (inclusive Capoeira) e nenhum recepcionista; o CEO faz a recepção | Corrigido com o CEO depois da visita — ver "Esclarecimentos posteriores" no levantamento |
 | Planos Mensal, Trimestral, Anual e Família | Inclui Semestral; Família existe em todas as durações | 2ª visita (Q2.1) |
  
- ### Processos não incluídos e justificativa
- 
-| Processo comum em academias | Situação | Justificativa |
-|---|---|---|
-| Venda de produtos e suplementos | Não incluído | Não faz parte da demanda da academia; descartado no levantamento. |
-| Folha de pagamento com encargos trabalhistas | Não incluído | O único contratado é o CEO e os demais professores são prestadores pagos por aula (processo 11). O CEO retira seu ganho das mensalidades e das taxas de exame, sem salário, então não há folha de pagamento. |
-| Controle de estoque e durabilidade de equipamentos | Não incluído | A academia compra sob demanda e não tem esse controle; o registro de compras cobre o necessário. |
-| Empréstimo de equipamentos | Não incluído | Os equipamentos são de uso livre nas aulas, sem registro nem cobrança. |
-| Registro do instrutor auxiliar | Não incluído | O professor escolhe o aluno informalmente, sem regra fixa; não há necessidade de dado. |
-| Marketing e divulgação | Não incluído | A divulgação é feita no Instagram, com vídeos produzidos sem custo e sem fluxo formal. Não há despesa, contrato ou pagamento a registrar. A aula experimental entra como processo (pré-cadastro) e preserva o primeiro contato do interessado. |
- 
+
 
 # Caracterização da Organização
 
@@ -497,6 +487,17 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 | Frequência | Pagamento dos Professores | Aulas ministradas | Valor a pagar |
 | Compras e Pagamento dos Professores | Contas a Pagar | Valor e vencimento | Despesa registrada |
 | Contratação de Planos | Contrato e Cancelamento | Fim do ciclo: aviso ao aluno e resposta | Contrato continua ou é cancelado e o aluno fica Inativo |
+
+  ### Processos não incluídos e justificativa
+ 
+| Processo comum em academias | Situação | Justificativa |
+|---|---|---|
+| Venda de produtos e suplementos | Não incluído | Não faz parte da demanda da academia; descartado no levantamento. |
+| Folha de pagamento com encargos trabalhistas | Não incluído | O único contratado é o CEO e os demais professores são prestadores pagos por aula (processo 11). O CEO retira seu ganho das mensalidades e das taxas de exame, sem salário, então não há folha de pagamento. |
+| Controle de estoque e durabilidade de equipamentos | Não incluído | A academia compra sob demanda e não tem esse controle; o registro de compras cobre o necessário. |
+| Empréstimo de equipamentos | Não incluído | Os equipamentos são de uso livre nas aulas, sem registro nem cobrança. |
+| Registro do instrutor auxiliar | Não incluído | O professor escolhe o aluno informalmente, sem regra fixa; não há necessidade de dado. |
+| Marketing e divulgação | Não incluído | A divulgação é feita no Instagram, com vídeos produzidos sem custo e sem fluxo formal. Não há despesa, contrato ou pagamento a registrar. A aula experimental entra como processo (pré-cadastro) e preserva o primeiro contato do interessado. |
  
 ---
  
