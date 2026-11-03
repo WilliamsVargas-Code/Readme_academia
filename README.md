@@ -209,7 +209,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** Não há registro sistêmico sobre quais aulas foram ministradas, quais professores compareceram e como ocorreram as reposições de horários. Ao final do mês, a apuração dos valores a serem repassados aos docentes depende de negociações verbais e memória, gerando risco de erros contábeis e atritos operacionais.
 
-**Como o banco de dados resolve:** Relaciona PROFESSOR e AULA (cada aula guarda o professor que a ministrou, e lança o pagamento em DESPESA) e lança o pagamento em DESPESA`, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
+**Como o banco de dados resolve: Relaciona PROFESSOR e AULA (cada aula guarda o professor que a ministrou, e o valor por aula fica em PROFESSOR.VL_POR_AULA) e lança o pagamento em DESPESA, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
 
 ### P7 - Desperdício de contatos e falta de acompanhamento de aulas experimentais
 
