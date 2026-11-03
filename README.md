@@ -38,7 +38,7 @@ estruturando os fluxos operacionais da instituição em um sistema normalizado e
 
 #### Os objetivos específicos incluem:
 
-* Modelar os cadastros de , os vínculos com responsáveis legais e o registro de condições médicas e restritivas;
+* Modelar os cadastros de alunos , os vínculos com responsáveis legais e o registro de condições médicas e restritivas;
 
 * Integrar a gestão de planos, contratos, aditivos de multi-modalidade e a geração de faturas financeiras de mensalidades;
 
@@ -201,7 +201,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** A ausência de sincronização no sistema impede que o CEO saiba quantas vagas reais estão preenchidas nos horários. Autorizar transferências entre artes marciais sem conferência de dados pode provocar a superlotação do tatame acima de 30 alunos na modalidade de destino, além de manter indevidamente bloqueadas as vagas de quem já se afastou por questões médicas.
 
-**Como o banco de dados resolve:** Integra as tabelas `TURMA`, `MATRICULA` a entidade `TRANCAMENTO`, mantendo o histórico de transferências, o registro formal do afastamento por lesão (TP_TRANCAMENTO, DS_MOTIVO, DT_INICIO, DT_RETORNO_PREVISTA) e permitindo o cálculo dinâmico da ocupação das turmas em tempo real.
+**Como o banco de dados resolve:** Integra as tabelas `TURMA`, `MATRICULA` e a entidade `TRANCAMENTO`, mantendo o histórico de transferências, o registro formal do afastamento por lesão (TP_TRANCAMENTO, DS_MOTIVO, DT_INICIO, DT_RETORNO_PREVISTA) e permitindo o cálculo dinâmico da ocupação das turmas em tempo real.
 
 ### P6 - Dificuldade no cálculo do repasse financeiro e controle das aulas lecionadas pelos professores
 
@@ -209,7 +209,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** Não há registro sistêmico sobre quais aulas foram ministradas, quais professores compareceram e como ocorreram as reposições de horários. Ao final do mês, a apuração dos valores a serem repassados aos docentes depende de negociações verbais e memória, gerando risco de erros contábeis e atritos operacionais.
 
-**Como o banco de dados resolve:** Relaciona PROFESSOR e AULA(cada aula guarda o professor que a ministrou, e o valor por aula fica em PROFESSOR.VL_POR_AULA) e lança o pagamento em DESPESA`, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
+**Como o banco de dados resolve:** Relaciona PROFESSOR e AULA (cada aula guarda o professor que a ministrou, e lança o pagamento em DESPESA) e lança o pagamento em DESPESA`, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
 
 ### P7 - Desperdício de contatos e falta de acompanhamento de aulas experimentais
 
@@ -303,7 +303,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 - **Fim do papel:** as fichas físicas deixam de existir, o que elimina a exposição dos dados no balcão.
 **Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco), quando menor; data de entrega do atestado de aptidão física (todos os alunos); autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
  
-**Regras:** situação do aluno restrita a Ativo (contrato vigente), Inativo (contrato terminado) ou Trancado (trancamento em curso); um aluno pode ter várias matrículas (várias modalidades) e um único contrato; menor de 18 e um único contrato vigente, como titular ou como dependente do Plano Família; menor de 18 anos exige responsável legal; todo aluno entrega o atestado de aptidão física antes da matrícula; CPF único; problemas de saúde e CPF são dados sensíveis, tratados conforme a regra de LGPD acima; a autorização de uso de imagem é opcional e fica registrada com a data; matrícula encerrada nunca é apagada.
+**Regras:** situação do aluno restrita a Ativo (contrato vigente), Inativo (contrato terminado) ou Trancado (trancamento em curso); um aluno pode ter várias matrículas (várias modalidades) e um único contrato vigente, como titular ou como dependente do Plano Família; menor de 18 anos exige responsável legal; todo aluno entrega o atestado de aptidão física antes da matrícula; CPF único; problemas de saúde e CPF são dados sensíveis, tratados conforme a regra de LGPD acima; a autorização de uso de imagem é opcional e fica registrada com a data; matrícula encerrada nunca é apagada.
  
 **Integração:** recebe de Aula Experimental; envia para Contratação de Planos, Frequência e Graduação.
  
