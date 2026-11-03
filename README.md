@@ -38,7 +38,7 @@ estruturando os fluxos operacionais da instituição em um sistema normalizado e
 
 #### Os objetivos específicos incluem:
 
-* Modelar os cadastros de alunos , os vínculos com responsáveis legais e o registro de condições médicas e restritivas;
+* Modelar os cadastros de alunos, os vínculos com responsáveis legais e o registro de condições médicas e restritivas;
 
 * Integrar a gestão de planos, contratos, aditivos de multi-modalidade e a geração de faturas financeiras de mensalidades;
 
