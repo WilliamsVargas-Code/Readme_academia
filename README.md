@@ -653,7 +653,22 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
   > A inadimplência é derivada das parcelas em PAGAMENTO. Caso a fatura não seja liquidada até o 5.º dia útil, o título assume o estado TP_ATRASADO e, a partir do 6.º dia útil, o aluno fica bloqueado operacionalmente, impedindo a inserção de registros de presença na tabela PRESENCA até a regularização financeira.
 
+---
+### **Requisitos e regras prováveis não incluídos (Justificativas)**
 
+* **Módulo Comercial (Venda de Artigos Esportivos e Cantina):** É uma regra de negócio comum em academias o controle de vendas de uniformes, faixas, luvas e suplementos. O escopo deste projeto, no entanto, foi estritamente delimitado para sanar a crise operacional prioritária da instituição: o controle de matrículas, frequência e inadimplência. A inclusão de um módulo de vendas exigiria entidades de estoque, fornecedores e fluxo de caixa paralelo, o que inflaria o modelo e desviaria o foco do problema principal.
+
+
+* **Operação Direta de Controle de Acesso (Catracas/Biometria):** Sistemas de academias frequentemente incluem o controle direto de hardware para bloqueio de inadimplentes. O projeto não contempla a operação direta de hardware ou o software da catraca. A regra não foi incluída porque o banco de dados atua apenas como fornecedor da informação (situação financeira do aluno); a arquitetura foi preparada para o consumo desses dados no futuro (RNF01), sem assumir a responsabilidade pela execução do bloqueio físico.
+
+
+* **Gestão de Planos Familiares e Dependentes:** Muitos sistemas esportivos possuem regras comerciais para agrupar múltiplos alunos sob um único contrato familiar com desconto. Atributos relacionados a parentesco e responsáveis por planos foram deliberadamente removidos nesta versão (v2.1 e v2.3). Optou-se por manter a relação de cobrança simplificada, onde o responsável legal está vinculado ao cadastro do menor para fins da LGPD, mas os contratos (CONTRATO) e pagamentos (PAGAMENTO) permanecem individualizados por aluno, adiando a complexidade de faturamentos agrupados para escopos futuros.
+
+
+* **Tabela de Autenticação e Usuários do Sistema:** É requisito comum o cadastro de usuários com login e senha criptografada. Como o foco da entrega é a modelagem dos processos de negócio da academia, a criação de uma entidade de gestão de usuários foi abstraída. A rastreabilidade exigida pela LGPD foi atendida de forma simplificada na tabela `LOG_ACESSO`, que registra o nome do usuário em formato de texto livre, dispensando uma chave estrangeira complexa para uma tabela de credenciais que não seria utilizada nas consultas analíticas.
+
+
+* **Agendamento de Reposições Via Aplicativo:** Regras sobre limite de reagendamentos e interface para o aluno marcar aulas não foram incluídas. O escopo restringe-se ao backend de dados. A modelagem resolve a reposição apenas no nível do banco (via auto-relacionamento na tabela AULA) para registro histórico e cálculo de honorários, assumindo que a validação de vagas nessas aulas será feita pela camada de aplicação, e não por restrições do banco.
 ---
 
 ##  Dicionário de Dados Conceitual
