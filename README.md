@@ -21,7 +21,7 @@
 | DER conceitual revisado | [diagrama_er.png](diagrama_er.png) |
 | Modelo lógico | [modelo_logico.png](<img/Modelo Logico V6.png>) |
 | Dicionário de dados (HTML) | [index.html](index.html) · [GitHub Pages](https://williamsvargas-code.github.io/Readme_academia/) |
-| Script SQL e Massa de Dados | [docs/academia_base_forte_leste.sql](academia_base_forte_leste.sql) |
+| Script SQL e Massa de Dados | [docs/academia_base_forte_leste.sql](docs/academia_base_forte_leste.sql) |
 | Slides do pitch | [slides/apresentacao.pdf](slides/apresentacao.pdf) [PENDENTE: criar] |
 
 ---
@@ -990,12 +990,12 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 
 O código completo de criação das tabelas (`CREATE TABLE`), restrições e inserção de dados (`INSERT INTO`) está no ficheiro [docs/academia_base_forte_leste.sql](academia_base_forte_leste.sql).
 
-## 3.1 Dados 100% Fictícios (Conformidade com a LGPD)
+### 3.1 Dados 100% Fictícios (Conformidade com a LGPD)
 Todos os dados pessoais e financeiros inseridos no script são **estritamente fictícios**:
 * Nomes sorteados aleatoriamente, CPFs com dígitos verificadores inválidos, telefones e moradas inventados e e-mails com o domínio reservado `@example.com`.
 * Os valores de mensalidades, multas, despesas e pagamentos por aula são simulados para preservar o sigilo comercial da organização.
 
-## 3.2 Justificativa da Quantidade de Registos (Proporção Real)
+### 3.2 Justificativa da Quantidade de Registos (Proporção Real)
 Embora os dados individuais sejam fictícios, a **quantidade de registos** em cada tabela (total de **2.030 linhas**, com data de referência em `01/11/2026`) foi dimensionada para refletir o porte operacional da academia levantado nas entrevistas:
 
 | Tabela | Qtd. Fictícia | Como o porte da academia justifica essa quantidade |
