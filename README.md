@@ -38,7 +38,7 @@ estruturando os fluxos operacionais da instituição em um sistema normalizado e
 
 #### Os objetivos específicos incluem:
 
-* Modelar os cadastros de alunos, os vínculos com responsáveis legais e o registro de condições médicas e restritivas;
+* Modelar os cadastros de , os vínculos com responsáveis legais e o registro de condições médicas e restritivas;
 
 * Integrar a gestão de planos, contratos, aditivos de multi-modalidade e a geração de faturas financeiras de mensalidades;
 
@@ -153,7 +153,7 @@ Empresa privada com fins lucrativos, atuante na prestação de serviços esporti
 
 * **Movimentação Financeira Mensal:** Emissão recorrente de 70 a 85 faturas de mensalidade por mês (uma para cada contrato vigente, com vencimento no 5º dia útil), gerando no banco um histórico de liquidações pontuais, pagamentos com acréscimo de uma multa (planos Trimestral, Semestral e Anual)  
 
-* **Aulas Experimentais:** Média observada de 2 a 4 atendimentos semanais de novos interessados para testes gratuitos (cerca de 8 a 16 por mês), que hoje dependem unicamente da memória dos instrutores.   
+* **Aulas Experimentais:** Média observada de 2 a 4 atendimentos semanais de novos interessados para testes gratuitos (cerca de 8 a 16 por mês), que hoje dependem unicamente da memória do CEO e instrutores.   
 
 * **Rotina de Compras e Despesas:** Reposição presencial semanal de insumos de higiene/limpeza realizada pelo gestor, além do lançamento mensal das despesas fixas da academia (locação, água, luz e pagamento de docentes). 
 
@@ -165,7 +165,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 ### P1 - Vulnerabilidade no armazenamento manual em fichas físicas e risco de perda de dados
 
-**O que acontece na prática:** O cadastro de novos alunos é realizado exclusivamente à mão em formulários impressos de papel preenchidos no balcão da recepção. Essas folhas reúnem dados cadastrais, telefones de emergência, identificação de pais ou responsáveis no caso de praticantes menores de idade e anotações sobre problemas de saúde preexistentes, ficando arquivadas em pastas físicas abertas sobre a bancada de atendimento.
+**O que acontece na prática:** O cadastro de novos alunos é realizado exclusivamente à mão em formulários impressos de papel preenchidos no balcão de atendimento. Essas folhas reúnem dados cadastrais, telefones de emergência, identificação de pais ou responsáveis no caso de praticantes menores de idade e anotações sobre problemas de saúde preexistentes, ficando arquivadas em pastas físicas abertas sobre a bancada de atendimento.
 
 **Por que é um problema:** Os papéis estão sujeitos à degradação física e a riscos constantes de extravio, rasuras e umidade durante o expediente. Além da perda física das informações, manter pastas de formulários expostas sobre o balcão deixa registros de saúde e dados pessoais vulneráveis à visualização de terceiros, infringindo os requisitos de sigilo da LGPD. Qualquer atualização cadastral ou consulta de contato exige folhear fichas manualmente, tornando o atendimento lento e propenso a inconsistências.
 
@@ -191,7 +191,7 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **O que acontece na prática:** Para progredir de graduação nas modalidades estruturadas por faixas (Muay Thai, No-Gi, Jiu-Jitsu, Kickboxing e Capoeira), o praticante deve cumprir um período de prática e uma assiduidade mínima comprovada. No entanto, a academia não mantém nenhum tipo de lista de chamada, caderno de presenças ou catraca eletrônica.
 
-**Por que é um problema:** A permissão para que o aluno se inscreva no exame de graduação apoia-se unicamente na memória dos instrutores, sem embasamento em dados históricos reais. Esse critério subjetivo compromete o rigor pedagógico e o nivelamento técnico esperado pela academia.
+**Por que é um problema:** A permissão para que o aluno se inscreva no exame de graduação apoia-se unicamente na memória dos professores, sem embasamento em dados históricos reais. Esse critério subjetivo compromete o rigor pedagógico e o nivelamento técnico esperado pela academia.
 
 **Como o banco de dados resolve:** Integra as tabelas `AULA`, `MATRICULA` e `GRADUACAO`, computando a assiduidade diária por modalidade e viabilizando consultas que atestam com precisão se a meta mínima de presença foi alcançada antes da emissão do certificado de faixa.
 
@@ -199,9 +199,9 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **O que acontece na prática:** Os horários são programados para suportar um teto de segurança de até 30 alunos por turma. Contudo, tanto as solicitações de trancamento de plano por lesão médica quanto os pedidos de troca definitiva de arte marcial (por exemplo, transferência do Boxe para o Muay Thai) ocorrem por mensagens no WhatsApp ou de boca no balcão.
 
-**Por que é um problema:** A ausência de sincronização no sistema impede que a recepção saiba quantas vagas reais estão preenchidas nos horários. Autorizar transferências entre artes marciais sem conferência de dados pode provocar a superlotação do tatame acima de 30 alunos na modalidade de destino, além de manter indevidamente bloqueadas as vagas de quem já se afastou por questões médicas.
+**Por que é um problema:** A ausência de sincronização no sistema impede que o CEO saiba quantas vagas reais estão preenchidas nos horários. Autorizar transferências entre artes marciais sem conferência de dados pode provocar a superlotação do tatame acima de 30 alunos na modalidade de destino, além de manter indevidamente bloqueadas as vagas de quem já se afastou por questões médicas.
 
-**Como o banco de dados resolve:** Integra as tabelas `TURMA`, `MATRICULA` e a entidade dependente `TRANCAMENTO`, mantendo o histórico de transferências, a comprovação formal de afastamento por lesão (`Atestado_Por, Motivo`) e permitindo o cálculo dinâmico da ocupação das turmas em tempo real.
+**Como o banco de dados resolve:** Integra as tabelas `TURMA`, `MATRICULA` a entidade `TRANCAMENTO`, mantendo o histórico de transferências, o registro formal do afastamento por lesão (TP_TRANCAMENTO, DS_MOTIVO, DT_INICIO, DT_RETORNO_PREVISTA) e permitindo o cálculo dinâmico da ocupação das turmas em tempo real.
 
 ### P6 - Dificuldade no cálculo do repasse financeiro e controle das aulas lecionadas pelos professores
 
@@ -209,19 +209,19 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** Não há registro sistêmico sobre quais aulas foram ministradas, quais professores compareceram e como ocorreram as reposições de horários. Ao final do mês, a apuração dos valores a serem repassados aos docentes depende de negociações verbais e memória, gerando risco de erros contábeis e atritos operacionais.
 
-**Como o banco de dados resolve:** Modela o relacionamento entre as tabelas `PROFESSOR` e `AULA` (armazenando o atributo [`Valor_Por_Aula`]) em conjunto com a entidade `DESPESA`, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
+**Como o banco de dados resolve:** Relaciona PROFESSOR e AULA(cada aula guarda o professor que a ministrou, e o valor por aula fica em PROFESSOR.VL_POR_AULA) e lança o pagamento em DESPESA`, permitindo a geração automática de folhas de repasse com base nas aulas de fato lecionadas por cada docente.
 
 ### P7 - Desperdício de contatos e falta de acompanhamento de aulas experimentais
 
 **O que acontece na prática:** A academia disponibiliza uma aula experimental gratuita para interessados que desejam experimentar uma modalidade antes de efetivar o vínculo. No entanto, nenhum dado de identificação ou contato desse participante é registrado no momento do agendamento.
 
-**Por que é um problema:** O histórico desse primeiro contato fica restrito à lembrança pontual dos professores e gestores. Quando o visitante não formaliza a adesão no mesmo dia da aula, a academia perde os dados de contato, impedindo que a recepção faça ações de retorno e converta potenciais alunos em matrículas ativas.
+**Por que é um problema:** O histórico desse primeiro contato fica restrito à lembrança pontual dos professores e do CEO. Quando o visitante não formaliza a adesão no mesmo dia da aula, a academia perde os dados de contato, impedindo que o CEO faça ações de retorno e converta potenciais alunos em matrículas ativas.
 
 **Como o banco de dados resolve:** Cria a entidade `INTERESSADO`, capturando o nome, telefone, data do atendimento e o retorno da visita (`Resultado_Interesse`), fornecendo métricas sobre o índice de conversão de aulas experimentais em novos contratos.
 
 ### Conclusão 
 
-A implantação de um banco de dados relacional é indispensável para substituir as fichas de papel e centralizar o controle hoje dividido com planilhas e mensagens informais. O sistema unifica os dados cadastrais, financeiros e pedagógicos em uma base sólida e auditável. Paralelamente, o anseio da academia pela instalação futura de uma catraca com reconhecimento facial na entrada atua apenas como um hardware externo de consumo de dados: essa automação não interfere na modelagem do banco de dados, que opera de forma independente e estruturalmente pronta para fornecer suporte a essa integração no futuro.
+A implantação de um banco de dados relacional é indispensável para substituir as fichas de papel e centralizar o controle hoje dividido entre fichas de papel, memória e mensagens de WhatsApp. O sistema unifica os dados cadastrais, financeiros e pedagógicos em uma base sólida e auditável. Paralelamente, o anseio da academia pela instalação futura de uma catraca com reconhecimento facial na entrada atua apenas como um hardware externo de consumo de dados: essa automação não interfere na modelagem do banco de dados, que opera de forma independente e estruturalmente pronta para fornecer suporte a essa integração no futuro.
 
 ## Justificativa da escolha:
 
@@ -283,7 +283,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 **No sistema (TO-BE):**
  
 1. O aluno informa seus dados: CPF, nome completo, data de nascimento, endereço (CEP, rua, número e bairro), e-mail, problemas de saúde, esportes já praticados, por quanto tempo treinou e se já é graduado. Informa também quantos telefones forem necessários (principal, reserva, emergência). (aluno e CEO)
-2. O sistema confere a idade. Se o aluno tem menos de 18 anos, exige os dados do responsável legal (nome, CPF, telefone e parentesco) e o atestado de aptidão física, entregue antes da matrícula. O sistema registra a data de entrega do atestado.
+2. O sistema confere a idade. Se o aluno tem menos de 18 anos, exige os dados do responsável legal (nome, CPF, telefone e parentesco). De todos os alunos, de qualquer idade, exige o atestado de aptidão física, entregue antes da matrícula, e registra a data de entrega.
 3. O CEO confirma o cadastro. O sistema gera o identificador único do aluno, que já fica com a situação Ativo.
 4. O aluno escolhe o plano (processo 3).
 5. O aluno escolhe a modalidade e a turma. O sistema cria a matrícula (aluno + turma) com data e situação e confere o limite de 30 alunos ativos. Se a turma estiver lotada, o aluno escolhe outra turma.
@@ -301,9 +301,9 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 - **Guarda e eliminação:** os dados são mantidos enquanto o aluno tiver contrato e, depois, pelo prazo necessário para o histórico de matrículas, pagamentos e graduações [prazo a definir com o CEO]. Após esse prazo, ou a pedido do titular quando não houver obrigação de guarda, os dados são eliminados ou anonimizados.
 - **Direitos do titular:** o aluno (ou o responsável legal) pode pedir ao CEO a confirmação do tratamento, o acesso, a correção e a eliminação dos seus dados, e revogar a autorização de imagem.
 - **Fim do papel:** as fichas físicas deixam de existir, o que elimina a exposição dos dados no balcão.
-**Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco) e data de entrega do atestado, quando menor; autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
+**Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco), quando menor; data de entrega do atestado de aptidão física (todos os alunos); autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
  
-**Regras:** situação do aluno restrita a Ativo (contrato vigente), Inativo (contrato terminado) ou Trancado (trancamento em curso); um aluno pode ter várias matrículas (várias modalidades) e um único contrato; menor de 18 anos exige responsável legal e atestado de aptidão física; CPF único; problemas de saúde e CPF são dados sensíveis, tratados conforme a regra de LGPD acima; a autorização de uso de imagem é opcional e fica registrada com a data; matrícula encerrada nunca é apagada.
+**Regras:** situação do aluno restrita a Ativo (contrato vigente), Inativo (contrato terminado) ou Trancado (trancamento em curso); um aluno pode ter várias matrículas (várias modalidades) e um único contrato; menor de 18 e um único contrato vigente, como titular ou como dependente do Plano Família; menor de 18 anos exige responsável legal; todo aluno entrega o atestado de aptidão física antes da matrícula; CPF único; problemas de saúde e CPF são dados sensíveis, tratados conforme a regra de LGPD acima; a autorização de uso de imagem é opcional e fica registrada com a data; matrícula encerrada nunca é apagada.
  
 **Integração:** recebe de Aula Experimental; envia para Contratação de Planos, Frequência e Graduação.
  
@@ -317,12 +317,12 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 1. O aluno escolhe a duração: Mensal, Trimestral, Semestral ou Anual. Cada duração tem uma faixa de desconto progressivo (percentuais confidenciais).
 2. O aluno escolhe a abrangência. O plano regular cobre uma única modalidade. Para mais de uma modalidade ou livre acesso a todas, aplica-se um acréscimo proporcional, mantida a tabela de desconto do ciclo. Cada aluno tem um único contrato (no Plano Família, o contrato é do titular e cobre os dependentes), que lista as modalidades cobertas; cada modalidade extra entra nesse mesmo contrato como um acréscimo.
-3. **Plano Família:** exige no mínimo duas pessoas com parentesco comprovado e existe em todas as durações, cada uma com seu desconto. O plano tem um responsável (titular) e pode ter até 4 dependentes. O titular tem um contrato único, que cobre os dependentes. o sistema não armazena a prova de parentesco.
+3. **Plano Família:** exige no mínimo duas pessoas com parentesco comprovado e existe em todas as durações, cada uma com seu desconto. O plano tem um responsável (titular) e pode ter até 4 dependentes. O titular tem um contrato único, que cobre os dependentes. Para cada dependente, o sistema registra o parentesco, o tipo de documento apresentado (por exemplo, RG) e a data da conferência; o número do documento não é guardado.
 4. O sistema  calcula a mensalidade (valor base + acréscimos por modalidadeextra - desconto).
 5. O contrato é registrado e o sistema gera as mensalidades (processo 4). Pagamento: os planos Trimestral, Semestral e Anual definem apenas o ciclo e o desconto. O pagamento é sempre em parcelas mensais, vencendo no 5º dia útil. Não existe quitação antecipada. Um plano anual gera 12 mensalidades.
 **Renovação:** o contrato não termina sozinho. No fim do ciclo, o aluno é contatado e avisado de possíveis alterações no desconto do seu plano. Se aceita, o contrato continua; se recusa, o contrato é cancelado e o aluno passa a Inativo.
  
-**Dados registrados (contrato):** aluno, plano, modalidades cobertas, data de início, data de fim do ciclo, valor da mensalidade, percentual de desconto, acréscimos por modalidade extra (quando houver), data do cancelamento e valor da multa rescisória (quando houver). No Plano Família, também o titular, os dependentes e o documento de parentesco apresentado.
+**Dados registrados (contrato):** aluno, plano, modalidades cobertas, data de início, data de fim do ciclo, valor da mensalidade, percentual de desconto, acréscimos por modalidade extra (quando houver), data do cancelamento e valor da multa rescisória (quando houver). No Plano Família, também o titular e os dependentes, com o parentesco de cada um, o tipo de documento apresentado e a data da conferência.
  
 **Regras:** vencimento fixo no 5º dia útil; multa rescisória só em planos de maior duração (processo 5); contrato só termina por cancelamento.
  
@@ -391,7 +391,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 1. O CEO cria a turma com modalidade, professor responsável, dia da semana, horário de início e horário de fim. Há 4 turmas por dia, em horários diferentes. Aos sábados só há turma de Capoeira, que tem uma única turma.
 2. O sistema só aceita o professor se ele ensina a modalidade da turma (cada professor tem uma única modalidade).
 3. O aluno entra na turma pela matrícula. Ao chegar a 30 alunos ativos, o sistema bloqueia novas matrículas.
-4. Regra de referência para abrir horário: Muay Thai 4 alunos (turma do CEO), Boxe 6, Jiu-Jitsu, Kickboxing e No-Gi 8, Capoeira 10. O sistema só alerta quando a turma tem menos alunos, porque na prática o instrutor pode dar o treino assim mesmo.
+4. Regra de referência para abrir horário: Muay Thai 4 alunos (turma do CEO), Boxe 6, Jiu-Jitsu, Kickboxing e No-Gi 8, Capoeira 10. O sistema só alerta quando a turma tem menos alunos, porque na prática o professor pode dar o treino assim mesmo.
 5. **Instrutor auxiliar:** o professor responsável pela modalidade pode escolher o aluno mais graduado para auxiliar, mas isso não é regra e não é marcado no sistema. Quando o CEO está dando sua aula de Muay Thai e precisa receber alunos novos, ele deixa um aluno mais graduado conduzindo o treino. Esse aluno é um instrutor auxiliar eventual, que não é funcionário nem é registrado, e a aula continua registrada em nome do professor responsável da turma.
 **Dados registrados:** turma (modalidade, professor, dia, horário de início e fim) e quórum por modalidade.
  
