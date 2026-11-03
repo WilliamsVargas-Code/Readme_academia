@@ -153,7 +153,7 @@ Empresa privada com fins lucrativos, atuante na prestação de serviços esporti
 
 * **Movimentação Financeira Mensal:** Emissão recorrente de 70 a 85 faturas de mensalidade por mês (uma para cada contrato vigente, com vencimento no 5º dia útil), gerando no banco um histórico de liquidações pontuais, pagamentos com acréscimo de uma multa (planos Trimestral, Semestral e Anual)  
 
-* **Aulas Experimentais:** Média observada de 2 a 4 atendimentos semanais de novos interessados para testes gratuitos (cerca de 8 a 16 por mês), que hoje dependem unicamente da memória do CEO e instrutores.   
+* **Aulas Experimentais:** Média observada de 2 a 4 atendimentos semanais de novos interessados para testes gratuitos (cerca de 8 a 16 por mês), que hoje dependem unicamente da memória do CEO e dos professores.   
 
 * **Rotina de Compras e Despesas:** Reposição presencial semanal de insumos de higiene/limpeza realizada pelo gestor, além do lançamento mensal das despesas fixas da academia (locação, água, luz e pagamento de docentes). 
 
