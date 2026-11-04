@@ -675,7 +675,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
 Abaixo está o dicionário de dados completo em uma imagem **clicável**, com todas as entidades e atributos que constam no Diagrama:
 
-[![Website Preview Screenshot](img_preview_dicionario.png)](https://williamsvargas-code.github.io/Readme_academia/)
+[![Website Preview Screenshot](img/img_preview_dicionario.png)](https://williamsvargas-code.github.io/Readme_academia/)
 
 
 ---
