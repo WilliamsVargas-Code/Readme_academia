@@ -83,6 +83,27 @@ Delimitação de Escopo: O projeto limita-se estritamente à arquitetura do banc
 | Questionário de 13/10 (Q5.2 e Q6.1): 4 professores e 1 colaborador na recepção | 5 professores prestadores (inclusive Capoeira) e nenhum recepcionista; o CEO faz a recepção | Corrigido com o CEO depois da visita — ver "Esclarecimentos posteriores" no levantamento |
 | Planos Mensal, Trimestral, Anual e Família | Inclui Semestral; Família existe em todas as durações | 2ª visita (Q2.1) |
 
+### Apontamentos da correção sobre Requisitos (Critério 7)
+
+| Apontamento da correção da E1 | O que mudou no trabalho | Por quê |
+| :---- | :---- | :---- |
+| 4 dos 6 RNF eram regras de negócio (RNF03 vencimento no 5o dia útil, RNF04 limite de 30 alunos, RNF05 professor só na sua modalidade, RNF06 trancamento com atestado), repetidas na Seção 4 | Os quatro saíram dos RNF e ficam só em Regras de Negócio: **RO02** (vencimento no 5o dia útil), **RE01** (limite de 30 por turma), **RE05** (professor só na sua modalidade) e **RE04** (trancamento). Os 5 RNF atuais são de qualidade: RNF01 independência arquitetural, RNF02 segurança e LGPD, RNF03 desempenho, RNF04 integridade e codificação, RNF05 disponibilidade e backup | RNF descreve **como** o sistema deve se comportar (desempenho, segurança, backup). O que a academia exige do negócio é regra de negócio, e cada coisa fica em um lugar só |
+
+### Apontamentos da correção sobre Regras de Negócio (Critério 8)
+
+| Apontamento da correção da E1 | O que mudou no trabalho | Por quê |
+| :---- | :---- | :---- |
+| Multa e juros por atraso ausentes | **RO04**: multa por atraso nos contratos Trimestral, Semestral e Anual, guardada na parcela (`VL_MULTA` em PAGAMENTO). O plano Mensal não tem multa. O PN04 descreve o fluxo | A multa é o que a academia cobra de fato, por isso vai para o banco. Juros ficam de fora porque o CEO informou que não os cobra |
+| Fidelidade e cancelamento de planos longos ausentes | **RO04**: multa rescisória no contrato (`VL_MULTA_RESCISORIA`, `DT_CANCELAMENTO`). O cancelamento é o PN05.3 | O cancelamento antecipado de um plano longo gera multa. Sem esses campos o banco não registra o cancelamento nem a multa |
+| Menor de idade com autorização do responsável ausente | **RE03**: aluno menor de 18 anos exige responsável legal cadastrado (RESPONSAVEL, `ID_RESPONSAVEL`) e consentimento para dados e imagem (Art. 14 da LGPD) | Sem o responsável cadastrado, não há quem autorize a matrícula do menor. A FK é opcional porque o maior de idade não tem responsável |
+| Atestado de aptidão física para matrícula ausente | **RE03**: atestado exigido de todos os alunos, com a data de entrega em `DT_ENTREGA_ATESTADO` (ALUNO) | A academia exige o atestado de todos, e a data permite saber quem está sem ele |
+| LGPD para dados de saúde parcial (RNF02) | **RNF02** com a tabela `LOG_ACESSO` (quem leu CPF e `DS_PROBLEMA_SAUDE`) e, no dicionário, base legal e prazo de retenção por categoria de dado (Seção 7) | Dado de saúde é sensível: precisa de base legal, prazo de guarda e rastro de quem acessa |
+
+### Apontamentos da correção sobre a Justificativa Técnica (Critério 11)
+
+| Apontamento da correção da E1 | O que mudou no trabalho | Por quê |
+| :---- | :---- | :---- |
+| Só uma decisão defendida (PRESENÇA separada de ALUNO); não discute MATRÍCULA, PLANO, GRADUAÇÃO nem as cardinalidades | A seção 1.5 passou a justificar as chaves primárias, cada chave estrangeira (inclusive `MATRICULA`, `CONTRATO` → `PLANO` e `GRADUACAO`), cada restrição com o código da regra (`RO`/`RE`) e 11 decisões gerais. Entre elas: histórico de matrículas (decisão 4), contrato entre ALUNO e PLANO (decisão 2) e a leitura das cardinalidades, Look-Across (decisão 10) | A nota pede justificar o **porquê** de cada decisão, e não só descrevê-la. Cada FK e cada restrição aponta para o processo, o problema ou a regra que a exige |
 
 ## Apontamentos da correção sobre o Dicionário de Dados (Critério 9)
 
