@@ -788,6 +788,10 @@ Os nomes foram padronizados em maiúsculas, sem acentos e sem espaços (`MATRICU
   * **Estratégia adotada:** uma tabela por entidade independente.
   * **Justificativa:** `ALUNO`, `PROFESSOR` e `RESPONSAVEL` têm papéis jurídicos, ciclos de vida, fluxos financeiros e atributos distintos. Uni-los em uma tabela genérica geraria colunas nulas em excesso e violaria o princípio de minimização de dados da LGPD (**RNF02**).
 
+Representatividade em imagem do modelo lógico:
+
+<img alt="diagrama_log" src="./img/ModeloLogicoFinal.png" />
+
 ---
 
 ### 1.3 Definição de Chaves Primárias e Estrangeiras
