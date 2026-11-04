@@ -176,11 +176,11 @@ Para solucionar esses gargalos e atender formalmente aos requisitos da disciplin
 
 **Por que é um problema:** A gestão não possui visibilidade em tempo real sobre quais alunos estão em atraso, qual é o saldo inadimplente total acumulado e deixa de aplicar as penalidades de multas previstas. Diversos praticantes permanecem com acesso liberado aos treinos mesmo com pendências financeiras prolongadas, devido à carência de rotinas automáticas de auditoria e cobrança.
 
-**Como o banco de dados resolve:** Estrutura a tabela `PAGAMENTO`, registrando o valor nominal devido, a data efetiva de liquidação, o montante liquidado, acréscimos moratórios (`Valor_Multa`) e os estados do título (`Pendente, Pago, Atrasado`), viabilizando relatórios imediatos de fluxo de caixa e inadimplência.
+**Como o banco de dados resolve:** Estrutura a tabela `PAGAMENTO`, registrando o valor nominal devido, a data efetiva de liquidação, o montante liquidado, a multa por atraso (`Valor_Multa`) e os estados do título (`Pendente, Pago, Atrasado`), viabilizando relatórios imediatos de fluxo de caixa e inadimplência.
 
 ### P3 - Acordos verbais na contratação de planos e descontrole no cálculo de multas rescisórias
 
-**O que acontece na prática:** O estabelecimento oferece planos nas modalidades Mensal, Semestral, Trimestral, Anual e Familiar (com descontos progressivos a partir de dois membros com vínculo de parentesco), além de aplicar cobranças complementares caso o aluno queira ter acesso a mais de uma luta da grade. Todos esses termos são formalizados por acertos verbais no balcão.
+**O que acontece na prática:** O estabelecimento oferece planos nas modalidades Mensal, Semestral, Trimestral, Anual e Familiar (com descontos progressivos a partir de dois alunos com vínculo de parentesco), além de aplicar cobranças complementares caso o aluno queira ter acesso a mais de uma luta da grade. Todos esses termos são formalizados por acertos verbais no balcão.
 
 **Por que é um problema:** Na ocorrência de cancelamentos antecipados de pacotes com duração trimestral ou anual, a empresa não tem suporte em registros formais de vigência para cobrar as multas rescisórias devidas. Esse vácuo gera contestações por parte dos alunos e provoca perdas de receita previamente planejadas.
 
@@ -282,12 +282,12 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 **No sistema (TO-BE):**
  
 1. O aluno informa seus dados: CPF, nome completo, data de nascimento, endereço (CEP, rua, número e bairro), e-mail, problemas de saúde, esportes já praticados, por quanto tempo treinou e se já é graduado. Informa também quantos telefones forem necessários (principal, reserva, emergência). (aluno e CEO)
-2. O sistema confere a idade. Se o aluno tem menos de 18 anos, exige os dados do responsável legal (nome, CPF, telefone e parentesco). De todos os alunos, de qualquer idade, exige o atestado de aptidão física, entregue antes da matrícula, e registra a data de entrega.
+2. O sistema confere a idade. Se o aluno tem menos de 18 anos, exige os dados do responsável legal (nome, CPF, telefone e parentesco). De todos os alunos, de qualquer idade, exige o atestado de aptidão física. A data de entrega é registrada quando o atestado é apresentado e fica em branco até lá.
 3. O CEO confirma o cadastro. O sistema gera o identificador único do aluno, que já fica com a situação Ativo.
 4. O aluno escolhe o plano (processo 3).
 5. O aluno escolhe a modalidade e a turma. O sistema cria a matrícula (aluno + turma) com data e situação e confere o limite de 30 alunos ativos. Se a turma estiver lotada, o aluno escolhe outra turma.
 6. A primeira mensalidade é gerada já com o valor integral, sem cálculo proporcional, e vence no 5º dia útil seguinte.
-**Troca de turma:** passa a ser registrada. A matrícula antiga é encerrada e uma nova é criada; a antiga nunca é apagada e fica no histórico. O tempo de treino é guardado por aluno em cada modalidade.
+**Troca de turma:** passa a ser registrada. A matrícula antiga é encerrada e uma nova é criada; a antiga nunca é apagada e fica no histórico. O histórico de treino do aluno é guardado no cadastro.
  
 **Autorização de uso de imagem:** quando o interessado vira aluno, o CEO pergunta se a academia pode usar a imagem dele em vídeos do Instagram. O sistema registra a resposta (autoriza ou não autoriza) e a data. Se o aluno tem menos de 18 anos, a resposta é dada pelo responsável legal.
  
@@ -295,14 +295,14 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 - **Finalidade e base legal:** os dados cadastrais são tratados para executar o contrato de prestação do serviço (matrícula, cobrança, controle de frequência e graduação). Os problemas de saúde são coletados com o consentimento do aluno, para que o professor conheça as restrições dele durante o treino. O uso de imagem é uma autorização separada, opcional e revogável a qualquer momento, e não condiciona a matrícula.
 - **Menores de idade:** o consentimento e a autorização de imagem são dados pelo responsável legal, cujos dados também são registrados.
-- **Minimização:** só se coleta o que o processo usa. Por isso o sistema não guarda o número do RG do Plano Família (só o tipo de documento e a data da conferência) nem dados bancários de credores.
+- **Minimização:** só se coleta o que o processo usa. Por isso o sistema não guarda documentos de familiares do Plano Família nem dados bancários de credores.
 - **Acesso por perfil:** o CEO acessa todos os dados. O professor acessa apenas os dados necessários para a aula (nome, turma, presença e restrições de saúde informadas). Os dados financeiros do aluno ficam restritos ao CEO.
 - **Guarda e eliminação:** os dados são mantidos enquanto o aluno tiver contrato e, depois, pelo prazo necessário para o histórico de matrículas, pagamentos e graduações de 5 anos. Após esse prazo, ou a pedido do titular quando não houver obrigação de guarda, os dados são eliminados ou anonimizados.
 - **Direitos do titular:** o aluno (ou o responsável legal) pode pedir ao CEO a confirmação do tratamento, o acesso, a correção e a eliminação dos seus dados, e revogar a autorização de imagem.
 - **Fim do papel:** as fichas físicas deixam de existir, o que elimina a exposição dos dados no balcão.
-**Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco), quando menor; data de entrega do atestado de aptidão física (todos os alunos); autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
+**Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco), quando menor; data de entrega do atestado de aptidão física (todos os alunos; em branco até a entrega); autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
  
-**Regras:** situação do aluno restrita a Ativo (contrato vigente), Inativo (contrato terminado) ou Trancado (trancamento em curso); um aluno pode ter várias matrículas (várias modalidades) e um único contrato vigente, como titular ou como dependente do Plano Família; menor de 18 anos exige responsável legal; todo aluno entrega o atestado de aptidão física antes da matrícula; CPF único; problemas de saúde e CPF são dados sensíveis, tratados conforme a regra de LGPD acima; a autorização de uso de imagem é opcional e fica registrada com a data; matrícula encerrada nunca é apagada.
+**Regras:** situação do aluno restrita a Ativo (contrato vigente), Inativo (contrato terminado) ou Trancado (trancamento em curso); um aluno pode ter várias matrículas (várias modalidades) e um único contrato vigente (no Plano Família, cada aluno tem o seu); menor de 18 anos exige responsável legal; todo aluno, adulto ou menor, deve entregar o atestado de aptidão física, e a data de entrega fica em branco até ele ser apresentado; CPF único; problemas de saúde são dados sensíveis e o CPF é dado pessoal comum, tratados conforme a regra de LGPD acima; a autorização de uso de imagem é opcional e fica registrada com a data; matrícula encerrada nunca é apagada.
  
 **Integração:** recebe de Aula Experimental; envia para Contratação de Planos, Frequência e Graduação.
  
@@ -315,13 +315,13 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 **No sistema (TO-BE):**
  
 1. O aluno escolhe a duração: Mensal, Trimestral, Semestral ou Anual. Cada duração tem uma faixa de desconto progressivo (percentuais confidenciais).
-2. O aluno escolhe a abrangência. O plano regular cobre uma única modalidade. Para mais de uma modalidade ou livre acesso a todas, aplica-se um acréscimo proporcional, mantida a tabela de desconto do ciclo. Cada aluno tem um único contrato (no Plano Família, o contrato é do titular e cobre os dependentes), que lista as modalidades cobertas; cada modalidade extra entra nesse mesmo contrato como um acréscimo.
-3. **Plano Família:** exige no mínimo duas pessoas com parentesco comprovado e existe em todas as durações, cada uma com seu desconto. O plano tem um responsável (titular) e pode ter até 4 dependentes. O titular tem um contrato único, que cobre os dependentes. Para cada dependente, o sistema registra o parentesco, o tipo de documento apresentado (por exemplo, RG) e a data da conferência; o número do documento não é guardado.
+2. O aluno escolhe a abrangência. O plano regular cobre uma única modalidade. Para mais de uma modalidade ou livre acesso a todas, aplica-se um acréscimo proporcional, mantida a tabela de desconto do ciclo. Cada aluno tem um único contrato (no Plano Família, cada familiar tem o seu, com o desconto do plano), que lista as modalidades cobertas; cada modalidade extra entra nesse mesmo contrato como um acréscimo.
+3. **Plano Família:** exige no mínimo dois alunos matriculados da mesma família e existe em todas as durações, cada uma com seu desconto. O grupo pode ter até 5 alunos (um aluno e até 4 familiares). Cada aluno do grupo tem o seu próprio contrato, com o desconto do Plano Família. O sistema não registra parentesco nem documento.
 4. O sistema  calcula a mensalidade (valor base + acréscimos por modalidadeextra - desconto).
 5. O contrato é registrado e o sistema gera as mensalidades (processo 4). Pagamento: os planos Trimestral, Semestral e Anual definem apenas o ciclo e o desconto. O pagamento é sempre em parcelas mensais, vencendo no 5º dia útil. Não existe quitação antecipada. Um plano anual gera 12 mensalidades.
 **Renovação:** o contrato não termina sozinho. No fim do ciclo, o aluno é contatado e avisado de possíveis alterações no desconto do seu plano. Se aceita, o contrato continua; se recusa, o contrato é cancelado e o aluno passa a Inativo.
  
-**Dados registrados (contrato):** aluno, plano, modalidades cobertas, data de início, data de fim do ciclo, valor da mensalidade, percentual de desconto, acréscimos por modalidade extra (quando houver), data do cancelamento e valor da multa rescisória (quando houver). No Plano Família, também o titular e os dependentes, com o parentesco de cada um, o tipo de documento apresentado e a data da conferência.
+**Dados registrados (contrato):** aluno, plano, modalidades cobertas, data de início, data de fim do ciclo, valor da mensalidade, percentual de desconto, acréscimos por modalidade extra (quando houver), data do cancelamento e valor da multa rescisória (quando houver).
  
 **Regras:** vencimento fixo no 5º dia útil; multa rescisória só em planos de maior duração (processo 5); contrato só termina por cancelamento.
  
@@ -429,14 +429,14 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 **No sistema (TO-BE):**
  
-1. O professor consulta a frequência e o tempo de treino do aluno na modalidade e decide quem está apto. Cada faixa tem seu tempo mínimo, cadastrado em cada faixa, para o sistema alertar quem já pode ser avaliado.
+1. O professor consulta a frequência e o tempo de treino do aluno na modalidade e decide quem está apto. O professor também avalia se o aluno tem tempo de treino suficiente na faixa atual.
 2. O aluno apto paga a taxa de exame, com valor diferente por faixa (as primeiras são mais baratas). A taxa é registrada no sistema (valores confidenciais) e cobrada junto com a mensalidade, paga por Pix, crédito ou débito.
 3. O exame acontece. Muay Thai, Jiu-Jitsu, Kickboxing, No-Gi e Capoeira têm exame de faixa.
 4. O professor registra o resultado do exame. A reprovação também é registrada, com o motivo em palavras-chave (por exemplo, condicionamento físico, técnica), para o professor entender por que os alunos estão reprovando.
 5. **Boxe:** não há exame. A evolução é registrada como análise técnica do professor, com observação e data, sem faixa.
 **Dados registrados:** aluno, modalidade, faixa ou nível avaliado (vazio no Boxe), data, resultado (aprovado ou reprovado), observações e motivo da reprovação, em palavras-chave; taxa de exame (valor, cobrada junto com a mensalidade).
  
-**Regras:** apenas modalidades com sistema de faixas têm faixa; o aluno só faz exame com a frequência exigida pelo professor e o tempo mínimo da faixa; reprovação fica no histórico.
+**Regras:** apenas modalidades com sistema de faixas têm faixa; o aluno só faz exame com a frequência exigida pelo professor e o tempo de treino que o professor exige; reprovação fica no histórico.
  
 **Integração:** recebe de Frequência e de Matrícula (tempo de treino); a taxa de exame vai para Cobrança e é cobrada junto com a mensalidade.
  
@@ -553,7 +553,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
 * **RF04 - Gestão de Planos, Contratos, Mensalidades e Despesas:**
 
-  > O sistema deve formalizar contratos vinculados aos planos comerciais (Mensal, Trimestral, Semestral, Anual e Família), gerenciar as modalidades cobertas (PARTICIPA), gerar parcelas mensais em PAGAMENTO (com vencimento no 5.º dia útil, controle de atrasos, multas e taxas de exame) e escriturar as contas a pagar e repasses docentes na entidade DESPESA.
+  > O sistema deve formalizar contratos vinculados aos planos comerciais (Mensal, Trimestral, Semestral, Anual e Família), gerenciar as modalidades cobertas (PARTICIPA), gerar parcelas mensais em PAGAMENTO (com vencimento no 5.º dia útil, controle de atrasos, multas e taxas de exame) e escriturar as contas a pagar e repasses docentes na entidade DESPESA. O Plano Família existe como desconto aplicado aos contratos individuais de alunos da mesma família.
 
 * **RF05 - Controle de Aulas Ministradas, Reposições e Presenças:**
 
@@ -571,7 +571,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
 * **RNF02 - Segurança, Privacidade e Conformidade com a LGPD:**
 
-  > O sistema deve assegurar o controle de acesso baseado em perfis (Administração e Professor), a minimização de dados sensíveis e a rastreabilidade de operações e consultas a CPF e DS_PROBLEMA_SAUDE por meio da tabela de auditoria LOG_ACESSO.
+  > O sistema deve assegurar o controle de acesso baseado em perfis (Administração e Professor), a minimização de dados pessoais e sensíveis e a rastreabilidade de operações e consultas a CPF e DS_PROBLEMA_SAUDE por meio da tabela de auditoria LOG_ACESSO.
 
 * **RNF03 - Desempenho e Tempo de Resposta em Consultas Críticas:**
 
@@ -595,7 +595,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
 * **RO01 - Estrutura de Planos, Abrangência e Plano Família**
 
-  > A academia comercializa planos nas durações Mensal, Trimestral, Semestral e Anual, aplicando descontos progressivos exclusivos do plano (nunca individuais). O plano regular contempla uma modalidade, permitindo a adição de modalidades extras no mesmo contrato (PARTICIPA) mediante acréscimo financeiro. O Plano Família aplica-se a qualquer duração para grupos a partir de duas pessoas com parentesco comprovado (titular e até 4 dependentes sob contrato único).
+  > A academia comercializa planos nas durações Mensal, Trimestral, Semestral e Anual, aplicando descontos progressivos exclusivos do plano (nunca individuais). O plano regular contempla uma modalidade, permitindo a adição de modalidades extras no mesmo contrato (PARTICIPA) mediante acréscimo financeiro. O Plano Família aplica-se a qualquer duração para grupos de dois a cinco alunos da mesma família (um aluno e até 4 familiares), cada um com o seu contrato.
 
 * **RO02 - Padronização do Vencimento no 5.º Dia Útil**
 
@@ -611,7 +611,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
 * **RO05 - Critério de Assiduidade e Tempo Mínimo para Exames de Graduação**
 
-  > A aptidão do aluno para prestar exame de faixa condiciona-se ao cumprimento do tempo mínimo exigido na graduação atual e à frequência mínima comprovada nos registros da tabela PRESENCA, segundo o critério pedagógico do professor titular da modalidade.
+  > A aptidão do aluno para prestar exame de faixa condiciona-se ao tempo de treino na faixa atual e à frequência mínima comprovada nos registros da tabela PRESENCA, segundo o critério pedagógico do professor titular da modalidade.
 
 * **RO06 - Exceção Avaliativa da Modalidade Boxe**
 
@@ -633,9 +633,9 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 
   > A abertura e manutenção de horários observa o parâmetro mínimo de referência de cada modalidade (QT_MINIMA_REFERENCIA: Muay Thai = 4; Boxe = 6; Jiu-Jitsu, Kickboxing e No-Gi = 8; Capoeira = 10). Quando a ocupação ativa for inferior ao parâmetro, o sistema emite um alerta gerencial, sem bloquear a realização da aula.
 
-* **RE03 - Obrigatoriedade de Responsável Legal e Atestado para Menores de 18 Anos**
+* **RE03 - Obrigatoriedade de Responsável Legal para Menores de 18 Anos e de Atestado para Todos os Alunos**
 
-  > Para o registro de alunos com idade inferior a 18 anos (calculada a partir de DT_NASCIMENTO), o sistema exige obrigatoriamente a vinculação a um registro válido na entidade RESPONSAVEL (ID_RESPONSAVEL), a entrega prévia do atestado de aptidão física (DT_ENTREGA_ATESTADO) e o consentimento formal do responsável para tratamento de dados e uso de imagem (Art. 14.º da LGPD).
+  > Para o registro de alunos com idade inferior a 18 anos (calculada a partir de DT_NASCIMENTO), o sistema exige obrigatoriamente a vinculação a um registro válido na entidade RESPONSAVEL (ID_RESPONSAVEL) e o consentimento formal do responsável para tratamento de dados e uso de imagem (Art. 14.º da LGPD). O atestado de aptidão física é exigido de todos os alunos, adultos e menores; a coluna DT_ENTREGA_ATESTADO é opcional e fica em branco até a entrega.
 
 * **RE04 - Condicionalidade para Trancamento de Matrícula**
 
@@ -697,7 +697,7 @@ Em resposta à avaliação da Entrega 01 e à segunda entrevista de campo (13/10
 | Item Modificado | 1º DER (Entrega 01) | 2º DER Atualizado (Entrega 02) | Motivo da Mudança |
 | :--- | :--- | :--- | :--- |
 | **Turma e Modalidade** | Sem ligação direta entre `Turma` e `Modalidade`. | Criado relacionamento **`Oferece`** `(1,1) --- (1,n)`. | Corrige apontamento da E1: identifica qual luta é dada em cada turma. |
-| **Pagamento** | Tinha apenas vencimento e status. | Adicionados `Data_Pagamento`, `Valor_Devido`, `Valor_Pago`, `Forma_Pagamento` e `Valor_Multa_Juros`. | Corrige apontamento da E1: permite controlar a inadimplência após o 5º dia útil. |
+| **Pagamento** | Tinha apenas vencimento e status. | Adicionados `Data_Pagamento`, `Valor_Devido`, `Valor_Pago`, `Forma_Pagamento` e `Valor_Multa`. | Corrige apontamento da E1: permite controlar a inadimplência após o 5º dia útil. |
 | **Contrato** | Inexistente (ligava direto ao Plano). | Nova entidade **`Contrato`** ligada a `Aluno`, `Plano` e `Modalidade`. | Congela o valor acordado (3FN), controla vigência, multimodalidade e multas. |
 | **Presença e Aulas** | `Presença` ligada apenas a `Matrícula`. | Nova entidade **`Aula`** ligada a `Turma`, `Professor` e `Matrícula`. | Permite apurar aulas dadas por professor terceirizado e controlar reposições. |
 | **Lotação de Turma** | Possuía o campo `Vagas_Ocupadas`. | Substituído por **`Capacidade_Maxima`** (teto de 30). | Adequação à 3FN: vagas ocupadas são calculadas via `COUNT(*)`. |
@@ -875,7 +875,7 @@ O modelo relacional foi submetido às três primeiras Formas Normais para elimin
 
 * As 14 tabelas de entidade e `LOG_ACESSO` usam **chaves primárias sintéticas** do tipo `INT AUTO_INCREMENT`.
   * **Motivo técnico:** inteiros curtos tornam os índices e as junções mais rápidos e ocupam menos espaço do que chaves naturais.
-  * **Motivo de privacidade:** o `CPF` não foi usado como PK porque ele seria copiado para todas as tabelas filhas como FK, espalhando um dado sensível pelo banco e contrariando a minimização de dados da LGPD (**RNF02**). Ele permanece como chave alternativa (`UNIQUE`).
+  * **Motivo de privacidade:** o `CPF` não foi usado como PK porque ele seria copiado para todas as tabelas filhas como FK, espalhando um dado pessoal pelo banco e contrariando a minimização de dados da LGPD (**RNF02**). Ele permanece como chave alternativa (`UNIQUE`).
 * As tabelas de N:N (`PRESENCA`, `PARTICIPA`) e as 8 de atributos multivalorados usam **PK composta** formada pelas FKs ou pelo valor. A própria combinação identifica o registro e impede duplicidade (o mesmo aluno não é registrado duas vezes na mesma aula, o mesmo e-mail não é repetido para o mesmo aluno).
 
 #### 2. Justificativa das Chaves Estrangeiras (FKs) e Relacionamentos
@@ -936,6 +936,7 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 | Coluna sem `NOT NULL` em `ID_AULA_ORIGEM` | `AULA` | **Processo 7** | Só é preenchida na aula de reposição, que aponta para a aula original; a aula regular fica com a coluna nula. A reposição em si não gera presença para o aluno que apenas assiste. |
 | `CHECK` em `QT_CAPACIDADE_MAXIMA` (entre 1 e 30) | `TURMA` | **P5**, **RE01** | Teto físico do tatame, aplicado pelo próprio banco. |
 | `CHECK` em valores numéricos | `VL_POR_AULA`, `VL_MENSALIDADE`, `VL_MENSAL_ACORDADO`, `VL_DEVIDO`, `VL_DESPESA`, `QT_DURACAO_MESES` (> 0); `PC_DESCONTO` (0 a 100); `QT_MINIMA_PESSOAS` em `PLANO` (≥ 1); `QT_MINIMA_REFERENCIA` em `MODALIDADE` (≥ 1) | **RE02** (quórum), demais sem regra própria | Impede valores negativos ou sem sentido nas regras financeiras e comerciais. |
+| Coluna sem NOT NULL em DT_ENTREGA_ATESTADO | ALUNO | RE03, Processo 2 | Fica vazia até o aluno apresentar o atestado. |
 
 #### 4. Justificativa de Decisões Arquiteturais Gerais
 
@@ -1036,7 +1037,7 @@ Para o porte da academia (cerca de 2 mil linhas na massa e de 70 a 85 parcelas p
 | Quanto deixou de entrar e de quem cobrar hoje? | Cobrança e bloqueio do 6º dia útil (RE07) | G02, G03, G04 | Out/2026: 10,7% das parcelas vencidas em aberto (R$ 1.506,00); 9 titulares na lista de cobrança |
 | Quais modalidades sustentam a academia depois do repasse ao professor? | Investir, rever turmas ou o valor por aula | G01 + G07 | Boxe fica com 44% da própria receita depois do repasse; as demais, de 58% a 67%. Muay Thai fica com 100% porque o gestor não recebe por aula |
 | Quanto a margem depende do gestor dar aula sem repasse? | Planejar contratação ou substituição do gestor nas aulas | G07, G17 | Custo docente de out/2026: 30,5%. Se as 18 aulas que o gestor deu em outubro fossem pagas como as dos prestadores (R$ 1.440,00), o custo do mês iria para cerca de 40,5% |
-| Onde há vaga ociosa ou risco de lotação? | Abrir, juntar ou fechar horários | G05, A06 | 172 matrículas ativas para 540 vagas (31,9%); a turma de Capoeira de sábado está sem alunos; nenhuma turma passa de 30 |
+| Onde há vaga ociosa ou risco de lotação? | Abrir, juntar ou fechar horários | G05, A06 | 172 matrículas ativas para 630 vagas (27,3%); a turma de Capoeira de sábado está sem alunos; nenhuma turma passa de 30 |
 | Quem está deixando de vir antes de cancelar? | Contato preventivo (retenção) | G09, G14 | Out/2026: 5 alunos abaixo de 50% de frequência (7,2% dos avaliados) |
 | A aula experimental traz alunos? Em qual modalidade? | Horários e modalidades que recebem as aulas experimentais e a divulgação | G06, G18 | Conversão de 57,1% em setembro e 50,0% em outubro; Boxe converte 75% e Jiu-Jitsu, 20% |
 | Os planos de fidelidade seguram o aluno e as multas são cobradas? | Política de desconto por ciclo e de rescisão (RO01, RO04) | G11, G13 | 57% da receita recorrente vem de planos de 3 meses ou mais; de ago a out, 2 cancelamentos antecipados de fidelidade e só 1 com multa lançada |
@@ -1048,10 +1049,10 @@ Para o porte da academia (cerca de 2 mil linhas na massa e de 70 a 85 parcelas p
  
 | Código | KPI | Fórmula | Período | Meta (origem) | Consulta | Valor na massa |
 | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
-| KPI01 | Completude do cadastro digital (P1) | cadastros sem pendência ÷ alunos atuais (ativos e trancados) × 100. Pendência: sem telefone, e-mail ou registro de saúde, ou menor sem responsável ou atestado | Mensal (posição na data de referência) | 100% (regra: RE03 e atributos (1,n) do DER) | G12 | 98,8% (1 menor sem atestado) |
+| KPI01 | Completude do cadastro digital (P1) | cadastros sem pendência ÷ alunos atuais (ativos e trancados) × 100. Pendência: sem telefone, e-mail ou registro de saúde, ou menor sem responsável, ou aluno sem atestado | Mensal (posição na data de referência) | 100% (regra: RE03 e atributos (1,n) do DER) | G12 | 98,8% (1 menor sem atestado) |
 | KPI02 | Taxa de inadimplência (P2) | parcelas vencidas e não pagas ÷ parcelas vencidas × 100, por mês de vencimento | Mensal | ≤ 5%; alerta acima de 10% (referência de mercado [6][7]) | G03 (em reais: G02; lista: G04) | Ago 0,0% · set 4,1% · out 10,7% |
 | KPI03 | Taxa de cancelamento de contratos (P3) | contratos cancelados no mês ÷ contratos vigentes no 1º dia do mês × 100 | Mensal | ≤ 3%, nível das melhores escolas de artes marciais; alerta acima de 6%, a média do setor [1] | G13 | Ago 2,8% · set 4,3% · out 0,0% |
-| KPI04 | Receita recorrente mensal contratada, MRR (P3) |  (`VL_MENSAL_ACORDADO` + `VL_ACRESCIMO_MODALIDADE`) dos contratos vigentes, por plano | Mensal (posição na data de referência) | MRR ≥ saídas do último mês fechado (G08): ponto de equilíbrio (proposta do grupo) | G11 | R$ 15.003,00 em 77 contratos, contra R$ 10.034,06 de saídas em outubro |
+| KPI04 | Receita recorrente mensal contratada, MRR (P3) |  (`VL_MENSAL_ACORDADO` + `VL_ACRESCIMO_MODALIDADE`) dos contratos vigentes, por plano | Mensal (posição na data de referência) | MRR ≥ saídas do último mês fechado (G08): ponto de equilíbrio (proposta do grupo) | G11 | R$ 15.003,00 em 78 contratos, contra R$ 10.034,06 de saídas em outubro |
 | KPI05 | Frequência média e alunos em risco (P4) | presenças ÷ aulas registradas dos alunos com pelo menos 4 aulas no mês; em risco = frequência abaixo de 50% | Mensal | Frequência ≥ 75% e no máximo 5% dos alunos em risco (proposta do grupo) | G14 (lista: G09) | Out: 79,5% · 5 alunos em risco (7,2%) |
 | KPI06 | Taxa de aprovação nas avaliações de graduação (P4) | aprovados ÷ avaliados × 100, por modalidade e no total | Janela de 12 meses, revista a cada rodada trimestral de exames | ≥ 80% (proposta do grupo: o aluno só vai ao exame com a frequência e o tempo exigidos, RO05) | G16 (aptidão: G15) | 82,1% (23 de 28); menor taxa: Boxe, 66,7% |
 | KPI07 | Ocupação das vagas (P5) | matrículas ativas ÷ (turmas × 30) × 100, por modalidade | Mensal (posição na data de referência) | De 33% a 67%, ou 10 a 20 alunos por turma: acima do maior quórum (RE02), dentro do tamanho de turma de referência do setor [1] e com folga para reposição (RE01) | G05 (alerta por turma: A06) | Jiu-Jitsu 41,7% · Muay Thai 35,8% · Capoeira 31,7% · Boxe 30,0% · Kickboxing 27,8% · No-Gi 13,3% |
