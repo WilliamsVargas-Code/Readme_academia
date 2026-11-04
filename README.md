@@ -1036,7 +1036,7 @@ Para o porte da academia (cerca de 2 mil linhas na massa e de 70 a 85 parcelas p
 | Quanto deixou de entrar e de quem cobrar hoje? | Cobrança e bloqueio do 6º dia útil (RE07) | G02, G03, G04 | Out/2026: 10,7% das parcelas vencidas em aberto (R$ 1.506,00); 9 titulares na lista de cobrança |
 | Quais modalidades sustentam a academia depois do repasse ao professor? | Investir, rever turmas ou o valor por aula | G01 + G07 | Boxe fica com 44% da própria receita depois do repasse; as demais, de 58% a 67%. Muay Thai fica com 100% porque o gestor não recebe por aula |
 | Quanto a margem depende do gestor dar aula sem repasse? | Planejar contratação ou substituição do gestor nas aulas | G07, G17 | Custo docente de out/2026: 30,5%. Se as 18 aulas que o gestor deu em outubro fossem pagas como as dos prestadores (R$ 1.440,00), o custo do mês iria para cerca de 40,5% |
-| Onde há vaga ociosa ou risco de lotação? | Abrir, juntar ou fechar horários | G05, A06 | 172 matrículas ativas para 540 vagas (31,9%); a turma de No-Gi de sábado está sem alunos; nenhuma turma passa de 30 |
+| Onde há vaga ociosa ou risco de lotação? | Abrir, juntar ou fechar horários | G05, A06 | 172 matrículas ativas para 540 vagas (31,9%); a turma de Capoeira de sábado está sem alunos; nenhuma turma passa de 30 |
 | Quem está deixando de vir antes de cancelar? | Contato preventivo (retenção) | G09, G14 | Out/2026: 5 alunos abaixo de 50% de frequência (7,2% dos avaliados) |
 | A aula experimental traz alunos? Em qual modalidade? | Horários e modalidades que recebem as aulas experimentais e a divulgação | G06, G18 | Conversão de 57,1% em setembro e 50,0% em outubro; Boxe converte 75% e Jiu-Jitsu, 20% |
 | Os planos de fidelidade seguram o aluno e as multas são cobradas? | Política de desconto por ciclo e de rescisão (RO01, RO04) | G11, G13 | 57% da receita recorrente vem de planos de 3 meses ou mais; de ago a out, 2 cancelamentos antecipados de fidelidade e só 1 com multa lançada |
@@ -1218,7 +1218,7 @@ Embora os dados individuais sejam fictícios, a **quantidade de registos** em ca
 | :--- | :---: | :--- |
 | **`MODALIDADE`** | **6** | Representa as 6 artes marciais ensinadas no espaço (Muay Thai, Kickboxing, Jiu-Jitsu, Boxe, Capoeira e No-Gi). |
 | **`PROFESSOR`** | **6** | Simula o quadro real de docentes: 1 gestor (que leciona Muay Thai) + 5 professores prestadores de serviço. |
-| **`TURMA`** | **18** | Reproduz as 18 turmas semanais de segunda a sábado que funcionam na academia. |
+| **`TURMA`** | **21** | Reproduz as 21 turmas semanais de segunda a sábado que funcionam na academia. |
 | **`PLANO`** | **8** | Simula os 4 ciclos de planos (Mensal, Trimestral, Semestral e Anual) nas modalidades Individual e Família. |
 | **`ALUNO`** | **92** | Quantidade fictícia dimensionada dentro da faixa informada pelo CEO (80 a 100 alunos), sendo 83 ativos, 6 inativos e 3 trancados. |
 | **`RESPONSAVEL`** | **11** | Responsáveis fictícios para cobrir os 14 alunos menores de idade (irmãos partilham o mesmo responsável). |
@@ -1228,7 +1228,7 @@ Embora os dados individuais sejam fictícios, a **quantidade de registos** em ca
 | **`TRANCAMENTO`** | **6** | Simula afastamentos por lesão ou razão médica ao longo de 2026 (3 encerrados e 3 em curso). |
 | **`PAGAMENTO`** | **293** | Simula cerca de 70 a 85 mensalidades geradas por mês durante 4 meses (agosto a novembro de 2026). |
 | **`INTERESSADO`** | **24** | Simula a média de 2 a 4 aulas experimentais por semana acumuladas ao longo de 2 meses. |
-| **`AULA` e `PRESENCA`** | **74 / 654** | Simula todas as aulas dadas pelas 18 turmas em outubro/2026 e a lista de chamada diária dos alunos matriculados. |
+| **`AULA` e `PRESENCA`** | **74 / 654** | Simula todas as aulas dadas pelas 21 turmas em outubro/2026 e a lista de chamada diária dos alunos matriculados. |
 | **`GRADUACAO`** | **28** | Simula o histórico dos exames de faixa trimestrais e análises técnicas de Boxe (aprovados e reprovados). |
 | **`DESPESA`** | **50** | Simula as contas fixas mensais, compras semanais de limpeza e o repasse mensal aos 5 professores terceirizados. |
 | **`LOG_ACESSO` e Apoio 1FN** | **387** | 20 registos de auditoria de acesso + 367 registos de e-mails, telefones, qualificações e fichas de saúde separados na 1ª Forma Normal. |
@@ -1240,7 +1240,7 @@ Embora os dados individuais sejam fictícios, a **quantidade de registos** em ca
 ## 4 Justificativa Técnica
 ### Premissa do Modelo e Evolução da 1.ª para a 2.ª Entrega
 
-#### * Na concepção inicial do projeto (1.ª Entrega), a modelagem concentrou-se nas entidades nucleares de cadastro, matrícula, presença e pagamento. Contudo, a partir da devolutiva docente e da segunda etapa de levantamento de campo realizada em 13/10/2026 junto ao gestor Adalberto, constatou-se a necessidade de expandir a arquitetura de 8 para **14 entidades** (acrescidas das tabelas associativas `PRESENCA` e `PARTICIPA`, das 8 tabelas de atributos multivalorados em 1FN e da estrutura de auditoria `LOG_ACESSO`). Essa evolução permitiu cobrir integralmente o ciclo de vida operacional da Base Forte Leste: desde a captação em aulas experimentais (`INTERESSADO`) até à escrituração de despesas e folha de repasse dos instrutores (`DESPESA`). 
+#### * Na concepção inicial do projeto (1.ª Entrega), a modelagem concentrou-se nas entidades nucleares de cadastro, matrícula, presença e pagamento. Contudo, a partir da devolutiva docente e da segunda etapa de levantamento de campo realizada em 13/10/2026 junto ao gestor Adalberto, constatou-se a necessidade de expandir a arquitetura de 9 para **14 entidades**, contando também com a adição de 2 tabelas associativas `PRESENCA` e `PARTICIPA`, 8 tabelas de atributos multivalorados em 1FN e mais 1 da estrutura de auditoria `LOG_ACESSO`. Essa evolução permitiu cobrir integralmente o ciclo de vida operacional da Base Forte Leste: desde a captação em aulas experimentais (`INTERESSADO`) até à escrituração de despesas e folha de repasse dos instrutores (`DESPESA`). 
 
 ### Decisões de Modelagem e Normalização
 
