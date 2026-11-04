@@ -214,7 +214,7 @@
 
   <!-- 3. CONVENÇÕES -->
   <h2 class="sec">3. Convenções do dicionário</h2>
-  <p>Nível de abstração: modelo conceitual com camada física de referência. <strong>SGBD:</strong> MySQL 8.0; <strong>mecanismo de armazenamento:</strong> InnoDB (transações e chaves estrangeiras); <strong>charset/collation:</strong> utf8mb4 / utf8mb4_unicode_ci (acentos do português e comparação sem distinção de maiúsculas). Tipos usados: Integer, Char(N), Varchar(N), Date, Time, Timestamp, Text, Decimal(p,s), Boolean — valores monetários (VL_) usam DECIMAL(10,2), por guardarem o valor exato, sem o erro de arredondamento do REAL/FLOAT; percentuais (PC_) usam DECIMAL(5,2); em MySQL, Boolean vira TINYINT(1). Backup diário automatizado, conforme RNF05.</p>
+  <p>Nível de abstração: modelo conceitual com camada física de referência. <strong>SGBD:</strong> MySQL 8.0; <strong>mecanismo de armazenamento:</strong> InnoDB (transações e chaves estrangeiras); <strong>charset/collation:</strong> utf8mb4 / utf8mb4_unicode_ci (acentos do português e comparação sem distinção de maiúsculas). Tipos usados: Integer, Char(N), Varchar(N), Date, Time, Timestamp, Text, Decimal(p,s), Boolean, Enum (todas as colunas com prefixo TP_; os valores são os listados no nome do atributo) — valores monetários (VL_) usam DECIMAL(10,2), por guardarem o valor exato, sem o erro de arredondamento do REAL/FLOAT; percentuais (PC_) usam DECIMAL(5,2); em MySQL, Boolean vira TINYINT(1). Backup diário automatizado, conforme RNF05.</p>
 
   <p><strong>Notação formal (símbolos usados neste dicionário):</strong></p>
   <table>
@@ -251,7 +251,7 @@
     </tbody>
   </table>
 
-  <p style="font-size:12.5px;color:var(--muted);">Versão deste dicionário: v2.5 — 02/11/2026. Seção 7: retirada a pendência de definir o prazo de guarda com o CEO; os prazos seguem como propostas do grupo (ver histórico de versões).</p>
+  <p style="font-size:12.5px;color:var(--muted);">Versão deste dicionário: v2.6 — 04/11/2026. Atestado de aptidão física exigido de todos os alunos; colunas TP_ com tipo físico enum (ver histórico de versões).</p>
 
   <!-- 4. DICIONÁRIO POR ENTIDADE -->
   <h2 class="sec">4. Dicionário de dados por entidade</h2>
@@ -261,7 +261,7 @@
 1{DS_PROBLEMA_SAUDE}n + DS_HISTORICO_TREINO + [TP_ATIVO | TP_INATIVO | TP_TRANCADO] +
 IN_ACEITE_USO_IMAGEM + DT_AUTORIZACAO_IMAGEM + (DT_ENTREGA_ATESTADO) + (ID_RESPONSAVEL) + (ID_INTERESSADO)
 ENDERECO = DS_RUA + NR_LOGRADOURO + NM_BAIRRO + NR_CEP</div>
-  <p class="leitura">@ID_ALUNO é o identificador único; os campos entre ( ) nem sempre são preenchidos; [TP_ATIVO | TP_INATIVO | TP_TRANCADO] exige escolher exatamente uma situação (RE06). ID_RESPONSAVEL só existe para menor de 18 anos (RE03) e DT_ENTREGA_ATESTADO registra a entrega do atestado de aptidão física desse menor. ID_INTERESSADO só existe quando o aluno veio da aula experimental. A inadimplência não é uma situação do aluno: é derivada dos pagamentos.</p>
+  <p class="leitura">@ID_ALUNO é o identificador único; os campos entre ( ) nem sempre são preenchidos; [TP_ATIVO | TP_INATIVO | TP_TRANCADO] exige escolher exatamente uma situação (RE06). ID_RESPONSAVEL só existe para menor de 18 anos (RE03) e DT_ENTREGA_ATESTADO registra a entrega do atestado de aptidão física, exigido de todos os alunos. ID_INTERESSADO só existe quando o aluno veio da aula experimental. A inadimplência não é uma situação do aluno: é derivada dos pagamentos.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
@@ -277,10 +277,10 @@ ENDERECO = DS_RUA + NR_LOGRADOURO + NM_BAIRRO + NR_CEP</div>
       <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim (1,n)</td><td>Telefones de contato (principal, reserva, emergência); multivalorado.</td></tr>
       <tr><td class="attr">DS_PROBLEMA_SAUDE</td><td>varchar(200)</td><td>Sim (1,n)</td><td>Dado sensível (RNF02); multivalorado. Sem problema de saúde, registrar "nenhum".</td></tr>
       <tr><td class="attr">DS_HISTORICO_TREINO</td><td>text</td><td>Sim</td><td>Esportes já praticados, tempo de treino e se já é graduado.</td></tr>
-      <tr><td class="attr">TP_ATIVO | TP_INATIVO | TP_TRANCADO</td><td>varchar(10)</td><td>Sim (escolha)</td><td>Situação cadastral: Ativo (contrato vigente), Inativo (contrato terminado), Trancado (trancamento em curso).</td></tr>
+      <tr><td class="attr">TP_ATIVO | TP_INATIVO | TP_TRANCADO</td><td>enum</td><td>Sim (escolha)</td><td>Situação cadastral: Ativo (contrato vigente), Inativo (contrato terminado), Trancado (trancamento em curso).</td></tr>
       <tr><td class="attr">IN_ACEITE_USO_IMAGEM</td><td>boolean</td><td>Sim</td><td>Autorização para uso de imagem em vídeos da academia; opcional para o aluno e revogável, não condiciona a matrícula.</td></tr>
       <tr><td class="attr">DT_AUTORIZACAO_IMAGEM</td><td>date</td><td>Sim</td><td>Data da resposta sobre o uso de imagem.</td></tr>
-      <tr><td class="attr">DT_ENTREGA_ATESTADO</td><td>date</td><td>Não</td><td>Data de entrega do atestado de aptidão física; exigido apenas de menor de 18 anos.</td></tr>
+      <tr><td class="attr">DT_ENTREGA_ATESTADO</td><td>date</td><td>Não</td><td>Data de entrega do atestado de aptidão física; exigido de todos os alunos, menores ou não. Fica vazia até a entrega.</td></tr>
       <tr><td class="attr">ID_RESPONSAVEL</td><td>integer</td><td>Não (FK)</td><td>Responsável legal; preenchido só para menor de 18 anos.</td></tr>
       <tr><td class="attr">ID_INTERESSADO</td><td>integer</td><td>Não (FK)</td><td>Pré-cadastro de origem, quando houve aula experimental.</td></tr>
     </tbody>
@@ -315,7 +315,7 @@ ENDERECO = DS_RUA + NR_LOGRADOURO + NM_BAIRRO + NR_CEP</div>
       <tr><td class="attr">NR_TELEFONE</td><td>varchar(15)</td><td>Sim</td><td>Telefone para retorno.</td></tr>
       <tr><td class="attr">DT_AULA</td><td>date</td><td>Sim</td><td>Data da aula experimental.</td></tr>
       <tr><td class="attr">HR_AULA</td><td>time</td><td>Sim</td><td>Horário da aula experimental.</td></tr>
-      <tr><td class="attr">TP_CONVERTIDO | TP_ENCERRADO | TP_PENDENTE</td><td>varchar(15)</td><td>Sim (escolha)</td><td>Resultado do interesse; permite medir a conversão em matrículas.</td></tr>
+      <tr><td class="attr">TP_CONVERTIDO | TP_ENCERRADO | TP_PENDENTE</td><td>enum</td><td>Sim (escolha)</td><td>Resultado do interesse; permite medir a conversão em matrículas.</td></tr>
     </tbody>
   </table>
   <p class="indices">PK ID_INTERESSADO; índice único composto em (NM_INTERESSADO, NR_TELEFONE) (uma aula experimental por pessoa); índice em ID_MODALIDADE.</p>
@@ -357,7 +357,7 @@ IN_POSSUI_SISTEMA_FAIXAS + DT_INICIO_AULAS</div>
       <tr><td class="attr pk">ID_MODALIDADE</td><td>integer</td><td>Sim (PK)</td><td>Identificador da modalidade.</td></tr>
       <tr><td class="attr">NM_MODALIDADE</td><td>varchar(50)</td><td>Sim</td><td>Domínio fechado às 6 modalidades oferecidas.</td></tr>
       <tr><td class="attr">QT_MINIMA_REFERENCIA</td><td>integer</td><td>Sim</td><td>Quórum de referência (Muay Thai 4, Boxe 6, Jiu-Jitsu/Kickboxing/No-Gi 8, Capoeira 10).</td></tr>
-      <tr><td class="attr">TP_ATIVA | TP_INATIVA</td><td>varchar(10)</td><td>Sim (escolha)</td><td>Controla se novas turmas podem ser abertas.</td></tr>
+      <tr><td class="attr">TP_ATIVA | TP_INATIVA</td><td>enum</td><td>Sim (escolha)</td><td>Controla se novas turmas podem ser abertas.</td></tr>
       <tr><td class="attr">IN_POSSUI_SISTEMA_FAIXAS</td><td>boolean</td><td>Sim</td><td>Define se GRADUAÇÃO usa sistema de faixas.</td></tr>
       <tr><td class="attr">DT_INICIO_AULAS</td><td>date</td><td>Sim</td><td>Data em que a modalidade passou a ser oferecida.</td></tr>
     </tbody>
@@ -391,7 +391,7 @@ IN_POSSUI_SISTEMA_FAIXAS + DT_INICIO_AULAS</div>
       <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno vinculado à matrícula.</td></tr>
       <tr><td class="attr">ID_TURMA</td><td>integer</td><td>Sim (FK)</td><td>Turma vinculada à matrícula.</td></tr>
       <tr><td class="attr">DT_MATRICULA</td><td>date</td><td>Sim</td><td>Data da matrícula (a ficha física não gerava número de matrícula).</td></tr>
-      <tr><td class="attr">TP_ATIVA | TP_TRANCADA | TP_ENCERRADA | TP_CANCELADA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Situação do aluno na turma; TP_ENCERRADA é usada na troca de turma.</td></tr>
+      <tr><td class="attr">TP_ATIVA | TP_TRANCADA | TP_ENCERRADA | TP_CANCELADA</td><td>enum</td><td>Sim (escolha)</td><td>Situação do aluno na turma; TP_ENCERRADA é usada na troca de turma.</td></tr>
     </tbody>
   </table>
   <p class="indices">PK ID_MATRICULA; índice único composto em (ID_ALUNO, ID_TURMA, DT_MATRICULA), que permite renovar a matrícula na mesma turma (a regra de uma única matrícula ativa por par aluno–turma fica com o sistema); índice em ID_TURMA (checar o limite de 30 ativas, RE01).</p>
@@ -405,7 +405,7 @@ DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
     <tbody>
       <tr><td class="attr pk">ID_TRANCAMENTO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do trancamento.</td></tr>
       <tr><td class="attr">ID_MATRICULA</td><td>integer</td><td>Sim (FK)</td><td>Matrícula trancada.</td></tr>
-      <tr><td class="attr">TP_LESAO | TP_RAZAO_MEDICA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Tipo do trancamento.</td></tr>
+      <tr><td class="attr">TP_LESAO | TP_RAZAO_MEDICA</td><td>enum</td><td>Sim (escolha)</td><td>Tipo do trancamento.</td></tr>
       <tr><td class="attr">DS_MOTIVO</td><td>text</td><td>Sim</td><td>Motivo registrado; dado sensível (saúde).</td></tr>
       <tr><td class="attr">DT_INICIO</td><td>date</td><td>Sim</td><td>Início do afastamento.</td></tr>
       <tr><td class="attr">DT_RETORNO_PREVISTA</td><td>date</td><td>Sim</td><td>Data de retorno combinada.</td></tr>
@@ -505,10 +505,10 @@ DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
       <tr><td class="attr">VL_DEVIDO</td><td>decimal(10,2)</td><td>Sim</td><td>Valor nominal da parcela.</td></tr>
       <tr><td class="attr">DT_PAGAMENTO</td><td>date</td><td>Não</td><td>Data da liquidação (RF04); vazia enquanto pendente ou atrasada.</td></tr>
       <tr><td class="attr">VL_PAGO</td><td>decimal(10,2)</td><td>Não</td><td>Valor efetivamente recebido.</td></tr>
-      <tr><td class="attr">TP_FORMA_PAGAMENTO</td><td>varchar(15)</td><td>Não</td><td>Pix, cartão de crédito ou cartão de débito.</td></tr>
+      <tr><td class="attr">TP_FORMA_PAGAMENTO</td><td>enum</td><td>Não</td><td>Pix, cartão de crédito ou cartão de débito.</td></tr>
       <tr><td class="attr">VL_MULTA</td><td>decimal(10,2)</td><td>Não</td><td>Multa por atraso, só nos planos de maior duração.</td></tr>
       <tr><td class="attr">VL_TAXA_GRADUACAO</td><td>decimal(10,2)</td><td>Não</td><td>Taxa de graduação (exame de faixa), quando houver.</td></tr>
-      <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Situação da parcela; resolve a inadimplência hoje não registrada.</td></tr>
+      <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>enum</td><td>Sim (escolha)</td><td>Situação da parcela; resolve a inadimplência hoje não registrada.</td></tr>
     </tbody>
   </table>
   <p class="indices">PK ID_PAGAMENTO; índice em ID_CONTRATO; índice composto em (DT_VENCIMENTO, situação) para a consulta de inadimplentes em menos de 2 s (RNF03); índice em DT_PAGAMENTO (relatórios por período).</p>
@@ -524,10 +524,10 @@ DT_GRADUACAO + [TP_APROVADO | TP_REPROVADO] + (DS_MOTIVO_REPROVACAO)</div>
       <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno avaliado.</td></tr>
       <tr><td class="attr">ID_MODALIDADE</td><td>integer</td><td>Sim (FK)</td><td>Modalidade avaliada.</td></tr>
       <tr><td class="attr">ID_PROFESSOR</td><td>integer</td><td>Sim (FK)</td><td>Professor que avaliou.</td></tr>
-      <tr><td class="attr">TP_EXAME_FAIXA | TP_ANALISE_TECNICA</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Tipo da avaliação.</td></tr>
-      <tr><td class="attr">TP_NIVEL_FAIXA</td><td>varchar(30)</td><td>Não</td><td>Faixa avaliada (RF06); vazia no Boxe.</td></tr>
+      <tr><td class="attr">TP_EXAME_FAIXA | TP_ANALISE_TECNICA</td><td>enum</td><td>Sim (escolha)</td><td>Tipo da avaliação.</td></tr>
+      <tr><td class="attr">TP_NIVEL_FAIXA</td><td>enum</td><td>Não</td><td>Faixa avaliada (RF06); vazia no Boxe.</td></tr>
       <tr><td class="attr">DT_GRADUACAO</td><td>date</td><td>Sim</td><td>Data do exame ou da análise.</td></tr>
-      <tr><td class="attr">TP_APROVADO | TP_REPROVADO</td><td>varchar(15)</td><td>Sim (escolha)</td><td>Resultado.</td></tr>
+      <tr><td class="attr">TP_APROVADO | TP_REPROVADO</td><td>enum</td><td>Sim (escolha)</td><td>Resultado.</td></tr>
       <tr><td class="attr">DS_MOTIVO_REPROVACAO</td><td>varchar(100)</td><td>Não</td><td>Palavras-chave (ex.: condicionamento, técnica); só na reprovação.</td></tr>
     </tbody>
   </table>
@@ -549,7 +549,7 @@ DT_GRADUACAO + [TP_APROVADO | TP_REPROVADO] + (DS_MOTIVO_REPROVACAO)</div>
       <tr><td class="attr">DT_PAGAMENTO</td><td>date</td><td>Não</td><td>Data do pagamento.</td></tr>
       <tr><td class="attr">VL_DESPESA</td><td>decimal(10,2)</td><td>Sim</td><td>Valor devido.</td></tr>
       <tr><td class="attr">VL_PAGO</td><td>decimal(10,2)</td><td>Não</td><td>Valor efetivamente pago.</td></tr>
-      <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>varchar(20)</td><td>Sim (escolha)</td><td>Situação da despesa.</td></tr>
+      <tr><td class="attr">TP_PAGO | TP_ATRASADO | TP_PENDENTE</td><td>enum</td><td>Sim (escolha)</td><td>Situação da despesa.</td></tr>
     </tbody>
   </table>
   <p class="indices">PK ID_DESPESA; índice em ID_PROFESSOR; índice composto em (DT_VENCIMENTO, situação) (despesas a vencer e vencidas).</p>
@@ -591,9 +591,9 @@ DT_GRADUACAO + [TP_APROVADO | TP_REPROVADO] + (DS_MOTIVO_REPROVACAO)</div>
     <tbody>
       <tr><td class="attr pk">ID_LOG</td><td>integer</td><td>Sim (PK)</td><td>Identificador do registro de log.</td></tr>
       <tr><td class="attr">NM_USUARIO</td><td>varchar(50)</td><td>Sim</td><td>Login de quem acessou (ainda sem entidade de usuários nesta versão).</td></tr>
-      <tr><td class="attr">TP_PERFIL</td><td>varchar(20)</td><td>Sim</td><td>Administração ou Professor (Seção 5).</td></tr>
+      <tr><td class="attr">TP_PERFIL</td><td>enum</td><td>Sim</td><td>Administração ou Professor (Seção 5).</td></tr>
       <tr><td class="attr">DT_ACESSO</td><td>timestamp</td><td>Sim</td><td>Data e hora do acesso.</td></tr>
-      <tr><td class="attr">TP_CRIACAO | TP_LEITURA | TP_ATUALIZACAO | TP_EXCLUSAO</td><td>varchar(15)</td><td>Sim (escolha)</td><td>Operação realizada.</td></tr>
+      <tr><td class="attr">TP_CRIACAO | TP_LEITURA | TP_ATUALIZACAO | TP_EXCLUSAO</td><td>enum</td><td>Sim (escolha)</td><td>Operação realizada.</td></tr>
       <tr><td class="attr">NM_TABELA</td><td>varchar(30)</td><td>Sim</td><td>Entidade acessada.</td></tr>
       <tr><td class="attr">ID_REGISTRO</td><td>integer</td><td>Sim</td><td>Registro acessado, sem copiar o dado sensível para o log.</td></tr>
       <tr><td class="attr">NM_CAMPO</td><td>varchar(40)</td><td>Não</td><td>Campo sensível acessado (ex.: CPF).</td></tr>
