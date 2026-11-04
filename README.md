@@ -291,13 +291,13 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 **Autorização de uso de imagem:** quando o interessado vira aluno, o CEO pergunta se a academia pode usar a imagem dele em vídeos do Instagram. O sistema registra a resposta (autoriza ou não autoriza) e a data. Se o aluno tem menos de 18 anos, a resposta é dada pelo responsável legal.
  
-**Proteção de dados pessoais (LGPD):** o cadastro reúne dados pessoais comuns (CPF, endereço, telefones, e-mail) e dados pessoais sensíveis (problemas de saúde). Por isso o sistema segue estas regras:
+**Proteção de dados pessoais (LGPD):** o cadastro reúne dados pessoais comuns (Endereço, telefones, e-mail) e dados pessoais sensíveis (CPF, problemas de saúde). Por isso o sistema segue estas regras:
  
 - **Finalidade e base legal:** os dados cadastrais são tratados para executar o contrato de prestação do serviço (matrícula, cobrança, controle de frequência e graduação). Os problemas de saúde são coletados com o consentimento do aluno, para que o professor conheça as restrições dele durante o treino. O uso de imagem é uma autorização separada, opcional e revogável a qualquer momento, e não condiciona a matrícula.
 - **Menores de idade:** o consentimento e a autorização de imagem são dados pelo responsável legal, cujos dados também são registrados.
 - **Minimização:** só se coleta o que o processo usa. Por isso o sistema não guarda o número do RG do Plano Família (só o tipo de documento e a data da conferência) nem dados bancários de credores.
 - **Acesso por perfil:** o CEO acessa todos os dados. O professor acessa apenas os dados necessários para a aula (nome, turma, presença e restrições de saúde informadas). Os dados financeiros do aluno ficam restritos ao CEO.
-- **Guarda e eliminação:** os dados são mantidos enquanto o aluno tiver contrato e, depois, pelo prazo necessário para o histórico de matrículas, pagamentos e graduações [prazo a definir com o CEO]. Após esse prazo, ou a pedido do titular quando não houver obrigação de guarda, os dados são eliminados ou anonimizados.
+- **Guarda e eliminação:** os dados são mantidos enquanto o aluno tiver contrato e, depois, pelo prazo necessário para o histórico de matrículas, pagamentos e graduações de 5 anos. Após esse prazo, ou a pedido do titular quando não houver obrigação de guarda, os dados são eliminados ou anonimizados.
 - **Direitos do titular:** o aluno (ou o responsável legal) pode pedir ao CEO a confirmação do tratamento, o acesso, a correção e a eliminação dos seus dados, e revogar a autorização de imagem.
 - **Fim do papel:** as fichas físicas deixam de existir, o que elimina a exposição dos dados no balcão.
 **Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco), quando menor; data de entrega do atestado de aptidão física (todos os alunos); autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
