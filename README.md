@@ -291,13 +291,13 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 **Autorização de uso de imagem:** quando o interessado vira aluno, o CEO pergunta se a academia pode usar a imagem dele em vídeos do Instagram. O sistema registra a resposta (autoriza ou não autoriza) e a data. Se o aluno tem menos de 18 anos, a resposta é dada pelo responsável legal.
  
-**Proteção de dados pessoais (LGPD):** o cadastro reúne dados pessoais comuns (Endereço, telefones, e-mail) e dados pessoais sensíveis (CPF, problemas de saúde). Por isso o sistema segue estas regras:
+**Proteção de dados pessoais (LGPD):** o cadastro reúne dados pessoais comuns (CPF, endereço, telefones, e-mail) e dados pessoais sensíveis (problemas de saúde). Por isso o sistema segue estas regras:
  
 - **Finalidade e base legal:** os dados cadastrais são tratados para executar o contrato de prestação do serviço (matrícula, cobrança, controle de frequência e graduação). Os problemas de saúde são coletados com o consentimento do aluno, para que o professor conheça as restrições dele durante o treino. O uso de imagem é uma autorização separada, opcional e revogável a qualquer momento, e não condiciona a matrícula.
 - **Menores de idade:** o consentimento e a autorização de imagem são dados pelo responsável legal, cujos dados também são registrados.
 - **Minimização:** só se coleta o que o processo usa. Por isso o sistema não guarda documentos de familiares do Plano Família nem dados bancários de credores.
 - **Acesso por perfil:** o CEO acessa todos os dados. O professor acessa apenas os dados necessários para a aula (nome, turma, presença e restrições de saúde informadas). Os dados financeiros do aluno ficam restritos ao CEO.
-- **Guarda e eliminação:** os dados são mantidos enquanto o aluno tiver contrato e, depois, pelo prazo necessário para o histórico de matrículas, pagamentos e graduações de 5 anos. Após esse prazo, ou a pedido do titular quando não houver obrigação de guarda, os dados são eliminados ou anonimizados.
+- **Guarda e eliminação:** os dados são mantidos enquanto o aluno tiver contrato e, depois, por 5 anos, para o histórico de matrículas, pagamentos e graduações. Após esse prazo, ou a pedido do titular quando não houver obrigação de guarda, os dados são eliminados ou anonimizados.
 - **Direitos do titular:** o aluno (ou o responsável legal) pode pedir ao CEO a confirmação do tratamento, o acesso, a correção e a eliminação dos seus dados, e revogar a autorização de imagem.
 - **Fim do papel:** as fichas físicas deixam de existir, o que elimina a exposição dos dados no balcão.
 **Dados registrados:** os do cadastro acima; telefones (vários por aluno); endereço (CEP, rua, número e bairro); responsável legal (nome, CPF, telefone, parentesco), quando menor; data de entrega do atestado de aptidão física (todos os alunos; em branco até a entrega); autorização de uso de imagem (sim ou não) e data da resposta; na matrícula, aluno, turma, data da matrícula e situação (Ativa, Cancelada, Trancada e Encerrada, esta usada na troca de turma).
@@ -913,7 +913,7 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 | `UNIQUE` composto em (`NM_INTERESSADO`, `NR_TELEFONE`) | `INTERESSADO` | **RO03**, **P7** | Garante uma única aula experimental gratuita por pessoa, conferida por nome e telefone. |
 | `UNIQUE` em `NM_MODALIDADE` e `NM_PLANO` | `MODALIDADE`, `PLANO` | — | Impede catálogo duplicado. |
 | `NOT NULL` em nome, CPF, data de nascimento e endereço | `ALUNO`, `PROFESSOR` (e `RESPONSAVEL`, nos campos de contato) | **P1**, **RF01** | Cadastro mínimo exigido para contrato, cobrança e contato. |
-| `NOT NULL` em `VL_POR_AULA` e `ID_MODALIDADE` | `PROFESSOR` | — | Sem valor da aula não há honorário a apurar, e todo professor atua em uma modalidade. |
+| `NOT NULL` em `VL_POR_AULA` e `ID_MODALIDADE` | `PROFESSOR` | — | Sem valor da aula não há honorário a apurar (o do CEO é 0, porque ele não recebe por aula), e todo professor atua em uma modalidade. |
 | `NOT NULL` em `IN_ACEITE_USO_IMAGEM` e `DT_AUTORIZACAO_IMAGEM` | `ALUNO` | **RNF02**, **Processo 2 (LGPD)** | O consentimento (sim ou não) e a data da resposta precisam estar sempre registrados. O aceite é opcional para o aluno e revogável, e não condiciona a matrícula. |
 | `NOT NULL` nas FKs de dependência | `MATRICULA`, `AULA`, `TURMA`, `GRADUACAO`, `CONTRATO`, `PAGAMENTO`, `TRANCAMENTO`, `INTERESSADO.ID_MODALIDADE` | — | Cada registro depende do pai: não existe matrícula sem aluno e turma, nem pagamento sem contrato. |
 | `NOT NULL` em `IN_POSSUI_SISTEMA_FAIXAS` | `MODALIDADE` | **RO06**, **Processo 8** | Isola a regra do Boxe, que não tem graduação por faixas, e habilita o módulo de exames só para modalidades com faixas. |
@@ -927,7 +927,7 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 | Coluna sem `NOT NULL` em `ID_PROFESSOR` | `DESPESA` | **P6**, **Processo 11** | Despesas como aluguel, consumo e suprimentos não têm professor. |
 | Colunas sem `NOT NULL` em `DT_CANCELAMENTO` e `VL_MULTA_RESCISORIA` | `CONTRATO` | **RO04** | Ficam nulas enquanto o contrato está vigente. A multa rescisória só existe nos planos mais longos. |
 | Colunas sem `NOT NULL` em `DT_PAGAMENTO`, `VL_PAGO` e `TP_FORMA_PAGAMENTO` | `PAGAMENTO` | **P2** | Ficam nulas até a quitação da parcela. |
-| Colunas sem `NOT NULL` em `VL_MULTA` e `VL_TAXA_GRADUACAO` | `PAGAMENTO` | **RO02** | `VL_MULTA` (multa por atraso) só existe nos planos de maior duração, e `VL_TAXA_GRADUACAO` só quando a parcela inclui a taxa do exame de faixa. |
+| Colunas sem `NOT NULL` em `VL_MULTA` e `VL_TAXA_GRADUACAO` | `PAGAMENTO` | **RO04, RO06** | `VL_MULTA` (multa por atraso) só existe nos planos de maior duração, e `VL_TAXA_GRADUACAO` só quando a parcela inclui a taxa do exame de faixa. |
 | Coluna sem `NOT NULL` em `DT_RETORNO_EFETIVA` | `TRANCAMENTO` | **RE04**, **P5** | O retorno efetivo só é preenchido depois que ocorre; até lá o trancamento segue em curso. |
 | Coluna sem `NOT NULL` em `DS_MOTIVO_REPROVACAO` | `GRADUACAO` | **Processo 8** | Preenchida somente quando o resultado é reprovado. |
 | `ENUM` em colunas de situação | `TP_STATUS_ALUNO` (`ALUNO`), `TP_SITUACAO_MATRICULA` (`MATRICULA`), `TP_STATUS_PAGAMENTO` (`PAGAMENTO`), `TP_SITUACAO_DESPESA` (`DESPESA`), `TP_SITUACAO_MODALIDADE` (`MODALIDADE`) | **P2**, **RE04**, **RE06**, **RE07**, **RO02**, **RF01** | Restringe os estados aos valores válidos: `ALUNO` (`Ativo`, `Inativo`, `Trancado`), `MATRICULA` (`Ativa`, `Trancada`, `Encerrada`, `Cancelada`), `PAGAMENTO` (`Pendente`, `Pago`, `Atrasado`), `DESPESA` (`Pendente`, `Pago`, `Atrasado`) e `MODALIDADE` (`Ativa`, `Inativa`). A inadimplência não é um estado do aluno: é derivada dos pagamentos em atraso. |
@@ -935,7 +935,7 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 | `ENUM` em `TP_AVALIACAO`, `TP_RESULTADO`, `TP_STATUS`, `DS_DIA_SEMANA`, `TP_FORMA_PAGAMENTO` e `TP_OPERACAO` | `GRADUACAO`, `INTERESSADO`, `TURMA`, `PAGAMENTO`, `LOG_ACESSO` | **Processo 8**, **RNF02** | Domínios fechados (exame de faixa ou análise técnica; `Aprovado`/`Reprovado`; `Convertido`/`Encerrado`/`Pendente`; dias da semana; Pix, cartão de crédito ou cartão de débito; operação registrada no log: criação, leitura, atualização ou exclusão). |
 | Coluna sem `NOT NULL` em `ID_AULA_ORIGEM` | `AULA` | **Processo 7** | Só é preenchida na aula de reposição, que aponta para a aula original; a aula regular fica com a coluna nula. A reposição em si não gera presença para o aluno que apenas assiste. |
 | `CHECK` em `QT_CAPACIDADE_MAXIMA` (entre 1 e 30) | `TURMA` | **P5**, **RE01** | Teto físico do tatame, aplicado pelo próprio banco. |
-| `CHECK` em valores numéricos | `VL_POR_AULA`, `VL_MENSALIDADE`, `VL_MENSAL_ACORDADO`, `VL_DEVIDO`, `VL_DESPESA`, `QT_DURACAO_MESES` (> 0); `PC_DESCONTO` (0 a 100); `QT_MINIMA_PESSOAS` em `PLANO` (≥ 1); `QT_MINIMA_REFERENCIA` em `MODALIDADE` (≥ 1) | **RE02** (quórum), demais sem regra própria | Impede valores negativos ou sem sentido nas regras financeiras e comerciais (para o CEO, o valor é 0).  |
+| `CHECK` em valores numéricos | `VL_MENSALIDADE`, `VL_MENSAL_ACORDADO`, `VL_DEVIDO`, `VL_DESPESA`, `QT_DURACAO_MESES` (> 0); `VL_POR_AULA` (≥ 0); `PC_DESCONTO` (0 a 100); `QT_MINIMA_PESSOAS` em `PLANO` (≥ 1); `QT_MINIMA_REFERENCIA` em `MODALIDADE` (≥ 1) | **RE02** (quórum), demais sem regra própria | Impede valores negativos ou sem sentido nas regras financeiras e comerciais.  |
 | Coluna sem NOT NULL em DT_ENTREGA_ATESTADO | ALUNO | RE03, Processo 2 | Fica vazia até o aluno apresentar o atestado. |
 
 #### 4. Justificativa de Decisões Arquiteturais Gerais
@@ -1039,7 +1039,7 @@ Para o porte da academia (cerca de 2 mil linhas na massa e de 80 a 100 parcelas 
  
 | Pergunta de gestão | Decisão que apoia | Consultas | O que a massa (fictícia) mostra |
 | :-- | :-- | :-- | :-- |
-| Quanto deixou de entrar e de quem cobrar hoje? | Cobrança e bloqueio do 6º dia útil (RE07) | G02, G03, G04 | Out/2026: 10,7% das parcelas vencidas em aberto (R$ 1.506,00); 9 titulares na lista de cobrança |
+| Quanto deixou de entrar e de quem cobrar hoje? | Cobrança e bloqueio do 6º dia útil (RE07) | G02, G03, G04 | Out/2026: 10,7% das parcelas vencidas em aberto (R$ 1.506,00); 9 alunos na lista de cobrança |
 | Quais modalidades sustentam a academia depois do repasse ao professor? | Investir, rever turmas ou o valor por aula | G01 + G07 | Boxe fica com 44% da própria receita depois do repasse; as demais, de 58% a 67%. Muay Thai fica com 100% porque o gestor não recebe por aula |
 | Quanto a margem depende do gestor dar aula sem repasse? | Planejar contratação ou substituição do gestor nas aulas | G07, G17 | Custo docente de out/2026: 30,5%. Se as 18 aulas que o gestor deu em outubro fossem pagas como as dos prestadores (R$ 1.440,00), o custo do mês iria para cerca de 40,5% |
 | Onde há vaga ociosa ou risco de lotação? | Abrir, juntar ou fechar horários | G05, A06 | 172 matrículas ativas para 630 vagas (27,3%); a turma de Capoeira de sábado está sem alunos; nenhuma turma passa de 30 |
