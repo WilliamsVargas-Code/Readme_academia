@@ -790,7 +790,7 @@ Os nomes foram padronizados em maiúsculas, sem acentos e sem espaços (`MATRICU
 
 Representatividade em imagem do modelo lógico:
 
-<img alt="diagrama_log" src="./img/ModeloLogicoFinal.png" />
+<img alt="diagrama_log" src="./img/Modelo_Logico_V6.png" />
 
 ---
 
