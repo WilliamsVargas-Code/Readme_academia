@@ -148,9 +148,9 @@ Empresa privada com fins lucrativos, atuante na prestação de serviços esporti
 
 * **Alunos Ativos:** Faixa estimada entre 80 e 100 praticantes matriculados, considerando a distribuição dos alunos nas turmas regulares acima do quantidade mínima operacional de cada modalidade.
 
-* **Contratos:** Estimativa de 70 a 85 contratos ativos. O número de contratos é inferior ao total de alunos matriculados devido à adesão ao Plano Família, modalidade na qual um único contrato e responsável financeiro englobam dois ou mais dependentes/parentes com desconto progressivo.
+* **Contratos:** Um contrato vigente por aluno ativo ou trancado, ou seja, de 80 a 100 contratos. No Plano Família, cada familiar matriculado tem o seu próprio contrato, com desconto progressivo.
 
-* **Movimentação Financeira Mensal:** Emissão recorrente de 70 a 85 faturas de mensalidade por mês (uma para cada contrato vigente, com vencimento no 5º dia útil), gerando no banco um histórico de liquidações pontuais, pagamentos com acréscimo de uma multa (planos Trimestral, Semestral e Anual)  
+* **Movimentação Financeira Mensal:** Emissão recorrente de 80 a 100 faturas de mensalidade por mês (uma para cada contrato vigente, com vencimento no 5º dia útil), gerando no banco um histórico de liquidações pontuais, pagamentos com acréscimo de uma multa (planos Trimestral, Semestral e Anual)  
 
 * **Aulas Experimentais:** Média observada de 2 a 4 atendimentos semanais de novos interessados para testes gratuitos (cerca de 8 a 16 por mês), que hoje dependem unicamente da memória do CEO e dos professores.   
 
@@ -308,7 +308,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 ---
  
-### PNO3. Contratação de Planos
+### PN03. Contratação de Planos
  
 **Hoje (AS-IS):** a academia trabalha com planos de diferentes durações, sem registro formal do que cada aluno contratou além da data de pagamento anotada no WhatsApp (P3).
  
@@ -316,7 +316,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 1. O aluno escolhe a duração: Mensal, Trimestral, Semestral ou Anual. Cada duração tem uma faixa de desconto progressivo (percentuais confidenciais).
 2. O aluno escolhe a abrangência. O plano regular cobre uma única modalidade. Para mais de uma modalidade ou livre acesso a todas, aplica-se um acréscimo proporcional, mantida a tabela de desconto do ciclo. Cada aluno tem um único contrato (no Plano Família, cada familiar tem o seu, com o desconto do plano), que lista as modalidades cobertas; cada modalidade extra entra nesse mesmo contrato como um acréscimo.
-3. **Plano Família:** exige no mínimo dois alunos matriculados da mesma família e existe em todas as durações, cada uma com seu desconto. O grupo pode ter até 5 alunos (um aluno e até 4 familiares). Cada aluno do grupo tem o seu próprio contrato, com o desconto do Plano Família. O sistema não registra parentesco nem documento.
+3. **Plano Família:** exige no mínimo dois alunos matriculados da mesma família e existe em todas as durações, cada uma com seu desconto. O grupo pode ter até 5 alunos (um aluno e até 4 familiares). Cada aluno do grupo tem o seu próprio contrato, com o desconto do Plano Família. O sistema não registra parentesco nem documento. Se um familiar paga pelos demais, isso é tratado fora do sistema: cada contrato continua registrado e cobrado individualmente.
 4. O sistema  calcula a mensalidade (valor base + acréscimos por modalidadeextra - desconto).
 5. O contrato é registrado e o sistema gera as mensalidades (processo 4). Pagamento: os planos Trimestral, Semestral e Anual definem apenas o ciclo e o desconto. O pagamento é sempre em parcelas mensais, vencendo no 5º dia útil. Não existe quitação antecipada. Um plano anual gera 12 mensalidades.
 **Renovação:** o contrato não termina sozinho. No fim do ciclo, o aluno é contatado e avisado de possíveis alterações no desconto do seu plano. Se aceita, o contrato continua; se recusa, o contrato é cancelado e o aluno passa a Inativo.
@@ -662,7 +662,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 * **Operação Direta de Controle de Acesso (Catracas/Biometria):** Sistemas de academias frequentemente incluem o controle direto de hardware para bloqueio de inadimplentes. O projeto não contempla a operação direta de hardware ou o software da catraca. A regra não foi incluída porque o banco de dados atua apenas como fornecedor da informação (situação financeira do aluno); a arquitetura foi preparada para o consumo desses dados no futuro (RNF01), sem assumir a responsabilidade pela execução do bloqueio físico.
 
 
-* **Gestão de Planos Familiares e Dependentes:** Muitos sistemas esportivos possuem regras comerciais para agrupar múltiplos alunos sob um único contrato familiar com desconto. Atributos relacionados a parentesco e responsáveis por planos foram deliberadamente removidos nesta versão (v2.1 e v2.3). Optou-se por manter a relação de cobrança simplificada, onde o responsável legal está vinculado ao cadastro do menor para fins da LGPD, mas os contratos (CONTRATO) e pagamentos (PAGAMENTO) permanecem individualizados por aluno, adiando a complexidade de faturamentos agrupados para escopos futuros.
+* **Gestão de Planos Familiares e Dependentes:** Muitos sistemas esportivos possuem regras comerciais para agrupar múltiplos alunos sob um único contrato familiar com desconto. Atributos relacionados a parentesco e responsáveis por planos foram deliberadamente removidos nesta versão (v2.1 e v2.3). Optou-se por manter a relação de cobrança simplificada, onde o responsável legal está vinculado ao cadastro do menor para fins da LGPD, mas os contratos (CONTRATO) e pagamentos (PAGAMENTO) permanecem individualizados por aluno, adiando a complexidade de faturamentos agrupados para escopos futuros. O Plano Família existe como desconto aplicado a contratos individuais de alunos da mesma família; a cobrança conjunta ao responsável, quando houver, é tratada fora do sistema (seção 1.5, item 11).
 
 
 * **Tabela de Autenticação e Usuários do Sistema:** É requisito comum o cadastro de usuários com login e senha criptografada. Como o foco da entrega é a modelagem dos processos de negócio da academia, a criação de uma entidade de gestão de usuários foi abstraída. A rastreabilidade exigida pela LGPD foi atendida de forma simplificada na tabela `LOG_ACESSO`, que registra o nome do usuário em formato de texto livre, dispensando uma chave estrangeira complexa para uma tabela de credenciais que não seria utilizada nas consultas analíticas.
@@ -895,7 +895,7 @@ O modelo relacional foi submetido às três primeiras Formas Normais para elimin
   * O vínculo é entre aulas, e não entre alunos: a concessão individual de reposição ao aluno é regra de negócio e não gera presença (Processo 7). Por isso a vaga que esse aluno ocupa na aula de reposição (contada no limite de 30, **RE01**) é controlada pela aplicação, e não pelo banco: é uma limitação assumida do modelo.
 * **`PRESENCA` → `AULA` e `MATRICULA`:** liga o aluno matriculado a cada sessão de treino, base para a frequência exigida nos exames de faixa (**P4**, **RO05**).
 * **`GRADUACAO` → `ALUNO`, `PROFESSOR` e `MODALIDADE`:** cada exame pertence a um aluno, é avaliado por um professor e se refere a uma modalidade (**Processo 8**).
-* **`CONTRATO` → `ALUNO` e `PLANO`:** o contrato tem um titular e é baseado em um único plano. Ele fixa a vigência e as condições comerciais pactuadas (**P3**, **RO01**).
+* **`CONTRATO` → `ALUNO` e `PLANO`:** o contrato pertence a um aluno e é baseado em um único plano (no Plano Família, cada familiar tem o seu). Que os alunos do Plano Família são da mesma família é conferido pelo CEO, e não pelo banco (limitação assumida do modelo). Ele fixa a vigência e as condições comerciais pactuadas (**P3**, **RO01**).
 * **FKs das 8 tabelas de multivalorados (`ID_ALUNO` ou `ID_PROFESSOR`):** cada valor (e-mail, telefone, problema de saúde, especialização, nível de experiência, qualificação) pertence a um único aluno ou professor e não existe sem ele. A FK faz parte da PK composta, o que impede valor órfão e repetição do mesmo valor para o mesmo dono (**RF01**, **RF02**).
 * **`PARTICIPA` → `CONTRATO` e `MODALIDADE`:** permite que um único contrato cubra mais de uma modalidade.
 * **`PAGAMENTO` → `CONTRATO`:** cada parcela pertence a um contrato, o que torna possível gerar as cobranças e apurar inadimplência por contrato (**P2**, **RO01**).
@@ -979,6 +979,11 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 10. **Notação das cardinalidades (Look-Across):**
     * *Decisão:* todas as cardinalidades do DER foram padronizadas na convenção Look-Across, em que o rótulo ao lado de uma entidade indica quantas dela se relacionam com uma da outra.
     * *Justificativa:* é a convenção do brModelo Web e da disciplina. O conversor usa essa leitura para decidir em qual tabela fica cada FK. Misturar convenções num mesmo DER inverte as chaves no modelo lógico.
+    
+11. **Plano Família com contratos individuais:**
+    * *Decisão:* cada aluno do Plano Família tem o seu próprio `CONTRATO`, com o desconto do plano. Não existe contrato compartilhado entre um titular e seus dependentes.
+    * *Justificativa:* mantém a regra de um único contrato vigente por aluno e preserva matrícula, presença, graduação e bloqueio por inadimplência individuais. Evita também uma tabela de cobertura ou um auto-relacionamento em `ALUNO`, o que complicaria o modelo sem ganho para as consultas do projeto. A academia não exige comprovação de parentesco, e a conferência de que os alunos são da mesma família é feita pelo CEO, e não pelo banco.
+    * *Limitação assumida:* o banco registra uma mensalidade por contrato. Se um responsável decide pagar por todos os familiares, a soma e a cobrança conjunta são tratadas fora do sistema, e as parcelas continuam registradas em cada contrato. Uma evolução futura seria um vínculo opcional entre aluno e titular (`ALUNO.ID_ALUNO_TITULAR`).
 
 
 ---
@@ -1028,7 +1033,7 @@ Os valores citados vêm da massa de dados **fictícia** (data de referência 01/
 | Consumo | Painéis e alertas; segurança em nível de linha (RLS) para o professor ver só a própria modalidade (RE05, RNF02) | Power BI Desktop, modo importação | Diária |
 | IA | Modelos que estimam risco a partir do histórico | Python (pandas, scikit-learn) | Retreino mensal |
  
-Para o porte da academia (cerca de 2 mil linhas na massa e de 70 a 85 parcelas por mês), um data warehouse separado não se justifica: views no próprio MySQL bastam. O banco operacional continua normalizado (seção 1.4), que é o melhor formato para gravar sem anomalias; as views apenas juntam as tabelas para leitura.
+Para o porte da academia (cerca de 2 mil linhas na massa e de 80 a 100 parcelas por mês), um data warehouse separado não se justifica: views no próprio MySQL bastam. O banco operacional continua normalizado (seção 1.4), que é o melhor formato para gravar sem anomalias; as views apenas juntam as tabelas para leitura.
  
 ### 1.6.2 Informações estratégicas
  
@@ -1223,11 +1228,11 @@ Embora os dados individuais sejam fictícios, a **quantidade de registos** em ca
 | **`PLANO`** | **8** | Simula os 4 ciclos de planos (Mensal, Trimestral, Semestral e Anual) nas modalidades Individual e Família. |
 | **`ALUNO`** | **92** | Quantidade fictícia dimensionada dentro da faixa informada pelo CEO (80 a 100 alunos), sendo 83 ativos, 6 inativos e 3 trancados. |
 | **`RESPONSAVEL`** | **11** | Responsáveis fictícios para cobrir os 14 alunos menores de idade (irmãos partilham o mesmo responsável). |
-| **`CONTRATO`** | **83** | Simula a faixa de 70 a 85 contratos ativos (77 vigentes + 6 cancelados). O número é menor que o de alunos porque 8 dependentes entram no contrato do titular (Plano Família). |
+| **`CONTRATO`** | **83** | Um contrato por aluno: 86 vigentes (ativos e trancados) + 6 cancelados = 92. No Plano Família, cada familiar tem o seu contrato (ver seção 1.5, item 11). |
 | **`PARTICIPA`** | **100** | Vincula cada contrato a pelo menos 1 modalidade (83), mais as modalidades extras contratadas por alguns alunos. |
 | **`MATRICULA`** | **190** | Simula cada aluno a treinar em 1 a 3 turmas da sua modalidade (média de 10 alunos por turma, respeitando o limite de 30 vagas). |
 | **`TRANCAMENTO`** | **6** | Simula afastamentos por lesão ou razão médica ao longo de 2026 (3 encerrados e 3 em curso). |
-| **`PAGAMENTO`** | **293** | Simula cerca de 70 a 85 mensalidades geradas por mês durante 4 meses (agosto a novembro de 2026). |
+| **`PAGAMENTO`** | **293** | Simula cerca de 80 a 100 mensalidades geradas por mês durante 4 meses (agosto a novembro de 2026). |
 | **`INTERESSADO`** | **24** | Simula a média de 2 a 4 aulas experimentais por semana acumuladas ao longo de 2 meses. |
 | **`AULA` e `PRESENCA`** | **74 / 654** | Simula todas as aulas dadas pelas 21 turmas em outubro/2026 e a lista de chamada diária dos alunos matriculados. |
 | **`GRADUACAO`** | **28** | Simula o histórico dos exames de faixa trimestrais e análises técnicas de Boxe (aprovados e reprovados). |
