@@ -790,7 +790,9 @@ Os nomes foram padronizados em maiúsculas, sem acentos e sem espaços (`MATRICU
 
 Representatividade em imagem do modelo lógico:
 
-<img alt="diagrama_log" src="./img/Modelo_Logico_V6.png" />
+<img alt="diagrama_log" src="./img/Modelo Logico V6.png" />
+
+**Legenda**: O Modelo Lógico deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web ([https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).](https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443)
 
 ---
 
@@ -976,9 +978,7 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 10. **Notação das cardinalidades (Look-Across):**
     * *Decisão:* todas as cardinalidades do DER foram padronizadas na convenção Look-Across, em que o rótulo ao lado de uma entidade indica quantas dela se relacionam com uma da outra.
     * *Justificativa:* é a convenção do brModelo Web e da disciplina. O conversor usa essa leitura para decidir em qual tabela fica cada FK. Misturar convenções num mesmo DER inverte as chaves no modelo lógico.
-<img width="2082" height="1485" alt="diagrama_er" src="./img/Modelo Logico V6.png" />
 
-**Legenda:** O Modelo Lógico deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web ([https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).](https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).)
 
 ---
 
