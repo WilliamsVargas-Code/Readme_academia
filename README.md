@@ -412,10 +412,10 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
  
 1. Quando o professor titular falta, o aluno tem direito a uma aula de reposição, na mesma modalidade ou em outra.
 2. O professor confirma se há vaga na turma escolhida.
-3. O aluno comparece e apenas assiste à aula: não é registrada presença para ele, porque não é matriculado nessa turma. A reposição fica registrada no sistema só como concessão usada (aluno, aula perdida, turma e data da reposição). A vaga ocupada por ele conta no limite de 30 da turma nessa aula.
+3. O aluno comparece e apenas assiste à aula: não é registrada presença para ele, porque não é matriculado nessa turma. No sistema fica registrada apenas a aula de reposição, ligada à aula perdida; quem usou a concessão não é registrado, e esse controle fica com o professor. A vaga ocupada por ele conta no limite de 30 da turma nessa aula.
 **Funções do registro:** embasar a liberação para graduação e comprovar as aulas dadas, base do pagamento dos professores.
  
-**Dados registrados:** aula (turma, data, hora de início e fim, professor); presença (aula, matrícula, presente ou ausente); reposição (aluno, aula perdida, turma e data da reposição), sem presença.
+**Dados registrados:** aula (turma, data, hora de início e fim, professor); presença (aula, matrícula, presente ou ausente); reposição (aula de reposição ligada à aula perdida), sem presença e sem registro do aluno.
  
 **Regras:** a frequência mínima para exame é definida por cada professor, não pela academia; aluno bloqueado não registra presença.
  
@@ -474,7 +474,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 **No sistema (TO-BE):**
  
 1. O professor é cadastrado com CPF, nome, data de nascimento, endereço, e-mail, telefone, modalidade de atuação, nível de experiência e qualificações (tempo de treino, faixa, mestres anteriores).
-2. A cada período, o CEO apura o valor devido a cada professor pelas aulas ministradas, a partir do registro de frequência. O valor por aula é igual para todos os professores.
+2. A cada período, o CEO apura o valor devido a cada professor pelas aulas ministradas, a partir do registro de frequência. O valor por aula fica guardado no cadastro de cada professor prestador (VL_POR_AULA); o do CEO é 0, porque ele não recebe por aula.
 3. O CEO paga o professor no 5º dia útil, por Pix.
 4. O pagamento gera uma despesa em Contas a Pagar.
 **Dados registrados:** professor, período de apuração, aulas ministradas, valor por aula, valor total, data de pagamento, forma de pagamento.
@@ -935,7 +935,7 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 | `ENUM` em `TP_AVALIACAO`, `TP_RESULTADO`, `TP_STATUS`, `DS_DIA_SEMANA`, `TP_FORMA_PAGAMENTO` e `TP_OPERACAO` | `GRADUACAO`, `INTERESSADO`, `TURMA`, `PAGAMENTO`, `LOG_ACESSO` | **Processo 8**, **RNF02** | Domínios fechados (exame de faixa ou análise técnica; `Aprovado`/`Reprovado`; `Convertido`/`Encerrado`/`Pendente`; dias da semana; Pix, cartão de crédito ou cartão de débito; operação registrada no log: criação, leitura, atualização ou exclusão). |
 | Coluna sem `NOT NULL` em `ID_AULA_ORIGEM` | `AULA` | **Processo 7** | Só é preenchida na aula de reposição, que aponta para a aula original; a aula regular fica com a coluna nula. A reposição em si não gera presença para o aluno que apenas assiste. |
 | `CHECK` em `QT_CAPACIDADE_MAXIMA` (entre 1 e 30) | `TURMA` | **P5**, **RE01** | Teto físico do tatame, aplicado pelo próprio banco. |
-| `CHECK` em valores numéricos | `VL_POR_AULA`, `VL_MENSALIDADE`, `VL_MENSAL_ACORDADO`, `VL_DEVIDO`, `VL_DESPESA`, `QT_DURACAO_MESES` (> 0); `PC_DESCONTO` (0 a 100); `QT_MINIMA_PESSOAS` em `PLANO` (≥ 1); `QT_MINIMA_REFERENCIA` em `MODALIDADE` (≥ 1) | **RE02** (quórum), demais sem regra própria | Impede valores negativos ou sem sentido nas regras financeiras e comerciais. |
+| `CHECK` em valores numéricos | `VL_POR_AULA`, `VL_MENSALIDADE`, `VL_MENSAL_ACORDADO`, `VL_DEVIDO`, `VL_DESPESA`, `QT_DURACAO_MESES` (> 0); `PC_DESCONTO` (0 a 100); `QT_MINIMA_PESSOAS` em `PLANO` (≥ 1); `QT_MINIMA_REFERENCIA` em `MODALIDADE` (≥ 1) | **RE02** (quórum), demais sem regra própria | Impede valores negativos ou sem sentido nas regras financeiras e comerciais (para o CEO, o valor é 0).  |
 | Coluna sem NOT NULL em DT_ENTREGA_ATESTADO | ALUNO | RE03, Processo 2 | Fica vazia até o aluno apresentar o atestado. |
 
 #### 4. Justificativa de Decisões Arquiteturais Gerais
