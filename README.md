@@ -953,47 +953,47 @@ No brModelo Web, as restrições `NOT NULL` e `UNIQUE` são definidas nas propri
 
 #### 4. Justificativa de Decisões Arquiteturais Gerais
 
-1. **Controle diário de frequência (`PRESENCA`):**
+. **Controle diário de frequência (`PRESENCA`):**
    * *Decisão:* a presença é registrada por sessão de `AULA` vinculada à `MATRICULA`, e não direto ao aluno.
    * *Justificativa:* a aula conhece a turma e, portanto, a modalidade. Isso permite o controle da frequência exigida para liberar exames de faixa (**P4**, **RO05**) e o cálculo da remuneração dos professores por aula ministrada.
 
-2. **Contrato entre `ALUNO` e `PLANO`; cobrança em `PAGAMENTO`:**
+. **Contrato entre `ALUNO` e `PLANO`; cobrança em `PAGAMENTO`:**
    * *Decisão:* o contrato guarda as condições pactuadas e gera as parcelas individuais em `PAGAMENTO`.
    * *Justificativa:* reajustes na tabela de planos não alteram contratos nem faturas passadas. O modelo suporta o vencimento padronizado no 5º dia útil (**RO02**), o bloqueio por inadimplência e a suspensão de parcelas em períodos de trancamento (**P5**).
 
-3. **Multimodalidade por tabela associativa (`PARTICIPA`):**
+. **Multimodalidade por tabela associativa (`PARTICIPA`):**
    * *Decisão:* relação N:N entre `CONTRATO` e `MODALIDADE`.
    * *Justificativa:* o aluno mantém um único contrato mesmo praticando mais de uma arte marcial.
 
-4. **Histórico de matrículas e trancamentos:**
+. **Histórico de matrículas e trancamentos:**
    * *Decisão:* `ALUNO` 1:N `MATRICULA` e `MATRICULA` 1:N `TRANCAMENTO`.
    * *Justificativa:* preserva o histórico completo do aluno na academia, incluindo mudanças de turma e afastamentos médicos, sem apagar registros anteriores.
 
-5. **Atributos multivalorados em tabelas próprias:**
+. **Atributos multivalorados em tabelas próprias:**
    * *Decisão:* telefones, e-mails, problemas de saúde do aluno e dados profissionais do professor ficam em 8 tabelas separadas.
    * *Justificativa:* não limita a quantidade de contatos por pessoa, permite consultar e validar cada valor e mantém o modelo em 1FN.
 
-6. **Separação entre `INTERESSADO` e `ALUNO`:**
+. **Separação entre `INTERESSADO` e `ALUNO`:**
    * *Decisão:* o visitante que faz a aula experimental é registrado em `INTERESSADO`, e a conversão é ligada por `ALUNO.ID_INTERESSADO`.
    * *Justificativa:* mantém o contato dos visitantes que não se matriculam e permite medir a taxa de conversão em matrículas definitivas.
 
-7. **`DESPESA` como tabela única das saídas financeiras:**
+. **`DESPESA` como tabela única das saídas financeiras:**
    * *Decisão:* despesas operacionais e honorários de professores ficam na mesma tabela, com o professor opcional.
    * *Justificativa:* centraliza as contas a pagar da academia e dispensa uma tabela separada de repasses.
 
-8. **Dados derivados não armazenados:**
+. **Dados derivados não armazenados:**
    * *Decisão:* vagas ocupadas por turma e outros totais são calculados por consulta (`COUNT`, `SUM`), e não gravados.
    * *Justificativa:* evita valores desatualizados em relação às matrículas e aos pagamentos.
 
-9. **Prontidão para integração biométrica (RNF01):**
+. **Prontidão para integração biométrica (RNF01):**
    * *Decisão:* a situação financeira do aluno pode ser consultada em tempo real pelo `ID_ALUNO`, a partir de `CONTRATO`, `PAGAMENTO` e `ALUNO.TP_STATUS_ALUNO`.
    * *Justificativa:* fornece resposta imediata para liberar ou bloquear a catraca biométrica.
 
-10. **Notação das cardinalidades (Look-Across):**
+. **Notação das cardinalidades (Look-Across):**
     * *Decisão:* todas as cardinalidades do DER foram padronizadas na convenção Look-Across, em que o rótulo ao lado de uma entidade indica quantas dela se relacionam com uma da outra.
     * *Justificativa:* é a convenção do brModelo Web e da disciplina. O conversor usa essa leitura para decidir em qual tabela fica cada FK. Misturar convenções num mesmo DER inverte as chaves no modelo lógico.
     
-11. **Plano Família com contratos individuais:**
+. **Plano Família com contratos individuais:**
     * *Decisão:* cada aluno do Plano Família tem o seu próprio `CONTRATO`, com o desconto do plano. Não existe contrato compartilhado entre um titular e seus dependentes.
     * *Justificativa:* mantém a regra de um único contrato vigente por aluno e preserva matrícula, presença, graduação e bloqueio por inadimplência individuais. Evita também uma tabela de cobertura ou um auto-relacionamento em `ALUNO`, o que complicaria o modelo sem ganho para as consultas do projeto. A academia não exige comprovação de parentesco, e a conferência de que os alunos são da mesma família é feita pelo CEO, e não pelo banco.
     * *Limitação assumida:* o banco registra uma mensalidade por contrato. Se um responsável decide pagar por todos os familiares, a soma e a cobrança conjunta são tratadas fora do sistema, e as parcelas continuam registradas em cada contrato. Uma evolução futura seria um vínculo opcional entre aluno e titular (`ALUNO.ID_ALUNO_TITULAR`).
