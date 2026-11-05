@@ -175,7 +175,7 @@
       <tr><td>ALUNO</td><td>RESPONSÁVEL</td><td>N:1 — um aluno menor de 18 anos tem um responsável legal; um responsável pode representar vários alunos</td><td>ALUNO (1,n) · RESPONSÁVEL (0,1)</td></tr>
       <tr><td>ALUNO</td><td>INTERESSADO</td><td>1:1 opcional — um interessado que faz a aula experimental pode virar aluno, mas o aluno também pode ser cadastrado direto</td><td>ALUNO (0,1) · INTERESSADO (0,1)</td></tr>
       <tr><td>MODALIDADE</td><td>INTERESSADO</td><td>1:N — cada interessado agenda a aula experimental em uma única modalidade; uma modalidade recebe vários interessados</td><td>MODALIDADE (1,1) · INTERESSADO (0,n)</td></tr>
-      <tr><td>ALUNO</td><td>CONTRATO</td><td>1:N — cada contrato tem um único titular; um aluno pode firmar contratos ao longo do tempo</td><td>ALUNO (1,1) · CONTRATO (1,n)</td></tr>
+      <tr><td>ALUNO</td><td>CONTRATO</td><td>1:N — cada contrato é de um único aluno (no Plano Família, cada familiar tem o seu); um aluno pode firmar contratos ao longo do tempo</td><td>ALUNO (1,1) · CONTRATO (1,n)</td></tr>
       <tr><td>PLANO</td><td>CONTRATO</td><td>1:N — cada contrato deriva de um único plano; um plano serve de base para vários contratos</td><td>PLANO (1,1) · CONTRATO (0,n)</td></tr>
       <tr><td>CONTRATO</td><td>PAGAMENTO</td><td>1:N — cada pagamento é parcela de um único contrato; um contrato gera várias parcelas</td><td>CONTRATO (1,1) · PAGAMENTO (1,n)</td></tr>
       <tr><td>CONTRATO</td><td>MODALIDADE</td><td>N:N (tabela PARTICIPA) — um contrato cobre uma ou mais modalidades; uma modalidade está em vários contratos</td><td>CONTRATO (0,n) · MODALIDADE (1,n)</td></tr>
@@ -463,12 +463,12 @@ DT_INICIO + DT_RETORNO_PREVISTA + (DT_RETORNO_EFETIVA)</div>
   <h3 class="entity">CONTRATO</h3>
   <div class="notation">CONTRATO = @ID_CONTRATO + ID_ALUNO + ID_PLANO + DT_INICIO + DT_FIM + VL_MENSAL_ACORDADO + (VL_ACRESCIMO_MODALIDADE) +
 (DT_CANCELAMENTO) + (VL_MULTA_RESCISORIA)</div>
-  <p class="leitura">Formaliza o acordo entre o aluno (titular) e a academia. VL_MENSAL_ACORDADO fica congelado: reajuste no PLANO não altera contratos nem parcelas já geradas. Cada modalidade extra entra no mesmo contrato como acréscimo. VL_MULTA_RESCISORIA só existe no cancelamento antecipado de planos de maior duração (RO04); o plano mensal cancela sem multa. O contrato só termina por cancelamento, e então o aluno passa a Inativo.</p>
+  <p class="leitura">Formaliza o acordo entre o aluno e a academia. No Plano Família, cada familiar tem o seu próprio contrato, com o desconto do plano. VL_MENSAL_ACORDADO fica congelado: reajuste no PLANO não altera contratos nem parcelas já geradas. Cada modalidade extra entra no mesmo contrato como acréscimo. VL_MULTA_RESCISORIA só existe no cancelamento antecipado de planos de maior duração (RO04); o plano mensal cancela sem multa. O contrato só termina por cancelamento, e então o aluno passa a Inativo.</p>
   <table>
     <thead><tr><th>Atributo</th><th>Tipo físico</th><th>Obrigatório</th><th>Significado e relevância</th></tr></thead>
     <tbody>
       <tr><td class="attr pk">ID_CONTRATO</td><td>integer</td><td>Sim (PK)</td><td>Identificador do contrato.</td></tr>
-      <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno titular.</td></tr>
+      <tr><td class="attr">ID_ALUNO</td><td>integer</td><td>Sim (FK)</td><td>Aluno do contrato (no Plano Família, cada familiar tem o seu).</td></tr>
       <tr><td class="attr">ID_PLANO</td><td>integer</td><td>Sim (FK)</td><td>Plano que serviu de base.</td></tr>
       <tr><td class="attr">DT_INICIO</td><td>date</td><td>Sim</td><td>Início da vigência.</td></tr>
       <tr><td class="attr">DT_FIM</td><td>date</td><td>Sim</td><td>Fim do ciclo; ajustada quando há trancamento.</td></tr>
