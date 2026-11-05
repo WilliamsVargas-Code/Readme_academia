@@ -1239,7 +1239,7 @@ Todos os dados pessoais e financeiros inseridos no script são **estritamente fi
 * Os valores de mensalidades, multas, despesas e pagamentos por aula são simulados para preservar o sigilo comercial da organização.
 
 ### 3.2 Justificativa da Quantidade de Registos (Proporção Real)
-Embora os dados individuais sejam fictícios, a **quantidade de registos** em cada tabela total de **2.073 linhas**, com data de referência em `01/11/2026`) foi dimensionada para refletir o porte operacional da academia levantado nas entrevistas:
+Embora os dados individuais sejam fictícios, a **quantidade de registos** em cada tabela (total de **2.073 linhas**, com data de referência em `01/11/2026`) foi dimensionada para refletir o porte operacional da academia levantado nas entrevistas:
 
 | Tabela | Qtd. Fictícia | Como o porte da academia justifica essa quantidade |
 | :--- | :---: | :--- |
