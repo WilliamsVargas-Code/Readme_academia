@@ -1078,7 +1078,7 @@ Para o porte da academia (cerca de 2 mil linhas na massa e de 80 a 100 parcelas 
 | KPI01 | Completude do cadastro digital (P1) | cadastros sem pendência ÷ alunos atuais (ativos e trancados) × 100. Pendência: sem telefone, e-mail ou registro de saúde, ou menor sem responsável, ou aluno sem atestado | Mensal (posição na data de referência) | 100% (regra: RE03 e atributos (1,n) do DER) | G12 | 98,8% (1 menor sem atestado) |
 | KPI02 | Taxa de inadimplência (P2) | parcelas vencidas e não pagas ÷ parcelas vencidas × 100, por mês de vencimento | Mensal | ≤ 5%; alerta acima de 10% (referência de mercado [6][7]) | G03 (em reais: G02; lista: G04) | Ago 0,0% · set 4,1% · out 10,7% |
 | KPI03 | Taxa de cancelamento de contratos (P3) | contratos cancelados no mês ÷ contratos vigentes no 1º dia do mês × 100 | Mensal | ≤ 3%, nível das melhores escolas de artes marciais; alerta acima de 6%, a média do setor [1] | G13 | Ago 2,8% · set 4,3% · out 0,0% |
-| KPI04 | Receita recorrente mensal contratada, MRR (P3) |  (`VL_MENSAL_ACORDADO` + `VL_ACRESCIMO_MODALIDADE`) dos contratos vigentes, por plano | Mensal (posição na data de referência) | MRR ≥ saídas do último mês fechado (G08): ponto de equilíbrio (proposta do grupo) | G11 | R$ 15.003,00 em 78 contratos, contra R$ 10.034,06 de saídas em outubro |
+| KPI04 | Receita recorrente mensal contratada, MRR (P3) |  (`VL_MENSAL_ACORDADO` + `VL_ACRESCIMO_MODALIDADE`) dos contratos vigentes, por plano | Mensal (posição na data de referência) | MRR ≥ saídas do último mês fechado (G08): ponto de equilíbrio (proposta do grupo) | G11 | R$ 15.003,00 em 85 contratos, contra R$ 10.034,06 de saídas em outubro |
 | KPI05 | Frequência média e alunos em risco (P4) | presenças ÷ aulas registradas dos alunos com pelo menos 4 aulas no mês; em risco = frequência abaixo de 50% | Mensal | Frequência ≥ 75% e no máximo 5% dos alunos em risco (proposta do grupo) | G14 (lista: G09) | Out: 79,5% · 5 alunos em risco (7,2%) |
 | KPI06 | Taxa de aprovação nas avaliações de graduação (P4) | aprovados ÷ avaliados × 100, por modalidade e no total | Janela de 12 meses, revista a cada rodada trimestral de exames | ≥ 80% (proposta do grupo: o aluno só vai ao exame com a frequência e o tempo exigidos, RO05) | G16 (aptidão: G15) | 82,1% (23 de 28); menor taxa: Boxe, 66,7% |
 | KPI07 | Ocupação das vagas (P5) | matrículas ativas ÷ (turmas × 30) × 100, por modalidade | Mensal (posição na data de referência) | De 33% a 67%, ou 10 a 20 alunos por turma: acima do maior quórum (RE02), dentro do tamanho de turma de referência do setor [1] e com folga para reposição (RE01) | G05 (alerta por turma: A06) | Jiu-Jitsu 41,7% · Muay Thai 35,8% · Capoeira 31,7% · Boxe 30,0% · Kickboxing 27,8% · No-Gi 13,3% |
@@ -1239,7 +1239,7 @@ Todos os dados pessoais e financeiros inseridos no script são **estritamente fi
 * Os valores de mensalidades, multas, despesas e pagamentos por aula são simulados para preservar o sigilo comercial da organização.
 
 ### 3.2 Justificativa da Quantidade de Registos (Proporção Real)
-Embora os dados individuais sejam fictícios, a **quantidade de registos** em cada tabela (total de **2.030 linhas**, com data de referência em `01/11/2026`) foi dimensionada para refletir o porte operacional da academia levantado nas entrevistas:
+Embora os dados individuais sejam fictícios, a **quantidade de registos** em cada tabela total de **2.073 linhas**, com data de referência em `01/11/2026`) foi dimensionada para refletir o porte operacional da academia levantado nas entrevistas:
 
 | Tabela | Qtd. Fictícia | Como o porte da academia justifica essa quantidade |
 | :--- | :---: | :--- |
@@ -1249,11 +1249,11 @@ Embora os dados individuais sejam fictícios, a **quantidade de registos** em ca
 | **`PLANO`** | **8** | Simula os 4 ciclos de planos (Mensal, Trimestral, Semestral e Anual) nas modalidades Individual e Família. |
 | **`ALUNO`** | **92** | Quantidade fictícia dimensionada dentro da faixa informada pelo CEO (80 a 100 alunos), sendo 83 ativos, 6 inativos e 3 trancados. |
 | **`RESPONSAVEL`** | **11** | Responsáveis fictícios para cobrir os 14 alunos menores de idade (irmãos partilham o mesmo responsável). |
-| **`CONTRATO`** | **83** | Um contrato por aluno: 86 vigentes (ativos e trancados) + 6 cancelados = 92. No Plano Família, cada familiar tem o seu contrato (ver seção 1.5, item 11). |
-| **`PARTICIPA`** | **100** | Vincula cada contrato a pelo menos 1 modalidade (83), mais as modalidades extras contratadas por alguns alunos. |
+| **`CONTRATO`** | **91** | Um contrato por aluno: 85 vigentes (ativos e trancados) + 6 cancelados = 91. O aluno 92, matriculado sem contrato, é o caso proposital da auditoria A01. No Plano Família, cada familiar tem o seu contrato (ver seção 1.5, item 11). |
+| **`PARTICIPA`** | **103** | Vincula cada contrato a pelo menos 1 modalidade (91), mais as modalidades extras contratadas por alguns alunos. |
 | **`MATRICULA`** | **190** | Simula cada aluno a treinar em 1 a 3 turmas da sua modalidade (média de 10 alunos por turma, respeitando o limite de 30 vagas). |
 | **`TRANCAMENTO`** | **6** | Simula afastamentos por lesão ou razão médica ao longo de 2026 (3 encerrados e 3 em curso). |
-| **`PAGAMENTO`** | **293** | Simula cerca de 80 a 100 mensalidades geradas por mês durante 4 meses (agosto a novembro de 2026). |
+| **`PAGAMENTO`** | **325** | Simula de 79 a 83 mensalidades geradas por mês, uma por contrato vigente, durante 4 meses (agosto a novembro de 2026). |
 | **`INTERESSADO`** | **24** | Simula a média de 2 a 4 aulas experimentais por semana acumuladas ao longo de 2 meses. |
 | **`AULA` e `PRESENCA`** | **74 / 654** | Simula todas as aulas dadas pelas 21 turmas em outubro/2026 e a lista de chamada diária dos alunos matriculados. |
 | **`GRADUACAO`** | **28** | Simula o histórico dos exames de faixa trimestrais e análises técnicas de Boxe (aprovados e reprovados). |
