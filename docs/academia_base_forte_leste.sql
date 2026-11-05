@@ -107,7 +107,8 @@
 --       ESTRUTURA: desconto gravado no PLANO (PC_DESCONTO entre 0 e 100), nunca no aluno;
 --       QT_MINIMA_PESSOAS >= 2 no Família; modalidades do contrato em PARTICIPA e
 --       acréscimo em CONTRATO.VL_ACRESCIMO_MODALIDADE. AUDITORIA: A10 (desconto dado ao
---       aluno fora do plano). O teto de 4 dependentes é controlado pela aplicação.
+--       aluno fora do plano). Cada familiar tem o próprio contrato; o grupo (2 a 5 pessoas) e o
+--       parentesco são conferidos pelo CEO no RG, fora do banco.
 --  RO02 Vencimento no 5º dia útil, sem valor proporcional
 --       ESTRUTURA: PAGAMENTO.DT_VENCIMENTO obrigatório; a massa usa sempre o 5º dia útil
 --       e o valor integral. AUDITORIA: A01 (matrícula sem parcela) e A07 (parcela vencida
@@ -449,7 +450,7 @@ CREATE TABLE PLANO (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.12 CONTRATO — acordo do aluno titular com a academia                [RF04, RO01, RO04, RE04]
+-- 2.12 CONTRATO — acordo do aluno com a academia                       [RF04, RO01, RO04, RE04]
 -- -------------------------------------------------------------------------------------
 -- VL_MENSAL_ACORDADO é congelado: reajuste no PLANO não muda contratos já firmados.
 -- VL_ACRESCIMO_MODALIDADE cobra as modalidades extras [RO01].
@@ -457,7 +458,7 @@ CREATE TABLE PLANO (
 -- DT_FIM é prorrogado pelo tempo de trancamento [RE04].
 CREATE TABLE CONTRATO (
     ID_CONTRATO               INT            NOT NULL AUTO_INCREMENT,
-    ID_ALUNO                  INT            NOT NULL,               -- titular (responsável financeiro)
+    ID_ALUNO                  INT            NOT NULL,               -- aluno do contrato (no Plano Família, cada familiar tem o seu)
     ID_PLANO                  INT            NOT NULL,
     DT_INICIO                 DATE           NOT NULL,
     DT_FIM                    DATE           NOT NULL,               -- fim do ciclo atual
@@ -861,13 +862,13 @@ ALTER TABLE LOG_ACESSO
 --   PLANO                    8  4 ciclos (mensal, trimestral, semestral, anual) x versão individual e Família
 --   ALUNO                   92  faixa de 80 a 100 alunos; 83 ativos + inativos e trancados
 --   RESPONSAVEL             11  14 alunos menores; irmãos dividem o mesmo responsável
---   CONTRATO                83  77 vigentes (faixa de 70 a 85) + 6 cancelados; menos contratos
---                               que alunos porque 8 dependentes estão no contrato do titular (Plano Família)
---   PARTICIPA              100  cada contrato cobre 1 modalidade; alguns têm modalidade extra
+--   CONTRATO                91  85 vigentes (faixa de 70 a 85) + 6 cancelados; um contrato por aluno,
+--                               inclusive no Plano Família (o aluno 92, sem contrato, é o caso da A01)
+--   PARTICIPA              103  cada contrato cobre 1 modalidade; alguns têm modalidade extra
 --   MATRICULA              190  aluno treina em 1 a 3 turmas da modalidade (média de 10 ativos por
 --                               turma, a maioria acima do quórum mínimo, como no levantamento) + histórico
 --   TRANCAMENTO              6  afastamentos por lesão/razão médica ao longo de 2026
---   PAGAMENTO              293  70 a 85 faturas por mês x 4 meses (ago, set, out e nov/2026)
+--   PAGAMENTO              325  79 a 83 faturas por mês x 4 meses (ago, set, out e nov/2026)
 --   INTERESSADO             24  2 a 4 aulas experimentais por semana (8 a 16 por mês) x ~2 meses
 --   AULA                    74  18 turmas x ~4 semanas de outubro (menos o feriado de 12/10) + 1 reposição
 --   PRESENCA               654  uma linha por matrícula ativa em cada aula de outubro
@@ -878,11 +879,11 @@ ALTER TABLE LOG_ACESSO
 --   TELEFONE_ALUNO         123  pelo menos 1 por aluno; menores com o telefone do responsável
 --   PROBLEMA_SAUDE_ALUNO    94  pelo menos 1 por aluno ('nenhum' quando não há)
 --   Apoio do professor      50  e-mails, telefones, especializações, níveis e qualificações (1,n)
---   TOTAL                 2030  registros
+--   TOTAL                 2073  registros
 --
 -- VARIEDADE PARA OS TESTES (situações reais, não só o caso comum)
 --   • Alunos ATIVO, INATIVO (contrato cancelado) e TRANCADO; menores com responsável;
---     dependentes de Plano Família; alunos que vieram da aula experimental.
+--     familiares no Plano Família, cada um com o seu contrato; alunos que vieram da aula experimental.
 --   • Contratos de todos os planos, com e sem modalidade extra; cancelamentos com e sem
 --     multa; um plano (Família Anual) sem nenhuma venda.
 --   • Parcelas pagas em dia, pagas com atraso (com multa nos planos longos), em atraso,
@@ -997,9 +998,8 @@ INSERT INTO REGISTRO_QUALIFICACOES (DS_REGISTRO_QUALIFICACOES, ID_PROFESSOR) VAL
 -- -------------------------------------------------------------------------------------
 -- 4.3 RESPONSAVEL (11) [RF01, RE03, RO01]
 -- Responsáveis legais dos alunos menores de 18 anos (RE03).
--- Nos contratos do Plano Família, o responsável é o próprio titular do contrato, que também é aluno:
--- por isso o CPF do responsável é igual ao CPF do aluno titular. É esse CPF que liga o dependente
--- ao contrato da família na consulta de auditoria A01.
+-- No Plano Família, o responsável pelo menor é um familiar que também é aluno, por isso o CPF
+-- se repete em RESPONSAVEL e em ALUNO. Cada familiar tem o próprio CONTRATO.
 -- -------------------------------------------------------------------------------------
 INSERT INTO RESPONSAVEL (ID_RESPONSAVEL, CPF, NM_RESPONSAVEL, NR_TELEFONE, DS_PARENTESCO) VALUES
     (1, '32218340669', 'Leonardo Queiroz Gomes', '11937896565', 'Pai'),
@@ -1049,7 +1049,7 @@ INSERT INTO INTERESSADO (ID_INTERESSADO, ID_MODALIDADE, NM_INTERESSADO, TP_STATU
 -- -------------------------------------------------------------------------------------
 -- 4.5 ALUNO (92) e tabelas de apoio [RF01, RE03, RE06, RNF02]
 -- Situação: 83 ATIVO, 6 INATIVO (contrato cancelado), 3 TRANCADO.
--- 14 alunos são menores de idade e têm responsável; 8 deles são dependentes de um Plano Família.
+-- 14 alunos são menores de idade e têm responsável; 8 deles estão no Plano Família, cada um com o seu contrato.
 -- 10 alunos vieram da aula experimental (ID_INTERESSADO preenchido).
 -- Cenários de auditoria: aluno 53 é menor e ainda não entregou o atestado (A05);
 -- aluno 92 foi matriculado em 28/10 sem contrato (A01).
@@ -2480,15 +2480,15 @@ INSERT INTO PLANO (ID_PLANO, NM_PLANO, QT_DURACAO_MESES, VL_MENSALIDADE, PC_DESC
     (2, 'Trimestral', 3, 180.00, 5.00, NULL, 'Fidelidade de 3 meses. Multa de 2% por atraso. Cancelamento antecipado: multa de 20% sobre as mensalidades restantes.'),
     (3, 'Semestral', 6, 180.00, 10.00, NULL, 'Fidelidade de 6 meses. Multa de 2% por atraso. Cancelamento antecipado: multa de 20% sobre as mensalidades restantes.'),
     (4, 'Anual', 12, 180.00, 15.00, NULL, 'Fidelidade de 12 meses. Multa de 2% por atraso. Cancelamento antecipado: multa de 20% sobre as mensalidades restantes.'),
-    (5, 'Família Mensal', 1, 180.00, 10.00, 2, 'Valor por pessoa; titular e dependentes no mesmo contrato. Sem fidelidade.'),
+    (5, 'Família Mensal', 1, 180.00, 10.00, 2, 'Valor por pessoa; cada familiar tem o seu contrato. Sem fidelidade.'),
     (6, 'Família Trimestral', 3, 180.00, 15.00, 2, 'Valor por pessoa; fidelidade de 3 meses. Mesmas regras de multa do plano Trimestral.'),
     (7, 'Família Semestral', 6, 180.00, 20.00, 2, 'Valor por pessoa; fidelidade de 6 meses. Mesmas regras de multa do plano Semestral.'),
     (8, 'Família Anual', 12, 180.00, 25.00, 2, 'Valor por pessoa; fidelidade de 12 meses. Mesmas regras de multa do plano Anual.');
 
 -- -------------------------------------------------------------------------------------
--- 4.12 CONTRATO (83) e PARTICIPA [RF04, RO01, RO04, RE04]
--- 77 contratos vigentes + 6 cancelados. VL_MENSAL_ACORDADO = valor do plano com desconto
--- (no Família, multiplicado pelo número de pessoas). Modalidade extra gera VL_ACRESCIMO_MODALIDADE (R$ 60,00 cada).
+-- 4.12 CONTRATO (91) e PARTICIPA [RF04, RO01, RO04, RE04]
+-- 85 contratos vigentes + 6 cancelados. VL_MENSAL_ACORDADO = valor do plano com desconto
+-- (no Família, o valor é por pessoa e cada familiar tem o seu contrato). Modalidade extra gera VL_ACRESCIMO_MODALIDADE (R$ 60,00 cada).
 -- DT_FIM é o fim do ciclo atual: o contrato renova sozinho e só termina por cancelamento; quem já voltou
 -- de trancamento teve o DT_FIM prorrogado pelos dias de afastamento (RE04).
 -- Cenário de auditoria: o contrato 66 (Trimestral) foi cancelado antes do fim do ciclo sem multa (A08).
@@ -2511,7 +2511,7 @@ INSERT INTO CONTRATO (ID_CONTRATO, ID_ALUNO, ID_PLANO, DT_INICIO, DT_FIM, VL_MEN
     (15, 15, 3, '2025-01-07', '2027-01-07', 162.00, NULL, NULL, NULL),
     (16, 16, 1, '2025-02-19', '2026-11-19', 180.00, NULL, NULL, NULL),
     (17, 17, 4, '2025-02-21', '2027-02-21', 153.00, NULL, NULL, NULL),
-    (18, 18, 5, '2025-03-10', '2026-11-10', 486.00, NULL, NULL, NULL),
+    (18, 18, 5, '2025-03-10', '2026-11-10', 162.00, NULL, NULL, NULL),
     (19, 21, 1, '2025-03-13', '2026-11-13', 180.00, NULL, NULL, NULL),
     (20, 22, 4, '2025-04-11', '2027-04-11', 153.00, NULL, NULL, NULL),
     (21, 23, 1, '2025-04-12', '2026-11-12', 180.00, NULL, NULL, NULL),
@@ -2527,7 +2527,7 @@ INSERT INTO CONTRATO (ID_CONTRATO, ID_ALUNO, ID_PLANO, DT_INICIO, DT_FIM, VL_MEN
     (31, 33, 3, '2025-07-22', '2027-01-22', 162.00, 60.00, NULL, NULL),
     (32, 34, 1, '2025-07-22', '2026-11-22', 180.00, NULL, NULL, NULL),
     (33, 35, 3, '2025-07-28', '2027-01-28', 162.00, NULL, NULL, NULL),
-    (34, 36, 6, '2025-08-04', '2026-11-04', 459.00, NULL, NULL, NULL),
+    (34, 36, 6, '2025-08-04', '2026-11-04', 153.00, NULL, NULL, NULL),
     (35, 39, 1, '2025-08-16', '2026-11-16', 180.00, NULL, NULL, NULL),
     (36, 40, 2, '2025-09-01', '2026-12-01', 171.00, NULL, NULL, NULL),
     (37, 41, 4, '2025-09-18', '2027-09-18', 153.00, NULL, NULL, NULL),
@@ -2543,7 +2543,7 @@ INSERT INTO CONTRATO (ID_CONTRATO, ID_ALUNO, ID_PLANO, DT_INICIO, DT_FIM, VL_MEN
     (47, 51, 4, '2026-01-05', '2027-01-05', 153.00, NULL, '2026-07-30', 214.20),
     (48, 52, 1, '2026-01-05', '2026-11-05', 180.00, NULL, NULL, NULL),
     (49, 53, 1, '2026-01-25', '2026-11-25', 180.00, NULL, NULL, NULL),
-    (50, 54, 7, '2026-02-02', '2027-02-02', 432.00, NULL, NULL, NULL),
+    (50, 54, 7, '2026-02-02', '2027-02-02', 144.00, NULL, NULL, NULL),
     (51, 57, 3, '2026-02-08', '2027-02-08', 162.00, NULL, NULL, NULL),
     (52, 58, 3, '2026-02-09', '2027-02-09', 162.00, 60.00, NULL, NULL),
     (53, 59, 1, '2026-02-10', '2026-11-10', 180.00, NULL, NULL, NULL),
@@ -2559,12 +2559,12 @@ INSERT INTO CONTRATO (ID_CONTRATO, ID_ALUNO, ID_PLANO, DT_INICIO, DT_FIM, VL_MEN
     (62, 68, 1, '2026-04-21', '2026-11-21', 180.00, 60.00, NULL, NULL),
     (63, 69, 1, '2026-04-26', '2026-11-26', 180.00, NULL, NULL, NULL),
     (64, 70, 3, '2026-05-04', '2026-11-04', 162.00, NULL, '2026-09-03', 64.80),
-    (65, 71, 5, '2026-05-11', '2026-11-11', 324.00, NULL, NULL, NULL),
+    (65, 71, 5, '2026-05-11', '2026-11-11', 162.00, NULL, NULL, NULL),
     (66, 73, 2, '2026-06-01', '2026-09-01', 171.00, NULL, '2026-08-14', NULL),
     (67, 74, 1, '2026-06-03', '2026-11-03', 180.00, NULL, NULL, NULL),
     (68, 75, 1, '2026-06-11', '2026-11-11', 180.00, NULL, NULL, NULL),
     (69, 76, 2, '2026-06-13', '2026-12-13', 171.00, 60.00, NULL, NULL),
-    (70, 77, 6, '2026-07-06', '2027-01-06', 306.00, NULL, NULL, NULL),
+    (70, 77, 6, '2026-07-06', '2027-01-06', 153.00, NULL, NULL, NULL),
     (71, 79, 1, '2026-07-15', '2026-11-15', 180.00, 60.00, NULL, NULL),
     (72, 80, 1, '2026-07-26', '2026-11-26', 180.00, NULL, NULL, NULL),
     (73, 81, 1, '2026-08-23', '2026-11-23', 180.00, NULL, NULL, NULL),
@@ -2577,7 +2577,17 @@ INSERT INTO CONTRATO (ID_CONTRATO, ID_ALUNO, ID_PLANO, DT_INICIO, DT_FIM, VL_MEN
     (80, 88, 4, '2026-10-07', '2027-10-07', 153.00, NULL, NULL, NULL),
     (81, 89, 1, '2026-10-11', '2026-11-11', 180.00, NULL, NULL, NULL),
     (82, 90, 3, '2026-10-15', '2027-04-15', 162.00, NULL, NULL, NULL),
-    (83, 91, 1, '2026-10-15', '2026-11-15', 180.00, NULL, NULL, NULL);
+    (83, 91, 1, '2026-10-15', '2026-11-15', 180.00, NULL, NULL, NULL),
+    -- Plano Família: cada familiar tem o próprio contrato, no mesmo plano e ciclo do familiar
+    -- que fechou o grupo (decisão 11 da seção 1.5 do README)
+    (84, 19, 5, '2025-03-10', '2026-11-10', 162.00, NULL, NULL, NULL),
+    (85, 20, 5, '2025-03-10', '2026-11-10', 162.00, NULL, NULL, NULL),
+    (86, 37, 6, '2025-08-04', '2026-11-04', 153.00, NULL, NULL, NULL),
+    (87, 38, 6, '2025-08-04', '2026-11-04', 153.00, NULL, NULL, NULL),
+    (88, 55, 7, '2026-02-02', '2027-02-02', 144.00, NULL, NULL, NULL),
+    (89, 56, 7, '2026-02-02', '2027-02-02', 144.00, NULL, NULL, NULL),
+    (90, 72, 5, '2026-05-11', '2026-11-11', 162.00, NULL, NULL, NULL),
+    (91, 78, 6, '2026-07-06', '2027-01-06', 153.00, NULL, NULL, NULL);
 
 INSERT INTO PARTICIPA (ID_MODALIDADE, ID_CONTRATO) VALUES
     (1, 1),
@@ -2600,7 +2610,6 @@ INSERT INTO PARTICIPA (ID_MODALIDADE, ID_CONTRATO) VALUES
     (3, 16),
     (2, 17),
     (3, 18),
-    (5, 18),
     (2, 19),
     (1, 20),
     (5, 21),
@@ -2620,7 +2629,6 @@ INSERT INTO PARTICIPA (ID_MODALIDADE, ID_CONTRATO) VALUES
     (3, 32),
     (3, 33),
     (2, 34),
-    (3, 34),
     (3, 35),
     (2, 36),
     (3, 37),
@@ -2639,7 +2647,6 @@ INSERT INTO PARTICIPA (ID_MODALIDADE, ID_CONTRATO) VALUES
     (1, 48),
     (3, 49),
     (4, 50),
-    (5, 50),
     (3, 51),
     (3, 52),
     (4, 52),
@@ -2657,7 +2664,6 @@ INSERT INTO PARTICIPA (ID_MODALIDADE, ID_CONTRATO) VALUES
     (6, 62),
     (1, 63),
     (5, 64),
-    (5, 65),
     (6, 65),
     (1, 66),
     (3, 67),
@@ -2665,7 +2671,6 @@ INSERT INTO PARTICIPA (ID_MODALIDADE, ID_CONTRATO) VALUES
     (2, 69),
     (3, 69),
     (1, 70),
-    (3, 70),
     (1, 71),
     (4, 71),
     (1, 72),
@@ -2679,10 +2684,18 @@ INSERT INTO PARTICIPA (ID_MODALIDADE, ID_CONTRATO) VALUES
     (2, 80),
     (6, 81),
     (4, 82),
-    (2, 83);
+    (2, 83),
+    (5, 84),
+    (5, 85),
+    (3, 86),
+    (3, 87),
+    (5, 88),
+    (5, 89),
+    (5, 90),
+    (3, 91);
 
 -- -------------------------------------------------------------------------------------
--- 4.13 PAGAMENTO (293) [RF04, RO02, RO04, RO06, RE07]
+-- 4.13 PAGAMENTO (325) [RF04, RO02, RO04, RO06, RE07]
 -- Parcelas de ago/2026 a nov/2026 (os 3 últimos meses fechados + o mês corrente), vencimento no 5º dia útil:
 -- 07/08, 08/09, 07/10 e 09/11 (RO02). Quem assina depois do vencimento do mês paga a 1ª parcela, com valor
 -- integral e o mesmo vencimento do 5º dia útil, no ato da assinatura (DT_PAGAMENTO = data do contrato).
@@ -2709,7 +2722,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (14, 15, '2026-08-07', '2026-08-04', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
     (15, 16, '2026-08-07', '2026-08-11', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (16, 17, '2026-08-07', '2026-08-03', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
-    (17, 18, '2026-08-07', '2026-08-05', 486.00, 486.00, 'CREDITO', NULL, NULL, 'PAGO'),
+    (17, 18, '2026-08-07', '2026-08-05', 162.00, 162.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (18, 19, '2026-08-07', '2026-08-06', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (19, 20, '2026-08-07', '2026-08-01', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
     (20, 21, '2026-08-07', '2026-08-05', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
@@ -2725,7 +2738,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (30, 31, '2026-08-07', '2026-08-01', 222.00, 222.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (31, 32, '2026-08-07', '2026-08-02', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (32, 33, '2026-08-07', '2026-08-14', 162.00, 165.24, 'DEBITO', 3.24, NULL, 'PAGO'),
-    (33, 34, '2026-08-07', '2026-08-05', 459.00, 459.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (33, 34, '2026-08-07', '2026-08-05', 153.00, 153.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (34, 35, '2026-08-07', '2026-08-01', 180.00, 180.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (35, 36, '2026-08-07', '2026-08-12', 171.00, 174.42, 'CREDITO', 3.42, NULL, 'PAGO'),
     (36, 37, '2026-08-07', '2026-08-02', 153.00, 153.00, 'DEBITO', NULL, NULL, 'PAGO'),
@@ -2740,7 +2753,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (45, 46, '2026-08-07', '2026-08-07', 180.00, 180.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (46, 48, '2026-08-07', '2026-08-03', 180.00, 180.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (47, 49, '2026-08-07', '2026-08-03', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
-    (48, 50, '2026-08-07', '2026-08-02', 432.00, 432.00, 'PIX', NULL, NULL, 'PAGO'),
+    (48, 50, '2026-08-07', '2026-08-02', 144.00, 144.00, 'PIX', NULL, NULL, 'PAGO'),
     (49, 51, '2026-08-07', '2026-08-06', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
     (50, 52, '2026-08-07', '2026-08-01', 222.00, 222.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (51, 53, '2026-08-07', '2026-08-06', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
@@ -2755,12 +2768,12 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (60, 62, '2026-08-07', '2026-08-09', 240.00, 240.00, 'PIX', NULL, NULL, 'PAGO'),
     (61, 63, '2026-08-07', '2026-08-07', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (62, 64, '2026-08-07', '2026-08-02', 162.00, 162.00, 'DEBITO', NULL, NULL, 'PAGO'),
-    (63, 65, '2026-08-07', '2026-08-01', 324.00, 324.00, 'PIX', NULL, NULL, 'PAGO'),
+    (63, 65, '2026-08-07', '2026-08-01', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
     (64, 66, '2026-08-07', '2026-08-01', 171.00, 171.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (65, 67, '2026-08-07', '2026-08-09', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (66, 68, '2026-08-07', '2026-08-01', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (67, 69, '2026-08-07', '2026-08-15', 231.00, 235.62, 'PIX', 4.62, NULL, 'PAGO'),
-    (68, 70, '2026-08-07', '2026-08-01', 306.00, 306.00, 'CREDITO', NULL, NULL, 'PAGO'),
+    (68, 70, '2026-08-07', '2026-08-01', 153.00, 153.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (69, 71, '2026-08-07', '2026-08-13', 240.00, 240.00, 'PIX', NULL, NULL, 'PAGO'),
     (70, 72, '2026-08-07', '2026-08-04', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (71, 73, '2026-08-07', '2026-08-23', 180.00, 180.00, 'DEBITO', NULL, NULL, 'PAGO'),
@@ -2782,7 +2795,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (86, 15, '2026-09-08', '2026-09-14', 162.00, 165.24, 'PIX', 3.24, NULL, 'PAGO'),
     (87, 16, '2026-09-08', '2026-09-16', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (88, 17, '2026-09-08', '2026-09-03', 153.00, 213.00, 'PIX', NULL, 60.00, 'PAGO'),
-    (89, 18, '2026-09-08', '2026-09-04', 486.00, 486.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (89, 18, '2026-09-08', '2026-09-04', 162.00, 162.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (90, 19, '2026-09-08', '2026-09-07', 180.00, 240.00, 'CREDITO', NULL, 60.00, 'PAGO'),
     (91, 20, '2026-09-08', '2026-09-15', 153.00, 156.06, 'PIX', 3.06, NULL, 'PAGO'),
     (92, 21, '2026-09-08', NULL, 180.00, NULL, NULL, NULL, NULL, 'ATRASADO'),
@@ -2798,7 +2811,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (102, 31, '2026-09-08', '2026-09-03', 222.00, 222.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (103, 32, '2026-09-08', '2026-09-07', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (104, 33, '2026-09-08', '2026-09-08', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
-    (105, 34, '2026-09-08', '2026-09-05', 459.00, 459.00, 'PIX', NULL, NULL, 'PAGO'),
+    (105, 34, '2026-09-08', '2026-09-05', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
     (106, 35, '2026-09-08', '2026-09-09', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (107, 36, '2026-09-08', '2026-09-04', 171.00, 171.00, 'PIX', NULL, NULL, 'PAGO'),
     (108, 37, '2026-09-08', '2026-09-03', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
@@ -2812,7 +2825,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (116, 46, '2026-09-08', '2026-09-07', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (117, 48, '2026-09-08', '2026-09-03', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (118, 49, '2026-09-08', '2026-09-08', 180.00, 180.00, 'DEBITO', NULL, NULL, 'PAGO'),
-    (119, 50, '2026-09-08', '2026-09-07', 432.00, 432.00, 'PIX', NULL, NULL, 'PAGO'),
+    (119, 50, '2026-09-08', '2026-09-07', 144.00, 144.00, 'PIX', NULL, NULL, 'PAGO'),
     (120, 51, '2026-09-08', '2026-09-08', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
     (121, 52, '2026-09-08', '2026-09-07', 222.00, 222.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (122, 53, '2026-09-08', '2026-09-08', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
@@ -2826,11 +2839,11 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (130, 61, '2026-09-08', '2026-09-07', 171.00, 171.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (131, 62, '2026-09-08', '2026-09-07', 240.00, 300.00, 'DEBITO', NULL, 60.00, 'PAGO'),
     (132, 63, '2026-09-08', '2026-09-04', 180.00, 180.00, 'DEBITO', NULL, NULL, 'PAGO'),
-    (133, 65, '2026-09-08', '2026-09-03', 324.00, 324.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (133, 65, '2026-09-08', '2026-09-03', 162.00, 162.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (134, 67, '2026-09-08', '2026-09-06', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (135, 68, '2026-09-08', '2026-09-05', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (136, 69, '2026-09-08', '2026-09-05', 231.00, 231.00, 'PIX', NULL, NULL, 'PAGO'),
-    (137, 70, '2026-09-08', '2026-09-06', 306.00, 306.00, 'PIX', NULL, NULL, 'PAGO'),
+    (137, 70, '2026-09-08', '2026-09-06', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
     (138, 71, '2026-09-08', '2026-09-02', 240.00, 240.00, 'PIX', NULL, NULL, 'PAGO'),
     (139, 72, '2026-09-08', '2026-09-11', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (140, 73, '2026-09-08', '2026-09-04', 180.00, 180.00, 'DEBITO', NULL, NULL, 'PAGO'),
@@ -2855,7 +2868,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (159, 16, '2026-10-07', '2026-10-07', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (160, 17, '2026-10-07', '2026-10-02', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO');
 INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, VL_DEVIDO, VL_PAGO, TP_FORMA_PAGAMENTO, VL_MULTA, VL_TAXA_GRADUACAO, TP_STATUS_PAGAMENTO) VALUES
-    (161, 18, '2026-10-07', '2026-10-04', 486.00, 486.00, 'PIX', NULL, NULL, 'PAGO'),
+    (161, 18, '2026-10-07', '2026-10-04', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
     (162, 19, '2026-10-07', '2026-10-07', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (163, 20, '2026-10-07', '2026-10-04', 153.00, 153.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (164, 21, '2026-10-07', NULL, 180.00, NULL, NULL, NULL, NULL, 'ATRASADO'),
@@ -2870,7 +2883,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (173, 31, '2026-10-07', '2026-10-15', 222.00, 226.44, 'PIX', 4.44, NULL, 'PAGO'),
     (174, 32, '2026-10-07', NULL, 180.00, NULL, NULL, NULL, NULL, 'ATRASADO'),
     (175, 33, '2026-10-07', '2026-10-07', 162.00, 162.00, 'CREDITO', NULL, NULL, 'PAGO'),
-    (176, 34, '2026-10-07', '2026-10-02', 459.00, 519.00, 'PIX', NULL, 60.00, 'PAGO'),
+    (176, 34, '2026-10-07', '2026-10-02', 153.00, 213.00, 'PIX', NULL, 60.00, 'PAGO'),
     (177, 35, '2026-10-07', '2026-10-06', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (178, 36, '2026-10-07', '2026-10-01', 171.00, 171.00, 'PIX', NULL, NULL, 'PAGO'),
     (179, 37, '2026-10-07', '2026-10-07', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
@@ -2884,7 +2897,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (187, 46, '2026-10-07', '2026-10-16', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (188, 48, '2026-10-07', '2026-10-07', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (189, 49, '2026-10-07', '2026-10-01', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
-    (190, 50, '2026-10-07', '2026-10-02', 432.00, 432.00, 'CREDITO', NULL, NULL, 'PAGO'),
+    (190, 50, '2026-10-07', '2026-10-02', 144.00, 144.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (191, 51, '2026-10-07', '2026-10-05', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
     (192, 52, '2026-10-07', NULL, 222.00, NULL, NULL, NULL, NULL, 'ATRASADO'),
     (193, 53, '2026-10-07', '2026-10-15', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
@@ -2896,11 +2909,11 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (199, 61, '2026-10-07', '2026-10-03', 171.00, 171.00, 'PIX', NULL, NULL, 'PAGO'),
     (200, 62, '2026-10-07', '2026-10-01', 240.00, 240.00, 'PIX', NULL, NULL, 'PAGO'),
     (201, 63, '2026-10-07', '2026-10-06', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
-    (202, 65, '2026-10-07', '2026-10-04', 324.00, 324.00, 'PIX', NULL, NULL, 'PAGO'),
+    (202, 65, '2026-10-07', '2026-10-04', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
     (203, 67, '2026-10-07', '2026-10-05', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
     (204, 68, '2026-10-07', '2026-10-06', 180.00, 180.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (205, 69, '2026-10-07', NULL, 231.00, NULL, NULL, NULL, NULL, 'ATRASADO'),
-    (206, 70, '2026-10-07', '2026-10-03', 306.00, 306.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (206, 70, '2026-10-07', '2026-10-03', 153.00, 153.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (207, 71, '2026-10-07', '2026-10-04', 240.00, 240.00, 'DEBITO', NULL, NULL, 'PAGO'),
     (208, 72, '2026-10-07', NULL, 180.00, NULL, NULL, NULL, NULL, 'ATRASADO'),
     (209, 73, '2026-10-07', '2026-10-05', 180.00, 180.00, 'PIX', NULL, NULL, 'PAGO'),
@@ -2929,7 +2942,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (232, 13, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (233, 14, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (234, 17, '2026-11-09', '2026-10-29', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
-    (235, 18, '2026-11-09', NULL, 486.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (235, 18, '2026-11-09', NULL, 162.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (236, 19, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (237, 20, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (238, 21, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
@@ -2945,7 +2958,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (247, 31, '2026-11-09', NULL, 222.00, NULL, NULL, NULL, 60.00, 'PENDENTE'),
     (248, 32, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (249, 33, '2026-11-09', '2026-10-29', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
-    (250, 34, '2026-11-09', NULL, 459.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (250, 34, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (251, 35, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (252, 36, '2026-11-09', NULL, 171.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (253, 37, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
@@ -2959,7 +2972,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (261, 46, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (262, 48, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (263, 49, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
-    (264, 50, '2026-11-09', NULL, 432.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (264, 50, '2026-11-09', NULL, 144.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (265, 51, '2026-11-09', NULL, 162.00, NULL, NULL, NULL, 60.00, 'PENDENTE'),
     (266, 52, '2026-11-09', NULL, 222.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (267, 53, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
@@ -2971,11 +2984,11 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (273, 61, '2026-11-09', NULL, 171.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (274, 62, '2026-11-09', '2026-10-28', 240.00, 240.00, 'CREDITO', NULL, NULL, 'PAGO'),
     (275, 63, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
-    (276, 65, '2026-11-09', NULL, 324.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (276, 65, '2026-11-09', NULL, 162.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (277, 67, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (278, 68, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (279, 69, '2026-11-09', NULL, 231.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
-    (280, 70, '2026-11-09', NULL, 306.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (280, 70, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (281, 71, '2026-11-09', NULL, 240.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (282, 72, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (283, 73, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
@@ -2989,6 +3002,41 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (291, 81, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (292, 82, '2026-11-09', NULL, 162.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
     (293, 83, '2026-11-09', NULL, 180.00, NULL, NULL, NULL, NULL, 'PENDENTE');
+
+-- Parcelas dos familiares do Plano Família (contratos 84 a 91), uma por mês, com o valor por pessoa
+INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, VL_DEVIDO, VL_PAGO, TP_FORMA_PAGAMENTO, VL_MULTA, VL_TAXA_GRADUACAO, TP_STATUS_PAGAMENTO) VALUES
+    (294, 84, '2026-08-07', '2026-08-05', 162.00, 162.00, 'CREDITO', NULL, NULL, 'PAGO'),
+    (295, 85, '2026-08-07', '2026-08-05', 162.00, 162.00, 'CREDITO', NULL, NULL, 'PAGO'),
+    (296, 86, '2026-08-07', '2026-08-05', 153.00, 153.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (297, 87, '2026-08-07', '2026-08-05', 153.00, 153.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (298, 88, '2026-08-07', '2026-08-02', 144.00, 144.00, 'PIX', NULL, NULL, 'PAGO'),
+    (299, 89, '2026-08-07', '2026-08-02', 144.00, 144.00, 'PIX', NULL, NULL, 'PAGO'),
+    (300, 90, '2026-08-07', '2026-08-01', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
+    (301, 91, '2026-08-07', '2026-08-01', 153.00, 153.00, 'CREDITO', NULL, NULL, 'PAGO'),
+    (302, 84, '2026-09-08', '2026-09-04', 162.00, 162.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (303, 85, '2026-09-08', '2026-09-04', 162.00, 162.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (304, 86, '2026-09-08', '2026-09-05', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
+    (305, 87, '2026-09-08', '2026-09-05', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
+    (306, 88, '2026-09-08', '2026-09-07', 144.00, 144.00, 'PIX', NULL, NULL, 'PAGO'),
+    (307, 89, '2026-09-08', '2026-09-07', 144.00, 144.00, 'PIX', NULL, NULL, 'PAGO'),
+    (308, 90, '2026-09-08', '2026-09-03', 162.00, 162.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (309, 91, '2026-09-08', '2026-09-06', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
+    (310, 84, '2026-10-07', '2026-10-04', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
+    (311, 85, '2026-10-07', '2026-10-04', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
+    (312, 86, '2026-10-07', '2026-10-02', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
+    (313, 87, '2026-10-07', '2026-10-02', 153.00, 153.00, 'PIX', NULL, NULL, 'PAGO'),
+    (314, 88, '2026-10-07', '2026-10-02', 144.00, 144.00, 'CREDITO', NULL, NULL, 'PAGO'),
+    (315, 89, '2026-10-07', '2026-10-02', 144.00, 144.00, 'CREDITO', NULL, NULL, 'PAGO'),
+    (316, 90, '2026-10-07', '2026-10-04', 162.00, 162.00, 'PIX', NULL, NULL, 'PAGO'),
+    (317, 91, '2026-10-07', '2026-10-03', 153.00, 153.00, 'DEBITO', NULL, NULL, 'PAGO'),
+    (318, 84, '2026-11-09', NULL, 162.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (319, 85, '2026-11-09', NULL, 162.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (320, 86, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (321, 87, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (322, 88, '2026-11-09', NULL, 144.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (323, 89, '2026-11-09', NULL, 144.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (324, 90, '2026-11-09', NULL, 162.00, NULL, NULL, NULL, NULL, 'PENDENTE'),
+    (325, 91, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE');
 
 -- -------------------------------------------------------------------------------------
 -- 4.14 GRADUACAO (28) [RF06, RO05, RO06]
@@ -3548,9 +3596,6 @@ ORDER BY QT_CONTRATOS_VIGENTES DESC, pl.ID_PLANO;
 -- A01 — Existem matrículas ativas sem nenhum registro de pagamento associado?
 -- Verifica: RF04 / RO02 (toda matrícula ativa deve possuir histórico financeiro: o contrato gera
 --           uma parcela por mês com vencimento no 5º dia útil)
--- Exceção legítima: dependente do Plano Família, cujas parcelas estão no contrato do titular.
--- O modelo não tem FK do dependente para o contrato; a ligação é feita pelo CPF do
--- responsável, que no Plano Família é o próprio titular (ver observação na Seção 4.3).
 SELECT a.ID_ALUNO,
        a.NM_COMPLETO,
        m.ID_MATRICULA,
@@ -3559,20 +3604,11 @@ SELECT a.ID_ALUNO,
 FROM MATRICULA m
 INNER JOIN ALUNO a ON a.ID_ALUNO = m.ID_ALUNO
 WHERE m.TP_SITUACAO_MATRICULA = 'ATIVA'
-  -- não tem parcela em contrato próprio
+  -- não tem parcela em contrato próprio (vale também para o Plano Família)
   AND NOT EXISTS (SELECT 1
                   FROM CONTRATO c
                   INNER JOIN PAGAMENTO pg ON pg.ID_CONTRATO = c.ID_CONTRATO
-                  WHERE c.ID_ALUNO = a.ID_ALUNO)
-  -- e também não é dependente de um contrato Família vigente
-  AND NOT EXISTS (SELECT 1
-                  FROM RESPONSAVEL r
-                  INNER JOIN ALUNO tit    ON tit.CPF      = r.CPF
-                  INNER JOIN CONTRATO c   ON c.ID_ALUNO   = tit.ID_ALUNO
-                  INNER JOIN PLANO pl     ON pl.ID_PLANO  = c.ID_PLANO
-                  WHERE r.ID_RESPONSAVEL = a.ID_RESPONSAVEL
-                    AND pl.QT_MINIMA_PESSOAS IS NOT NULL
-                    AND c.DT_CANCELAMENTO IS NULL);
+                  WHERE c.ID_ALUNO = a.ID_ALUNO);
 
 -- A02 — Algum aluno teve presença registrada enquanto estava bloqueado por parcela em atraso?
 -- Verifica: RE07 (a partir do dia seguinte ao vencimento sem pagamento, o aluno é bloqueado
