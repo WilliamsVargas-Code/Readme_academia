@@ -484,7 +484,7 @@ A escolha desta academia fundamenta-se em sua expressiva relevância comunitári
 1. O CEO compra, em quatro grupos: materiais de treino (saco de pancada, cordas, pneus), sob demanda e conforme o desgaste; higiene e limpeza (álcool, descartáveis, sanitizantes, papel higiênico), semanal e presencial; equipamentos de proteção para os alunos (luvas, capacetes, caneleiras); e água para consumo, semanal, fornecida gratuitamente a todos.
 2. O CEO registra cada compra no sistema e guarda a nota ou o comprovante. A academia não tem fornecedor fixo: o fornecedor muda de uma compra para outra.
 3. Cada compra gera uma despesa em Contas a Pagar.
-**Dados registrados:** data, grupo da compra, descrição, quantidade, valor total, forma de pagamento, nota ou comprovante guardado e fornecedor (o nome é anotado em cada compra, sem cadastro fixo).
+**Dados registrados:** data, categoria, descrição (onde se anota o grupo da compra), valor total, situação e fornecedor (o nome é anotado em cada compra, sem cadastro fixo). Quantidade, forma de pagamento e comprovante ficam fora do sistema.
  
 **Regras:** sem controle de estoque nem de durabilidade (justificado na tabela de exclusões).
  
