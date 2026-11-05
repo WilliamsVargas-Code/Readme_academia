@@ -22,7 +22,7 @@
 | Modelo lógico | [modelo_logico.png](<img/Modelo Logico V6.png>) |
 | Dicionário de dados (HTML) | [index.html](index.html) · [GitHub Pages](https://williamsvargas-code.github.io/Readme_academia/) |
 | Script SQL e Massa de Dados | [docs/academia_base_forte_leste.sql](docs/academia_base_forte_leste.sql) |
-| Slides do pitch | [slides/apresentacao.pdf](slides/apresentacao.pdf) |
+| Slides do pitch | [slides/apresentacao.pdf](slides/apresentacao.pptx) |
 
 ---
 
