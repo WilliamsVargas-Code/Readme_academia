@@ -1001,9 +1001,9 @@ No brModelo Web, as restrições `NOT NULL` e `UNIQUE` são definidas nas propri
 ---
 
 ## 1.6 Proposta de Arquitetura Analítica para BI e IA
-
-
-
+ 
+ 
+ 
 O banco operacional (seção 3) registra o dia a dia da academia; esta seção mostra como esses mesmos dados viram informação para decidir. Todos os indicadores abaixo são calculados por uma consulta gerencial do script ([docs/academia_base_forte_leste.sql](docs/academia_base_forte_leste.sql), seção 8), e cada problema P1 a P7 tem ao menos uma consulta que o responde (tabela de rastreabilidade no fim da seção). As consultas G12 a G18 foram criadas nesta etapa para cobrir os problemas e KPIs que ainda não tinham consulta, e a G08 ganhou a coluna de margem.
  
 Os valores citados vêm da massa de dados **fictícia** (data de referência 01/11/2026; último mês fechado: outubro/2026), com o script executado do zero no MySQL 8.0. Eles demonstram que cada consulta funciona e devolve resultado; não representam o desempenho real da Base Forte Leste.
@@ -1042,7 +1042,7 @@ Os valores citados vêm da massa de dados **fictícia** (data de referência 01/
 | Fonte (OLTP) | Registra a operação e garante a integridade (PK, FK, CHECK, ENUM). É a única fonte da verdade | MySQL 8.0, banco `ACADEMIA_BFL` | Em tempo real |
 | Consultas | Calculam KPIs (G01–G18) e conferem regras (A01–A10) | Script SQL, seções 8 e 9 | A cada execução |
 | Camada analítica | Views que reorganizam as tabelas normalizadas em fatos e dimensões, sem alterar o banco. Acesso por um usuário MySQL só de leitura (`GRANT SELECT` nas views, como os perfis da seção 3.5 do script) | Views no próprio MySQL | Diária |
-| Consumo | Painéis e alertas; segurança em nível de linha (RLS) para o professor ver só a própria modalidade (RE05, RNF02) | Power BI Desktop, modo importação | Diária |
+| Consumo | Painéis e alertas; segurança em nível de linha (RLS) para o professor ver só a própria modalidade (RE03, RNF02) | Power BI Desktop, modo importação | Diária |
 | IA | Modelos que estimam risco a partir do histórico | Python (pandas, scikit-learn) | Retreino mensal |
  
 Para o porte da academia (cerca de 2 mil linhas na massa e de 80 a 100 parcelas por mês), um data warehouse separado não se justifica: views no próprio MySQL bastam. O banco operacional continua normalizado (seção 1.4), que é o melhor formato para gravar sem anomalias; as views apenas juntam as tabelas para leitura.
@@ -1051,28 +1051,28 @@ Para o porte da academia (cerca de 2 mil linhas na massa e de 80 a 100 parcelas 
  
 | Pergunta de gestão | Decisão que apoia | Consultas | O que a massa (fictícia) mostra |
 | :-- | :-- | :-- | :-- |
-| Quanto deixou de entrar e de quem cobrar hoje? | Cobrança e bloqueio do 6º dia útil (RE07) | G02, G03, G04 | Out/2026: 10,7% das parcelas vencidas em aberto (R$ 1.506,00); 9 alunos na lista de cobrança |
+| Quanto deixou de entrar e de quem cobrar hoje? | Cobrança e bloqueio do 6º dia útil (RE05) | G02, G03, G04 | Out/2026: 9,6% das parcelas vencidas em aberto (R$ 1.506,00); 9 alunos na lista de cobrança |
 | Quais modalidades sustentam a academia depois do repasse ao professor? | Investir, rever turmas ou o valor por aula | G01 + G07 | Boxe fica com 44% da própria receita depois do repasse; as demais, de 58% a 67%. Muay Thai fica com 100% porque o gestor não recebe por aula |
 | Quanto a margem depende do gestor dar aula sem repasse? | Planejar contratação ou substituição do gestor nas aulas | G07, G17 | Custo docente de out/2026: 30,5%. Se as 18 aulas que o gestor deu em outubro fossem pagas como as dos prestadores (R$ 1.440,00), o custo do mês iria para cerca de 40,5% |
-| Onde há vaga ociosa ou risco de lotação? | Abrir, juntar ou fechar horários | G05, A06 | 172 matrículas ativas para 630 vagas (27,3%); a turma de Capoeira de sábado está sem alunos; nenhuma turma passa de 30 |
+| Onde há vaga ociosa ou risco de lotação? | Abrir, juntar ou fechar horários | G05, A06 | 172 matrículas ativas para 540 vagas (31,9%); a turma de No-Gi de sábado está sem alunos; nenhuma turma passa de 30 |
 | Quem está deixando de vir antes de cancelar? | Contato preventivo (retenção) | G09, G14 | Out/2026: 5 alunos abaixo de 50% de frequência (7,2% dos avaliados) |
 | A aula experimental traz alunos? Em qual modalidade? | Horários e modalidades que recebem as aulas experimentais e a divulgação | G06, G18 | Conversão de 57,1% em setembro e 50,0% em outubro; Boxe converte 75% e Jiu-Jitsu, 20% |
-| Os planos de fidelidade seguram o aluno e as multas são cobradas? | Política de desconto por ciclo e de rescisão (RO01, RO04) | G11, G13 | 57% da receita recorrente vem de planos de 3 meses ou mais; de ago a out, 2 cancelamentos antecipados de fidelidade e só 1 com multa lançada |
-| Os alunos chegam ao exame preparados? | Critério de liberação para o exame (RO05) e foco das aulas | G15, G16 | 82,1% de aprovação em 12 meses; uma das reprovações teve como motivo "frequência abaixo da exigida" |
+| Os planos de fidelidade seguram o aluno e as multas são cobradas? | Política de desconto por ciclo e de rescisão (RO01, RO08) | G11, G13 | 57% da receita recorrente vem de planos de 3 meses ou mais; de ago a out, 2 cancelamentos antecipados de fidelidade e só 1 com multa lançada |
+| Os alunos chegam ao exame preparados? | Critério de liberação para o exame (RO03) e foco das aulas | G15, G16 | 82,1% de aprovação em 12 meses; uma das reprovações teve como motivo "frequência abaixo da exigida" |
  
 ### 1.6.3 Indicadores e métricas gerenciais (KPIs)
  
-**Como foram escolhidos.** O grupo pesquisou os indicadores usados por academias e escolas de artes marciais (fontes no fim da seção) e manteve só os que as tabelas do modelo conseguem calcular e que têm consulta no script. Cancelamento e frequência entram porque a evasão é o maior risco do setor: nas academias brasileiras, a evasão média anual fica entre 40% e 60% [8]. A meta vem de uma referência de mercado quando ela existe [1–7]; quando não existe, vem de uma regra da própria academia ou é proposta do grupo, e isso está indicado em cada linha. Como a frequência exigida para o exame é de cada professor (RO05), as metas pedagógicas são propostas a validar com os professores e com o CEO.
+**Como foram escolhidos.** O grupo pesquisou os indicadores usados por academias e escolas de artes marciais (fontes no fim da seção) e manteve só os que as tabelas do modelo conseguem calcular e que têm consulta no script. Cancelamento e frequência entram porque a evasão é o maior risco do setor: nas academias brasileiras, a evasão média anual fica entre 40% e 60% [8]. A meta vem de uma referência de mercado quando ela existe [1–7]; quando não existe, vem de uma regra da própria academia ou é proposta do grupo, e isso está indicado em cada linha. Como a frequência exigida para o exame é de cada professor (RO03), as metas pedagógicas são propostas a validar com os professores e com o CEO.
  
 | Código | KPI | Fórmula | Período | Meta (origem) | Consulta | Valor na massa |
 | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
-| KPI01 | Completude do cadastro digital (P1) | cadastros sem pendência ÷ alunos atuais (ativos e trancados) × 100. Pendência: sem telefone, e-mail ou registro de saúde, ou menor sem responsável, ou aluno sem atestado | Mensal (posição na data de referência) | 100% (regra: RE03 e atributos (1,n) do DER) | G12 | 98,8% (1 menor sem atestado) |
-| KPI02 | Taxa de inadimplência (P2) | parcelas vencidas e não pagas ÷ parcelas vencidas × 100, por mês de vencimento | Mensal | ≤ 5%; alerta acima de 10% (referência de mercado [6][7]) | G03 (em reais: G02; lista: G04) | Ago 0,0% · set 4,1% · out 10,7% |
-| KPI03 | Taxa de cancelamento de contratos (P3) | contratos cancelados no mês ÷ contratos vigentes no 1º dia do mês × 100 | Mensal | ≤ 3%, nível das melhores escolas de artes marciais; alerta acima de 6%, a média do setor [1] | G13 | Ago 2,8% · set 4,3% · out 0,0% |
+| KPI01 | Completude do cadastro digital (P1) | cadastros sem pendência ÷ alunos atuais (ativos e trancados) × 100. Pendência: sem telefone, e-mail ou registro de saúde, ou menor sem responsável, ou aluno sem atestado | Mensal (posição na data de referência) | 100% (regra: RE07, RE08 e atributos (1,n) do DER) | G12 | 96,5% (3 de 86 sem atestado: alunos 53, 90 e 92) |
+| KPI02 | Taxa de inadimplência (P2) | parcelas vencidas e não pagas ÷ parcelas vencidas × 100, por mês de vencimento | Mensal | ≤ 5%; alerta acima de 10% (referência de mercado [6][7]) | G03 (em reais: G02; lista: G04) | Ago 0,0% · set 3,7% · out 9,6% |
+| KPI03 | Taxa de cancelamento de contratos (P3) | contratos cancelados no mês ÷ contratos vigentes no 1º dia do mês × 100 | Mensal | ≤ 3%, nível das melhores escolas de artes marciais; alerta acima de 6%, a média do setor [1] | G13 | Ago 2,5% · set 3,8% · out 0,0% |
 | KPI04 | Receita recorrente mensal contratada, MRR (P3) |  (`VL_MENSAL_ACORDADO` + `VL_ACRESCIMO_MODALIDADE`) dos contratos vigentes, por plano | Mensal (posição na data de referência) | MRR ≥ saídas do último mês fechado (G08): ponto de equilíbrio (proposta do grupo) | G11 | R$ 15.003,00 em 85 contratos, contra R$ 10.034,06 de saídas em outubro |
 | KPI05 | Frequência média e alunos em risco (P4) | presenças ÷ aulas registradas dos alunos com pelo menos 4 aulas no mês; em risco = frequência abaixo de 50% | Mensal | Frequência ≥ 75% e no máximo 5% dos alunos em risco (proposta do grupo) | G14 (lista: G09) | Out: 79,5% · 5 alunos em risco (7,2%) |
-| KPI06 | Taxa de aprovação nas avaliações de graduação (P4) | aprovados ÷ avaliados × 100, por modalidade e no total | Janela de 12 meses, revista a cada rodada trimestral de exames | ≥ 80% (proposta do grupo: o aluno só vai ao exame com a frequência e o tempo exigidos, RO05) | G16 (aptidão: G15) | 82,1% (23 de 28); menor taxa: Boxe, 66,7% |
-| KPI07 | Ocupação das vagas (P5) | matrículas ativas ÷ (turmas × 30) × 100, por modalidade | Mensal (posição na data de referência) | De 33% a 67%, ou 10 a 20 alunos por turma: acima do maior quórum (RE02), dentro do tamanho de turma de referência do setor [1] e com folga para reposição (RE01) | G05 (alerta por turma: A06) | Jiu-Jitsu 41,7% · Muay Thai 35,8% · Capoeira 31,7% · Boxe 30,0% · Kickboxing 27,8% · No-Gi 13,3% |
+| KPI06 | Taxa de aprovação nas avaliações de graduação (P4) | aprovados ÷ avaliados × 100, por modalidade e no total | Janela de 12 meses, revista a cada rodada trimestral de exames | ≥ 80% (proposta do grupo: o aluno só vai ao exame com a frequência e o tempo exigidos, RO03) | G16 (aptidão: G15) | 82,1% (23 de 28); menor taxa: Boxe, 66,7% |
+| KPI07 | Ocupação das vagas (P5) | matrículas ativas ÷ (turmas × 30) × 100, por modalidade | Mensal (posição na data de referência) | De 33% a 67%, ou 10 a 20 alunos por turma: acima do maior quórum (RE06), dentro do tamanho de turma de referência do setor [1] e com folga para reposição (RE01) | G05 (alerta por turma: A06) | Jiu-Jitsu 41,7% · Muay Thai 35,8% · Capoeira 31,7% · Boxe 30,0% · Kickboxing 27,8% · No-Gi 13,3% |
 | KPI08 | Custo docente sobre a receita (P6) | repasse pago aos professores no mês ÷ receita recebida no mês × 100 | Mensal (regime de caixa) | ≤ 30%; alerta a partir de 40% (referências do setor [2][4][5]) | G17 (apuração: G07) | Ago 32,5% · set 31,8% · out 30,5% |
 | KPI09 | Taxa de conversão da aula experimental (P7) | convertidos ÷ aulas experimentais já realizadas no mês × 100 | Mensal (mês da aula) | ≥ 55%; alerta abaixo de 40% (média do setor [1][3]) | G18 (por modalidade: G06) | Set 57,1% · out 50,0% (3 ainda sem decisão) |
 | KPI10 | Resultado mensal e margem (P2 e P6) | entradas − saídas pagas no mês; margem = resultado ÷ entradas × 100 | Mensal (regime de caixa) | Margem ≥ 15% [2]. Atenção: a margem ainda remunera o gestor, que não tem retirada lançada em `DESPESA` | G08 | Ago 24,6% · set 28,5% · out 30,3% |
@@ -1095,7 +1095,7 @@ Para o porte da academia (cerca de 2 mil linhas na massa e de 80 a 100 parcelas 
 - Todo fato tem data: `DT_VENCIMENTO` e `DT_PAGAMENTO` (parcelas), `DT_AULA` (aulas e aulas experimentais), `DT_MATRICULA`, `DT_CANCELAMENTO` e `DT_GRADUACAO`. Isso dá um eixo de tempo comum a todos os painéis.
 - As chaves estrangeiras já são os caminhos de análise: `PAGAMENTO → CONTRATO → PLANO / ALUNO` e `PRESENCA → AULA → TURMA → MODALIDADE / PROFESSOR`.
 - Os domínios fechados (`ENUM` e `CHECK`) dão categorias limpas para filtros: situação da parcela, forma de pagamento, categoria de despesa, tipo de avaliação. Não há "Pix" e "pix" misturados.
-- Nada é apagado (RE06): matrícula encerrada, contrato cancelado e parcela paga continuam no banco, e por isso as séries históricas são confiáveis.
+- Nada é apagado (RE04): matrícula encerrada, contrato cancelado e parcela paga continuam no banco, e por isso as séries históricas são confiáveis.
 - Os valores derivados não são gravados (vagas ocupadas, inadimplência): o painel calcula sempre pela mesma regra das consultas.
 - As chaves são inteiros estáveis (RNF01): painéis e modelos usam `ID_ALUNO` como pseudônimo, sem expor nome ou CPF.
 **Esquema estrela da camada analítica**
@@ -1158,8 +1158,8 @@ INNER JOIN CONTRATO c ON c.ID_CONTRATO = pg.ID_CONTRATO;
 | :-- | :-- | :-- | :-- | :-- | :-- |
 | Previsão de cancelamento | Quem tende a cancelar nos próximos 60 dias? | frequência das últimas semanas e sua tendência (`PRESENCA`, `AULA`); atrasos (`PAGAMENTO`); plano e tempo de casa (`CONTRATO`, `PLANO`); modalidades (`PARTICIPA`); trocas de turma (`MATRICULA`); reprovação recente (`GRADUACAO`) | `CONTRATO.DT_CANCELAMENTO` preenchida no período | Regressão logística ou árvore de decisão, que explicam o motivo de cada alerta | Lista semanal de contato para o CEO. Até haver histórico, a G09 faz isso por regra |
 | Risco de atraso da próxima parcela | Quem deve atrasar a mensalidade deste mês? | histórico de pagamento do contrato (dias de atraso, multas), forma de pagamento e plano (`PAGAMENTO`, `CONTRATO`, `PLANO`) | parcela paga depois do vencimento ou não paga | Regressão logística | Lembrete antes do 5º dia útil só para quem tem risco |
-| Prontidão para o exame | Quem tem perfil de aprovação no próximo exame? | frequência desde a última faixa e meses na faixa (G15); resultados e motivos anteriores (`GRADUACAO`) | `TP_RESULTADO` | Árvore de decisão; contagem das palavras-chave de `DS_MOTIVO_REPROVACAO` | Sugestão ao professor, que continua decidindo (RO05) |
-| Demanda por turma | Quantos alunos cada horário terá nos próximos meses? | presenças por aula, dia e horário (`PRESENCA`, `AULA`, `TURMA`); matrículas e aulas experimentais por modalidade (`MATRICULA`, `INTERESSADO`) | presenças por aula | Séries temporais simples (média móvel com sazonalidade) | Abrir, juntar ou fechar horário antes de passar de 30 alunos ou de cair abaixo do quórum (RE01, RE02) |
+| Prontidão para o exame | Quem tem perfil de aprovação no próximo exame? | frequência desde a última faixa e meses na faixa (G15); resultados e motivos anteriores (`GRADUACAO`) | `TP_RESULTADO` | Árvore de decisão; contagem das palavras-chave de `DS_MOTIVO_REPROVACAO` | Sugestão ao professor, que continua decidindo (RO03) |
+| Demanda por turma | Quantos alunos cada horário terá nos próximos meses? | presenças por aula, dia e horário (`PRESENCA`, `AULA`, `TURMA`); matrículas e aulas experimentais por modalidade (`MATRICULA`, `INTERESSADO`) | presenças por aula | Séries temporais simples (média móvel com sazonalidade) | Abrir, juntar ou fechar horário antes de passar de 30 alunos ou de cair abaixo do quórum (RE01, RE06) |
 | Modalidade extra | Qual segunda modalidade oferecer a cada aluno? | combinações de modalidades nos contratos (`PARTICIPA`) | modalidades contratadas juntas com frequência | Regras de associação (algoritmo Apriori) | Oferta do acréscimo de modalidade (RO01) |
 | Catraca com reconhecimento facial (futuro) | O aluno pode entrar agora? | situação da parcela (G04) e da matrícula | reconhecimento do rosto, feito pelo equipamento do fornecedor | Visão computacional do fornecedor; o banco só responde liberado ou bloqueado | Registraria a presença sozinha. Biometria é dado sensível (LGPD, art. 11) e exige consentimento específico; está fora do escopo atual |
  
@@ -1202,12 +1202,9 @@ INNER JOIN CONTRATO c ON c.ID_CONTRATO = pg.ID_CONTRATO;
 7. Omie — gestão de cobranças (taxa aceitável costuma ficar abaixo de 5%). https://www.omie.com.br/blog/como-fazer-gestao-de-cobrancas-e-reduzir-a-inadimplencia-2/
 8. Estado de Minas, com dados da ACAD Brasil — evasão média anual das academias entre 40% e 60%. https://www.em.com.br/networking-e-negocios/2026/07/7469486-retencao-de-alunos-vira-novo-campo-de-batalha-das-academias-no-brasil.html
 9. Rework — *Framework de Redução de Churn em Academias* (sinais de desengajamento de 6 a 8 semanas antes do cancelamento). https://resources.rework.com/pt/libraries/gym-fitness-growth/gym-churn-reduction
-
-
-
-
 ---
-
+ 
+ 
 ## 2 Modelo Lógico Relacional
 
 **Software utilizado:** o modelo lógico foi criado no **brModelo Web** ([abrir o modelo publicado](https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443)), a partir do DER (modelo conceitual) feito na mesma ferramenta, usando o conversor conceitual → lógico e ajustes manuais posteriores.
