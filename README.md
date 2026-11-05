@@ -948,7 +948,7 @@ No brModelo Web, as restrições `NOT NULL` e `UNIQUE` são definidas nas propri
 | Coluna sem `NOT NULL` em `ID_AULA_ORIGEM` | `AULA` | **Processo 7** | Só é preenchida na aula de reposição, que aponta para a aula original; a aula regular fica com a coluna nula. A reposição em si não gera presença para o aluno que apenas assiste. |
 | `CHECK` em `QT_CAPACIDADE_MAXIMA` (entre 1 e 30) | `TURMA` | **P5**, **RE01** | Teto físico do tatame, aplicado pelo próprio banco. |
 | `CHECK` em valores monetários (≥ 0) | `VL_MENSALIDADE` (`PLANO`); `VL_MENSAL_ACORDADO`, `VL_ACRESCIMO_MODALIDADE`, `VL_MULTA_RESCISORIA` (`CONTRATO`); `VL_DEVIDO`, `VL_PAGO`, `VL_MULTA`, `VL_TAXA_GRADUACAO` (`PAGAMENTO`); `VL_POR_AULA` (`PROFESSOR`) | **RO01**, **RO04**, **RO06** | Impede valor negativo nas regras financeiras. O zero é aceito porque há casos sem cobrança (Capoeira gratuita, CEO sem honorário por aula). As colunas opcionais continuam aceitando `NULL`. |
-| `CHECK` em quantidades, percentual e despesa | `QT_DURACAO_MESES` (> 0); `PC_DESCONTO` (0 a 100); `QT_MINIMA_PESSOAS` em `PLANO` (≥ 1); `QT_MINIMA_REFERENCIA` em `MODALIDADE` (≥ 1); `VL_DESPESA` (> 0) | **RE02** (quórum), demais sem regra própria | Impede valores sem sentido nas regras comerciais e na apuração de despesas. |
+| `CHECK` em quantidades, percentual e despesa | `QT_DURACAO_MESES` (> 0); `PC_DESCONTO` (0 a 100); `QT_MINIMA_PESSOAS` em `PLANO` (≥ 2); `QT_MINIMA_REFERENCIA` em `MODALIDADE` (≥ 1); `VL_DESPESA` e `VL_PAGO` de `DESPESA` (> 0) | **RE02** (quórum), demais sem regra própria | Impede valores sem sentido nas regras comerciais e na apuração de despesas. |
 | Coluna sem `NOT NULL` em `DT_ENTREGA_ATESTADO` | `ALUNO` | RE03, Processo 2 | Fica vazia até o aluno apresentar o atestado. |
 
 #### 4. Justificativa de Decisões Arquiteturais Gerais
@@ -1095,7 +1095,7 @@ Para o porte da academia (cerca de 2 mil linhas na massa e de 80 a 100 parcelas 
 - Todo fato tem data: `DT_VENCIMENTO` e `DT_PAGAMENTO` (parcelas), `DT_AULA` (aulas e aulas experimentais), `DT_MATRICULA`, `DT_CANCELAMENTO` e `DT_GRADUACAO`. Isso dá um eixo de tempo comum a todos os painéis.
 - As chaves estrangeiras já são os caminhos de análise: `PAGAMENTO → CONTRATO → PLANO / ALUNO` e `PRESENCA → AULA → TURMA → MODALIDADE / PROFESSOR`.
 - Os domínios fechados (`ENUM` e `CHECK`) dão categorias limpas para filtros: situação da parcela, forma de pagamento, categoria de despesa, tipo de avaliação e faixa. Não há "Pix" e "pix" misturados.
-- Nada é apagado (RE06): matrícula encerrada, contrato cancelado e parcela paga continuam no banco, e por isso as séries históricas são confiáveis.
+- Quase nada é apagado (RE06): matrícula encerrada, contrato cancelado e parcela paga continuam no banco, e por isso as séries históricas são confiáveis. As exceções são o pré-cadastro de quem desistiu (D01) e os contatos que o titular pede para tirar (D02).
 - Os valores derivados não são gravados (vagas ocupadas, inadimplência): o painel calcula sempre pela mesma regra das consultas.
 - As chaves são inteiros estáveis (RNF01): painéis e modelos usam `ID_ALUNO` como pseudônimo, sem expor nome ou CPF.
 **Esquema estrela da camada analítica**
@@ -1175,7 +1175,7 @@ INNER JOIN CONTRATO c ON c.ID_CONTRATO = pg.ID_CONTRATO;
 | :-- | :-- | :-- |
 | P1 — fichas de papel e risco de perda de dados | `ALUNO`, `TELEFONE_ALUNO`, `EMAIL_ALUNO`, `PROBLEMA_SAUDE_ALUNO` | G12 (auditoria: A05) |
 | P2 — inadimplência oculta | `PAGAMENTO`, `CONTRATO`, `ALUNO`, `TELEFONE_ALUNO` | G03, G02, G04, G10 (auditoria: A02, A07) |
-| P3 — planos e multas acertados de boca | `CONTRATO`, `PLANO`, `PAGAMENTO`, `PARTICIPA`, `MATRICULA` | G13, G11 (auditoria: A08, A10, A11, A12, A13) |
+| P3 — planos e multas acertados de boca | `CONTRATO`, `PLANO`, `PAGAMENTO`, `PARTICIPA`, `MATRICULA` | G13, G11 (auditoria: A01, A08, A10, A11, A12, A13) |
 | P4 — graduação sem comprovação de frequência | `PRESENCA`, `AULA`, `MATRICULA`, `TURMA`, `GRADUACAO`, `MODALIDADE`, `PROFESSOR` | G14, G15, G16, G09 (auditoria: A03) |
 | P5 — superlotação e vagas sem controle | `TURMA`, `MATRICULA`, `MODALIDADE` | G05 (auditoria: A06) |
 | P6 — repasse aos professores calculado de memória | `AULA`, `PROFESSOR`, `DESPESA`, `PAGAMENTO`, `PARTICIPA` | G07, G17, G01 (auditoria: A04) |
