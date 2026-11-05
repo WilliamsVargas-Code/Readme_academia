@@ -1210,12 +1210,13 @@ INNER JOIN CONTRATO c ON c.ID_CONTRATO = pg.ID_CONTRATO;
 ## 2 Modelo Lógico Relacional
 
 **Software utilizado:** o modelo lógico foi criado no **brModelo Web** ([abrir o modelo publicado](https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443)), a partir do DER (modelo conceitual) feito na mesma ferramenta, usando o conversor conceitual → lógico e ajustes manuais posteriores.
- 
+
 <img alt="Modelo Lógico Relacional - Base Forte Leste (brModelo Web)" src="./img/Modelo Logico V6.png" />
+
 **Legenda:** modelo lógico com 25 tabelas, na notação visual do brModelo para o modelo lógico.
- 
-#### Como ler o diagrama
- 
+
+**Como ler o diagrama**
+
 | Elemento | Como aparece | Exemplo neste modelo |
 | --- | --- | --- |
 | Tabela | Retângulo com o nome da tabela no topo e uma linha por coluna | `ALUNO`, `TURMA`, `PAGAMENTO` |
@@ -1224,13 +1225,13 @@ INNER JOIN CONTRATO c ON c.ID_CONTRATO = pg.ID_CONTRATO;
 | Chave estrangeira | Marca **FK** ao lado do tipo | `ID_TURMA` — **FK** `INT`, em `MATRICULA` |
 | Coluna que é PK e FK | Marcas **PK, FK** | `ID_ALUNO` — **PK, FK** `INT`, em `EMAIL_ALUNO` |
 | Ligação entre tabelas | Linha entre a tabela da FK e a tabela referenciada, com a cardinalidade (mín, máx) em cada ponta | `PLANO` — `CONTRATO`: **(1, 1)** e **(0, n)** |
- 
+
 O diagrama apresenta: as 25 tabelas, as colunas com seus tipos de dados, as chaves primárias, as chaves estrangeiras e as cardinalidades já convertidas.
- 
-#### Cardinalidades representadas no diagrama
- 
+
+**Cardinalidades representadas no diagrama**
+
 As cardinalidades seguem a convenção *Look-Across* (seção 1.5, item 10). Em cada ligação, o primeiro par fica na ponta da tabela referenciada (lado "1") e o segundo, na ponta da tabela que recebe a FK.
- 
+
 | Tabela referenciada | Tabela com a FK | Ponta do lado "1" | Ponta da FK |
 | --- | --- | --- | --- |
 | `RESPONSAVEL` | `ALUNO` | (1, 1) | (0, n) |
@@ -1246,16 +1247,17 @@ As cardinalidades seguem a convenção *Look-Across* (seção 1.5, item 10). Em 
 | `MODALIDADE`, `CONTRATO` | `PARTICIPA` (N:N) | (1, 1) | (0, n) |
 | `ALUNO` | `EMAIL_ALUNO`, `TELEFONE_ALUNO`, `PROBLEMA_SAUDE_ALUNO` | (1, 1) | (0, n) |
 | `PROFESSOR` | `EMAIL_PROFESSOR`, `TELEFONE_PROFESSOR`, `REGISTRO_QUALIFICACOES`, `ESPECIALIZACAO`, `NIVEL_DE_EXPERIENCIA` | (1, 1) | (0, n) |
- 
+
 Observações sobre o diagrama:
- 
+
 * `LOG_ACESSO` aparece isolada, sem ligação com as demais tabelas (justificativa na seção 1.5).
 * O auto-relacionamento de reposição (`AULA`–`AULA`) não pode ser desenhado no brModelo Web. Ele aparece apenas como a coluna `ID_AULA_ORIGEM` (FK) na tabela `AULA`.
 * O diagrama mostra a cardinalidade gerada pelo conversor do brModelo. A opcionalidade das FKs `ALUNO.ID_RESPONSAVEL`, `ALUNO.ID_INTERESSADO` e `DESPESA.ID_PROFESSOR` não é representada pelo desenho: ela é aplicada pelo `NULL` / `NOT NULL` da coluna no modelo físico (seção 3) e documentada no dicionário de dados (seção 5).
-#### Restrições que não aparecem no diagrama
- 
-O brModelo representa apenas tabelas, colunas, tipos, PK, FK e cardinalidades. As demais restrições de integridade não aparecem no desenho e são tratadas assim:
- 
+
+**Restrições que não aparecem no diagrama**
+
+O brModelo representa visualmente apenas tabelas, colunas, tipos, PK, FK e cardinalidades. As restrições `NOT NULL` e `UNIQUE` existem nas propriedades de cada coluna, mas não são desenhadas. As demais restrições são tratadas assim:
+
 * obrigatoriedade (`NOT NULL`): consta na coluna "Obrigatório" do **dicionário de dados (seção 5)** e é justificada na **seção 1.5**;
 * unicidade (`UNIQUE`), valores permitidos (`ENUM` e `CHECK`) e valores padrão (`DEFAULT`, quando houver): documentados e justificados na **seção 1.5**;
 * todas elas são implementadas no **script SQL (seção 3)**.
