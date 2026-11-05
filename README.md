@@ -754,6 +754,7 @@ Os nomes foram padronizados em maiúsculas, sem acentos e sem espaços (`MATRICU
   * **Atributo derivado:** as vagas ocupadas de uma turma não são armazenadas. A ocupação é calculada por contagem das matrículas ativas.
   * **Identificadores:** cada atributo identificador do DER virou a PK da tabela. O `CPF` não é PK: ele é chave alternativa (`UNIQUE`) em `ALUNO`, `PROFESSOR` e `RESPONSAVEL`.
   * **Colunas de conformidade e auditoria:** `IN_ACEITE_USO_IMAGEM`, `DT_AUTORIZACAO_IMAGEM`, `DT_ENTREGA_ATESTADO`, `ID_AULA_ORIGEM`, `TP_RESULTADO`, `DS_MOTIVO_REPROVACAO`, `DT_INICIO`, `DT_RETORNO_PREVISTA` e `DT_RETORNO_EFETIVA`.
+  * **Acréscimo por modalidade:** `CONTRATO.VL_ACRESCIMO_MODALIDADE` guarda o valor adicional cobrado por cada modalidade além da primeira, nos contratos ligados a mais de uma modalidade por meio de `PARTICIPA` (**RO01**). A coluna é opcional e fica nula no contrato de uma modalidade só.
 
 * **Relacionamentos → Chaves:**
   * **1:N:** a PK do lado "1" é propagada como FK para a tabela do lado "N".
@@ -862,7 +863,7 @@ O modelo relacional foi submetido às três primeiras Formas Normais para elimin
   * O modelo está na 2FN e, exceto pelas três dependências residuais mantidas de propósito (descritas abaixo), nenhum atributo não-chave depende de outro atributo não-chave. Pontos tratados:
     * **Modalidade em `MATRICULA`:** no DER antigo, a matrícula guardava o esporte praticado. Esse dado depende da turma, não da matrícula. O atributo foi removido, e a modalidade é obtida por `MATRICULA → TURMA → MODALIDADE`.
     * **Vagas ocupadas em `TURMA`:** é um dado derivado, calculado por contagem de matrículas ativas. Foi substituído por `QT_CAPACIDADE_MAXIMA`, que é um limite fixo.
-    * **Valor do contrato:** `VL_MENSAL_ACORDADO` fica em `CONTRATO`. Ele é um fato do contrato, definido na assinatura, e não pode ser recalculado a partir de `PLANO.VL_MENSALIDADE`. Assim, reajustes futuros no plano não alteram contratos nem parcelas já geradas em `PAGAMENTO`.
+    * **Valor do contrato:** `VL_MENSAL_ACORDADO` e `VL_ACRESCIMO_MODALIDADE` ficam em `CONTRATO`. Ambos são fatos do contrato, definidos na assinatura, e não podem ser recalculados a partir de `PLANO.VL_MENSALIDADE`. Assim, reajustes futuros no plano não alteram contratos nem parcelas já geradas em `PAGAMENTO`.
     * **Valor da taxa de graduação:** `PAGAMENTO.VL_TAXA_GRADUACAO` guarda o valor cobrado naquele pagamento, sem depender de tabelas de preços posteriores.
     * **Remuneração docente:** `VL_POR_AULA` fica somente em `PROFESSOR`. `TURMA` e `AULA` guardam apenas `ID_PROFESSOR`, evitando que o valor varie por registro.
   * **Dependência transitiva residual, mantida de forma deliberada:** como cada professor atua em uma única modalidade (`PROFESSOR.ID_MODALIDADE`), a modalidade de uma `TURMA` e a de uma `GRADUACAO` poderiam ser deduzidas a partir do `ID_PROFESSOR` (regra **RE05**). As colunas `TURMA.ID_MODALIDADE` e `GRADUACAO.ID_MODALIDADE` foram mantidas porque:
@@ -914,7 +915,7 @@ O modelo relacional foi submetido às três primeiras Formas Normais para elimin
 
 #### 3. Justificativa das Restrições Aplicadas (Mapeamento de Regras de Negócio)
 
-Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições. Os valores permitidos (`ENUM`) e as verificações (`CHECK`) são definidos no script SQL e documentados no dicionário de dados.
+No brModelo Web, as restrições `NOT NULL` e `UNIQUE` são definidas nas propriedades de cada coluna, mas não aparecem no desenho do diagrama. Os valores permitidos (`ENUM`) e as verificações (`CHECK`) são definidos no script SQL. Todas as restrições são justificadas na tabela abaixo, e a obrigatoriedade de cada coluna também consta no dicionário de dados.
 
 | Restrição | Onde | Regra de negócio | Justificativa |
 | --- | --- | --- | --- |
@@ -936,6 +937,7 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
 | Coluna sem `NOT NULL` em `ID_INTERESSADO` | `ALUNO` | **P7**, **RF01** | Aluno cadastrado direto, sem aula experimental. |
 | Coluna sem `NOT NULL` em `ID_PROFESSOR` | `DESPESA` | **P6**, **Processo 11** | Despesas como aluguel, consumo e suprimentos não têm professor. |
 | Colunas sem `NOT NULL` em `DT_CANCELAMENTO` e `VL_MULTA_RESCISORIA` | `CONTRATO` | **RO04** | Ficam nulas enquanto o contrato está vigente. A multa rescisória só existe nos planos mais longos. |
+| Coluna sem `NOT NULL` em `VL_ACRESCIMO_MODALIDADE` | `CONTRATO` | **RO01** | Só é preenchida quando o contrato cobre mais de uma modalidade (`PARTICIPA`); fica nula no contrato de uma modalidade só. |
 | Colunas sem `NOT NULL` em `DT_PAGAMENTO`, `VL_PAGO` e `TP_FORMA_PAGAMENTO` | `PAGAMENTO` | **P2** | Ficam nulas até a quitação da parcela. |
 | Colunas sem `NOT NULL` em `VL_MULTA` e `VL_TAXA_GRADUACAO` | `PAGAMENTO` | **RO04, RO06** | `VL_MULTA` (multa por atraso) só existe nos planos de maior duração, e `VL_TAXA_GRADUACAO` só quando a parcela inclui a taxa do exame de faixa. |
 | Coluna sem `NOT NULL` em `DT_RETORNO_EFETIVA` | `TRANCAMENTO` | **RE04**, **P5** | O retorno efetivo só é preenchido depois que ocorre; até lá o trancamento segue em curso. |
@@ -994,7 +996,6 @@ Em `NOT NULL` e `UNIQUE`, o modelo lógico do brModelo já traz as restrições.
     * *Decisão:* cada aluno do Plano Família tem o seu próprio `CONTRATO`, com o desconto do plano. Não existe contrato compartilhado entre um titular e seus dependentes.
     * *Justificativa:* mantém a regra de um único contrato vigente por aluno e preserva matrícula, presença, graduação e bloqueio por inadimplência individuais. Evita também uma tabela de cobertura ou um auto-relacionamento em `ALUNO`, o que complicaria o modelo sem ganho para as consultas do projeto. A academia não exige comprovação de parentesco, e a conferência de que os alunos são da mesma família é feita pelo CEO, e não pelo banco.
     * *Limitação assumida:* o banco registra uma mensalidade por contrato. Se um responsável decide pagar por todos os familiares, a soma e a cobrança conjunta são tratadas fora do sistema, e as parcelas continuam registradas em cada contrato. Uma evolução futura seria um vínculo opcional entre aluno e titular (`ALUNO.ID_ALUNO_TITULAR`).
-
 
 ---
 
