@@ -120,23 +120,26 @@ Delimitação de Escopo: O projeto limita-se estritamente à arquitetura do banc
 
 Itens que a correção já aprovava e foram mantidos: tabela conceitual, MATRÍCULA como entidade associativa, definições, fluxo de dados, notação, prefixos, expressões com leitura, tipos físicos e índices.
 
-### Mudanças que vieram do MER, do DER, do modelo lógico e das decisões do grupo, e não da correção
+###  Detalhamento das Mudanças (1º DER para o 2º DER)
 
-| O que estava antes | O que mudou | Por quê |
-| :---- | :---- | :---- |
-| Cardinalidades pela outra leitura (v1.3) | Look-Across (v2.0) | Segue a convenção do DER no brModelo Web |
-| 9 entidades (v1.1) | 14 entidades. PRESENÇA e PARTICIPA viraram tabelas associativas | Reescrita sobre o MER e o DER atualizados (v2.0). Onde o modelo lógico divergia dos documentos, valeu o documento |
-| PAGAMENTO ligado a aluno e plano | PAGAMENTO é parcela do CONTRATO | O plano contratado passa a existir como contrato, e não só através do pagamento |
-| Trancamento por lesão **ou** troca de modalidade (v1.3) | Só lesão ou razão médica. A troca encerra a matrícula antiga e cria outra | README, Processo 5 |
-| Multivalorados mapeados só no modelo físico | 8 tabelas de apoio com chave primária composta (v2.1) | O modelo lógico já as tem |
-| NM_RESPONSAVEL_PLANO, TP_DOC_PARENTESCO, DT_CONFERENCIA_PARENTESCO, NM_ATESTADO_POR, QT_TEMPO_MINIMO_FAIXA e DS_OBSERVACAO | Removidos (v2.1 e v2.3) | Não constam no MER nem no modelo lógico. O Plano Família é um desconto em contratos individuais: o banco não liga os familiares entre si (seção 1.5, decisão 11) |
-| VL_MULTA_ATRASO e VL_TAXA_EXAME | VL_MULTA e VL_TAXA_GRADUACAO (v2.1). "Taxa Graduação" é o nome definitivo do projeto | Nomes do MER, do DER e do modelo lógico; "Taxa Exame" é o nome antigo |
-| real/numeric | decimal (v2.3) | Alinhado ao modelo lógico, que já usa DECIMAL |
-| Campos de tamanho fixo em varchar | char para CPF e NR_CEP (v2.2); CPF char(11) e NR_CEP char(8), só dígitos, em ALUNO, RESPONSÁVEL e PROFESSOR (v2.4) | Os tamanhos antigos davam espaço para pontuação e eram diferentes entre as entidades, o que impedia comparar o mesmo CPF entre as tabelas com índice único |
-| Prazo de guarda "a definir com o CEO" na Seção 7 (v1.2) | Frase retirada (v2.5). Os prazos ficam como propostas do grupo | Mantém o projeto no tamanho atual. O prazo de 5 anos dos dados financeiros já é o do RNF05 |
+Em resposta à avaliação da Entrega 01 e à segunda entrevista de campo (13/10/2026), o modelo evoluiu de **9 para 14 entidades**, corrigindo todas as pendências estruturais:
+
+| Escopo / Item | Como estava antes (Entrega 01) | Como ficou na Entrega 02 (DER, Lógico e SQL) | Motivo e Justificativa Técnica |
+| :--- | :--- | :--- | :--- |
+| **Escopo e Entidades** | 9 entidades iniciais (55% de cobertura dos processos). | **14 entidades** principais, além de **`PRESENCA`** e **`PARTICIPA`** como tabelas associativas. Novas entidades: `Contrato`, `Aula`, `Trancamento`, `Responsavel`, `Interessado` e `Despesa`. | Reescrita sobre o MER e o DER atualizados para atingir 100% de cobertura operacional (captação, aulas, contratos, LGPD e contas a pagar). |
+| **Leitura de Cardinalidades** | Cardinalidades lidas pela convenção invertida, apenas com `1,1` e `1,n`. | Convenção **Look-Across** padronizada com parênteses e mínimos opcionais `(0,1)` e `(0,n)`. | Segue a convenção nativa do DER no **brModelo Web** e corrige restrições rígidas da Entrega 01. |
+| **Turma e Modalidade** | Sem ligação direta entre `Turma` e `Modalidade`. | Criado o relacionamento **`Oferece`** `(1,1) --- (1,n)`. | Corrige apontamento da E1: identifica qual arte marcial é lecionada em cada turma. |
+| **Contrato e Pagamento** | `Pagamento` ligava-se direto a `Aluno` e `Plano`, contendo apenas vencimento e status. | Criada a entidade **`Contrato`** (entre `Aluno`, `Plano` e `Modalidade`). `Pagamento` passa a ser parcela do `Contrato`, com `DT_PAGAMENTO`, `VL_DEVIDO`, `VL_PAGO`, `TP_FORMA_PAGAMENTO`, `VL_MULTA` e `VL_TAXA_GRADUACAO`. | O plano contratado passa a existir como acordo formal (3FN, congelando o valor acordado) e permite auditar a inadimplência após o 5º dia útil. |
+| **Presença e Aulas** | `Presença` ligada apenas a `Matrícula`. | Nova entidade **`Aula`** ligada a `Turma`, `Professor` e `Matrícula` (com `PRESENCA` associativa). | Permite apurar aulas efetivamente dadas por professor terceirizado e controlar reposições (`ID_AULA_ORIGEM`). |
+| **Lotação de Turma** | Possuía o campo calculável `Vagas_Ocupadas`. | Substituído por **`QT_CAPACIDADE_MAXIMA`** (teto de 30). | Adequação à 3FN: as vagas ocupadas são apuradas dinamicamente via `COUNT(*)`. |
+| **Trancamento e Troca de Turma** | Era um atributo em `Matrícula` e aceitava trancamento por lesão **ou** troca de modalidade. | Nova entidade **`Trancamento`** restrita a **lesão ou razão médica**. A troca de turma encerra a matrícula antiga (`ENCERRADA`) e cria outra. | Alinhado ao Processo 5 do README: preserva o histórico de presença na turma anterior e isola os afastamentos médicos. |
+| **Graduação** | Ligada apenas a `Aluno` e `Modalidade`. | Ligada a `Professor` (`Avalia`), com `TP_AVALIACAO`, `TP_RESULTADO` e `DS_MOTIVO_REPROVACAO`. | Audita qual professor aplicou o exame, separa análise técnica (Boxe) e registra reprovações. |
+| **LGPD e Menores** | Sem responsável legal, termos ou prazos consolidados (continha frase *"a definir com o CEO"*). | Nova entidade **`Responsavel`**, campos de imagem/atestado em `Aluno`, tabela **`LOG_ACESSO`** e prazos de guarda definidos pelo grupo (5 anos para dados financeiros — RNF05). | Atende ao Art. 14 da LGPD para menores de 18 anos e consolida a governança de retenção sem pendências em aberto. |
+| **Atributos Multivalorados (1FN)** | Mapeados apenas na etapa física preliminar. | Desmembrados em **8 tabelas de apoio** com chave primária composta já no Modelo Lógico. | Garante total aderência à 1ª Forma Normal (1FN) entre o Modelo Lógico e o script SQL. |
+| **Limpeza e Padronização de Colunas** | Continha `NM_RESPONSAVEL_PLANO`, `TP_DOC_PARENTESCO`, `DT_CONFERENCIA_PARENTESCO`, `NM_ATESTADO_POR`, `QT_TEMPO_MINIMO_FAIXA`, `DS_OBSERVACAO`, `VL_MULTA_ATRASO` e `VL_TAXA_EXAME`. | Atributos excedentes removidos. Nomes padronizados para **`VL_MULTA`** e **`VL_TAXA_GRADUACAO`** (nome definitivo do projeto). | Alinhamento estrito entre MER, DER, Modelo Lógico e Dicionário de Dados, eliminando colunas que não constavam no modelo lógico. |
+| **Tipagem de Dados Físicos** | Valores monetários como `real/numeric` e documentos em `varchar` de tamanhos variados. | Monetários em **`DECIMAL`**; `CPF` padronizado em **`CHAR(11)`** e `NR_CEP` em **`CHAR(8)`** (apenas dígitos) em `ALUNO`, `RESPONSAVEL` e `PROFESSOR`. | Evita erros de arredondamento financeiro e permite comparar CPFs entre tabelas com índice único sem divergência de pontuação ou tamanho. |
 
  
-
 
 # Caracterização da Organização
 
@@ -712,21 +715,6 @@ O Diagrama Entidade-Relacionamento (DER) conceitual consolida a totalidade dos p
 
 **Legenda:** O Diagrama Entidade-Relacionamento (DER) conceitual deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web (https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).
 
-
-###  Detalhamento das Mudanças (1º DER para o 2º DER)
-Em resposta à avaliação da Entrega 01 e à segunda entrevista de campo (13/10/2026), o modelo evoluiu de **9 para 14 entidades**, corrigindo todas as pendências estruturais:
-
-| Item Modificado | 1º DER (Entrega 01) | 2º DER Atualizado (Entrega 02) | Motivo da Mudança |
-| :--- | :--- | :--- | :--- |
-| **Turma e Modalidade** | Sem ligação direta entre `Turma` e `Modalidade`. | Criado relacionamento **`Oferece`** `(1,1) --- (1,n)`. | Corrige apontamento da E1: identifica qual luta é dada em cada turma. |
-| **Pagamento** | Tinha apenas vencimento e status. | Adicionados `Data_Pagamento`, `Valor_Devido`, `Valor_Pago`, `Forma_Pagamento` e `Valor_Multa`. | Corrige apontamento da E1: permite controlar a inadimplência após o 5º dia útil. |
-| **Contrato** | Inexistente (ligava direto ao Plano). | Nova entidade **`Contrato`** ligada a `Aluno`, `Plano` e `Modalidade`. | Congela o valor acordado (3FN), controla vigência, multimodalidade e multas. |
-| **Presença e Aulas** | `Presença` ligada apenas a `Matrícula`. | Nova entidade **`Aula`** ligada a `Turma`, `Professor` e `Matrícula`. | Permite apurar aulas dadas por professor terceirizado e controlar reposições. |
-| **Lotação de Turma** | Possuía o campo `Vagas_Ocupadas`. | Substituído por **`Capacidade_Maxima`** (teto de 30). | Adequação à 3FN: vagas ocupadas são calculadas via `COUNT(*)`. |
-| **Trancamento** | Era um atributo dentro de `Matrícula`. | Nova entidade **`Trancamento`** ligada a `Matrícula`. | Registra histórico de afastamentos por lesão com datas de início e retorno. |
-| **Graduação** | Ligada apenas a `Aluno` e `Modalidade`. | Ligada a `Professor` (`Avalia`), com `Resultado` e `Motivo_Reprovacao`. | Audita qual professor aplicou o exame e registra reprovações. |
-| **LGPD e Menores** | Sem responsável legal ou termos. | Nova entidade **`Responsavel`** e campos de imagem/atestado em `Aluno`. | Atende ao Art. 14 da LGPD para menores de 18 anos. |
-| **Captação e Despesas** | Processos ausentes no 1º DER. | Novas entidades **`Interessado`** (aula experimental) e **`Despesa`** (contas/repasse). | Eleva a cobertura dos processos de negócio de 55% para 100%. |
 
 ---
 
