@@ -1211,7 +1211,6 @@ INNER JOIN CONTRATO c ON c.ID_CONTRATO = pg.ID_CONTRATO;
 **Software utilizado:** o modelo lógico foi criado no **brModelo Web** ([abrir o modelo publicado](https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443)), a partir do DER (modelo conceitual) feito na mesma ferramenta, usando o conversor conceitual → lógico e ajustes manuais posteriores.
  
 <img alt="Modelo Lógico Relacional - Base Forte Leste (brModelo Web)" src="./img/Modelo Logico V6.png" />
-
 **Legenda:** modelo lógico com 25 tabelas, na notação visual do brModelo para o modelo lógico.
  
 #### Como ler o diagrama
@@ -1254,13 +1253,12 @@ Observações sobre o diagrama:
 * O diagrama mostra a cardinalidade gerada pelo conversor do brModelo. A opcionalidade das FKs `ALUNO.ID_RESPONSAVEL`, `ALUNO.ID_INTERESSADO` e `DESPESA.ID_PROFESSOR` não é representada pelo desenho: ela é aplicada pelo `NULL` / `NOT NULL` da coluna no modelo físico (seção 3) e documentada no dicionário de dados (seção 5).
 #### Restrições que não aparecem no diagrama
  
-O brModelo representa apenas tabelas, colunas, tipos, PK, FK e cardinalidades. As demais restrições de integridade são documentadas no **dicionário de dados (seção 5)** e implementadas no **script SQL (seção 3)**:
+O brModelo representa apenas tabelas, colunas, tipos, PK, FK e cardinalidades. As demais restrições de integridade não aparecem no desenho e são tratadas assim:
  
-* obrigatoriedade (`NOT NULL`);
-* unicidade (`UNIQUE`);
-* valores permitidos (`CHECK` e `ENUM`);
-* valores padrão (`DEFAULT`).
-
+* obrigatoriedade (`NOT NULL`): consta na coluna "Obrigatório" do **dicionário de dados (seção 5)** e é justificada na **seção 1.5**;
+* unicidade (`UNIQUE`), valores permitidos (`ENUM` e `CHECK`) e valores padrão (`DEFAULT`, quando houver): documentados e justificados na **seção 1.5**;
+* todas elas são implementadas no **script SQL (seção 3)**.
+ 
 
 
 
