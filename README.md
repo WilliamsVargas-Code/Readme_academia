@@ -18,7 +18,7 @@
 | Artefato | Local |
 | :-- | :-- |
 | Levantamento de requisitos (texto do grupo) | [levantamento/levantamento.md](levantamento/levantamento.md)|
-| DER conceitual revisado | [diagrama_er.png](diagrama_er.png) |
+| DER conceitual revisado | [Der final.png](<img/Der final.png>) |
 | Modelo lógico | [modelo_logico.png](<img/Modelo Logico V6.png>) |
 | Dicionário de dados (HTML) | [index.html](index.html) · [GitHub Pages](https://williamsvargas-code.github.io/Readme_academia/) |
 | Script SQL e Massa de Dados | [docs/academia_base_forte_leste.sql](docs/academia_base_forte_leste.sql) |
