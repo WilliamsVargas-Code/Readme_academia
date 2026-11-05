@@ -22,7 +22,7 @@
 | Modelo lógico | [modelo_logico.png](<img/Modelo Logico V6.png>) |
 | Dicionário de dados (HTML) | [index.html](index.html) · [GitHub Pages](https://williamsvargas-code.github.io/Readme_academia/) |
 | Script SQL e Massa de Dados | [docs/academia_base_forte_leste.sql](docs/academia_base_forte_leste.sql) |
-| Slides do pitch | [slides/apresentacao.pdf](slides/apresentacao.pdf) [PENDENTE: criar] |
+| Slides do pitch | [slides/apresentacao.pdf](slides/apresentacao.pdf) |
 
 ---
 
@@ -711,7 +711,7 @@ Abaixo está o dicionário de dados completo em uma imagem **clicável**, com to
 
 O Diagrama Entidade-Relacionamento (DER) conceitual consolida a totalidade dos processos operacionais, pedagógicos e administrativos da Academia Base Forte Leste, estruturado a partir das entrevistas de campo e das correções apontadas na Entrega 01. O modelo adota a notação clássica de Peter Chen com especificação de cardinalidades mínimas e máximas (mín, máx) em ambas as extremidades das relações. Em estrita conformidade com as diretrizes teóricas de modelagem conceitual, o diagrama não contém chaves estrangeiras (FKs), as quais são derivadas formalmente apenas na etapa lógica. O esquema integra 14 entidades interdependentes, garantindo a rastreabilidade de aulas, frequência diária, contratos, controle de capacidade por turma (teto de 30 alunos), afastamentos médicos e salvaguardas da LGPD para menores de idade.
 
-<img width="2082" height="1485" alt="diagrama_er" src="./img/Diagrama Entidade Relacionamento.png" />
+<img width="2082" height="1485" alt="diagrama_er" src="./img/Der final.png" />
 
 **Legenda:** O Diagrama Entidade-Relacionamento (DER) conceitual deste projeto foi elaborado e estruturado por meio da ferramenta brModelo Web (https://app.brmodeloweb.com/publicview/6ae6fb2559aaf5bef87df443).
 
