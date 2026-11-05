@@ -1278,7 +1278,7 @@ Todos os dados pessoais e financeiros inseridos no script são **estritamente fi
 * Os valores de mensalidades, multas, despesas e pagamentos por aula são simulados para preservar o sigilo comercial da organização.
 
 ### 3.2 Justificativa da Quantidade de Registos (Proporção Real)
-Embora os dados individuais sejam fictícios, a **quantidade de registos** em cada tabela (total de **2.073 linhas**, com data de referência em `01/11/2026`) foi dimensionada para refletir o porte operacional da academia levantado nas entrevistas:
+Embora os dados individuais sejam fictícios, a **quantidade de registos** em cada tabela (total de **2.152 linhas**, com data de referência em `01/11/2026`) foi dimensionada para refletir o porte operacional da academia levantado nas entrevistas:
 
 | Tabela | Qtd. Fictícia | Como o porte da academia justifica essa quantidade |
 | :--- | :---: | :--- |
@@ -1288,14 +1288,13 @@ Embora os dados individuais sejam fictícios, a **quantidade de registos** em ca
 | **`PLANO`** | **8** | Simula os 4 ciclos de planos (Mensal, Trimestral, Semestral e Anual) nas modalidades Individual e Família. |
 | **`ALUNO`** | **92** | Quantidade fictícia dimensionada dentro da faixa informada pelo CEO (80 a 100 alunos), sendo 83 ativos, 6 inativos e 3 trancados. |
 | **`RESPONSAVEL`** | **11** | Responsáveis fictícios para cobrir os 14 alunos menores de idade (irmãos partilham o mesmo responsável). |
-| **`CONTRATO`** | **91** | Um contrato por aluno: 85 vigentes (ativos e trancados) + 6 cancelados = 91. O aluno 92, matriculado sem contrato, é o caso proposital da auditoria A01. No Plano Família, cada familiar tem o seu contrato (ver seção 1.5, item 11). |
-| **`PARTICIPA`** | **103** | Vincula cada contrato a pelo menos 1 modalidade (91), mais as modalidades extras contratadas por alguns alunos. |
-| **`MATRICULA`** | **190** | Simula cada aluno a treinar em 1 a 3 turmas da sua modalidade (média de 10 alunos por turma, respeitando o limite de 30 vagas). |
-| **`TRANCAMENTO`** | **6** | Simula afastamentos por lesão ou razão médica ao longo de 2026 (3 encerrados e 3 em curso). |
+| **`CONTRATO`** | **92** | Um contrato por aluno: 86 vigentes (ativos e trancados) + 6 cancelados = 92. Dois casos propositais para auditoria: o aluno 92 está matriculado sem contrato (A01) e o aluno 9 tem dois contratos vigentes (A12). No Plano Família, cada familiar tem o seu contrato (ver seção 1.5, item 11). |
+| **`PARTICIPA`** | **104** | Vincula cada contrato a pelo menos 1 modalidade (92), mais as 12 modalidades extras contratadas por alguns alunos. |
+| **`MATRICULA`** | **204** | Simula cada aluno a treinar em 1 a 3 turmas de cada modalidade do contrato: 188 matrículas ativas (média de 9 alunos por turma, de 6 a 13, bem abaixo do limite de 30 vagas) mais 16 de histórico (3 encerradas, 3 trancadas e 10 canceladas). |
 | **`PAGAMENTO`** | **325** | Simula de 79 a 83 mensalidades geradas por mês, uma por contrato vigente, durante 4 meses (agosto a novembro de 2026). |
-| **`INTERESSADO`** | **24** | Simula a média de 2 a 4 aulas experimentais por semana acumuladas ao longo de 2 meses. |
+| **`PAGAMENTO`** | **324** | Simula de 80 a 83 mensalidades geradas por mês, uma por contrato vigente, durante 4 meses (agosto a novembro de 2026). |
 | **`AULA` e `PRESENCA`** | **74 / 654** | Simula todas as aulas dadas pelas 21 turmas em outubro/2026 e a lista de chamada diária dos alunos matriculados. |
-| **`GRADUACAO`** | **28** | Simula o histórico dos exames de faixa trimestrais e análises técnicas de Boxe (aprovados e reprovados). |
+| **`AULA` e `PRESENCA`** | **85 / 704** | Simula as aulas de outubro/2026: 20 das 21 turmas com aula uma vez por semana, sem o feriado de 12/10 (a 21ª turma acabou de abrir), mais 1 aula de reposição, que não gera presença. A lista de chamada tem uma linha por matrícula ativa em cada aula. |
 | **`DESPESA`** | **50** | Simula as contas fixas mensais, compras semanais de limpeza e o repasse mensal aos 5 professores terceirizados. |
 | **`LOG_ACESSO` e Apoio 1FN** | **387** | 20 registos de auditoria de acesso + 367 registos de e-mails, telefones, qualificações e fichas de saúde separados na 1ª Forma Normal. |
 
