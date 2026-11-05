@@ -1270,7 +1270,7 @@ O brModelo representa visualmente apenas tabelas, colunas, tipos, PK, FK e cardi
 
 ## 3 Implementação em SQL e Massa de Dados Fictícia
 
-O código completo de criação das tabelas (`CREATE TABLE`), restrições e inserção de dados (`INSERT INTO`) está no ficheiro [docs/academia_base_forte_leste.sql](academia_base_forte_leste.sql).
+O código completo de criação das tabelas (`CREATE TABLE`), restrições e inserção de dados (`INSERT INTO`) está no ficheiro [docs/academia_base_forte_leste.sql](docs/academia_base_forte_leste.sql).
 
 ### 3.1 Dados 100% Fictícios (Conformidade com a LGPD)
 Todos os dados pessoais e financeiros inseridos no script são **estritamente fictícios**:
