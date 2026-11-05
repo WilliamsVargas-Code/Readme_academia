@@ -3,8 +3,9 @@
 --  Script completo de implementação física (MySQL 8.0)
 -- -------------------------------------------------------------------------------------
 --  Disciplina : Modelagem de Banco de Dados — Prof. Cid Rodrigues De Andrade
---  Base       : Modelo Lógico (DER) + Dicionário de Dados v2.3 + Requisitos do Sistema
---  Grupo      : (preencher com os integrantes)
+--  Base       : Modelo Lógico (DER) + Dicionário de Dados v2.6 + Requisitos do Sistema
+--  Grupo      : Nickolas Henrique Bezerra, Pedro Henrique Ruola Coiado, Raphaela Gonçalves Neves e
+--               Williams Vargas Neves Paoli dos Santos
 --  SGBD       : MySQL 8.0.16 ou superior (é a versão a partir da qual o CHECK é validado)
 --  Motor      : InnoDB (transações e chaves estrangeiras)                        [RNF04]
 --  Charset    : utf8mb4 / utf8mb4_unicode_ci (acentos do português)              [RNF04]
@@ -82,7 +83,7 @@
 --       ESTRUTURA: o banco não depende da aplicação (nenhuma trigger ou procedure; todas
 --       as regras ficam em constraints e consultas SQL padrão). Chaves substitutas INT
 --       (ID_ALUNO) estáveis, que um equipamento futuro pode usar como identificador, e
---       índice IX_PAGAMENTO_VENC_STATUS para a catraca consultar o bloqueio (RE07) na hora.
+--       índice IX_PAGAMENTO_VENC_STATUS para a catraca consultar o bloqueio (RE05) na hora.
 --       O cadastro biométrico em si fica para uma versão futura (fora do escopo atual).
 --  RNF02 Segurança, privacidade e LGPD
 --       ESTRUTURA: LOG_ACESSO (quem leu ou alterou CPF e DS_PROBLEMA_SAUDE) com perfis
@@ -102,7 +103,7 @@
 --       na Seção 1). ESTRUTURA: a retenção de 5 anos é protegida pelas FKs RESTRICT, que
 --       impedem apagar contratos, pagamentos e despesas que tenham histórico ligado.
 --
---  REGRAS OPERACIONAIS
+--  REGRAS OPERACIONAIS (RO01 a RO05 são os códigos da Entrega 1; RO06 a RO09 são novos)
 --  RO01 Planos, modalidades extras e Plano Família
 --       ESTRUTURA: desconto gravado no PLANO (PC_DESCONTO entre 0 e 100), nunca no aluno;
 --       QT_MINIMA_PESSOAS >= 2 no Família; modalidades do contrato em PARTICIPA e
@@ -113,50 +114,70 @@
 --       ESTRUTURA: PAGAMENTO.DT_VENCIMENTO obrigatório; a massa usa sempre o 5º dia útil
 --       e o valor integral. AUDITORIA: A01 (matrícula sem parcela) e A07 (parcela vencida
 --       sem mudar para ATRASADO). O arquivo de operações gera as parcelas do mês.
---  RO03 Uma única aula experimental por pessoa
---       ESTRUTURA: UK_INTERESSADO_PESSOA (NM_INTERESSADO + NR_TELEFONE) recusa o segundo
---       agendamento; situação em ENUM ('PENDENTE','CONVERTIDO','ENCERRADO').
---       AUDITORIA: A09 (situação incoerente com o cadastro de alunos).
---  RO04 Multa rescisória e moratória só nos planos de fidelidade
---       ESTRUTURA: CK_CONTRATO_MULTA (multa rescisória só existe se houve cancelamento) e
---       VL_MULTA (> 0) na parcela. AUDITORIA: A08. UPDATE U01 aplica a multa de 2%.
---  RO05 Assiduidade para exame de faixa
+--  RO03 Assiduidade para exame de faixa
 --       ESTRUTURA: PRESENCA guarda a frequência que fundamenta a decisão. A decisão é
 --       pedagógica (critério do professor), por isso não é bloqueada pelo banco; a
 --       consulta de frequência fica no arquivo de operações e na G09.
---  RO06 Boxe sem faixa e sem taxa de exame
+--  RO04 Instrutor auxiliar, sem registro no sistema
+--       ESTRUTURA: nenhuma tabela, por decisão de negócio (não é funcionário e não gera
+--       pagamento). AULA.ID_PROFESSOR guarda apenas o professor que conduziu a aula.
+--  RO05 Boxe sem faixa e sem taxa de exame
 --       ESTRUTURA: MODALIDADE.IN_POSSUI_SISTEMA_FAIXAS e CK_GRADUACAO_FAIXA (exame de
 --       faixa exige faixa; análise técnica não pode ter faixa). A taxa de exame entra na
 --       parcela (VL_TAXA_GRADUACAO) só para exames de faixa.
---  RO07 Repasse por aula ministrada; instrutor auxiliar sem registro
+--  RO06 Uma única aula experimental por pessoa
+--       ESTRUTURA: UK_INTERESSADO_PESSOA (NM_INTERESSADO + NR_TELEFONE) recusa o segundo
+--       agendamento; situação em ENUM ('PENDENTE','CONVERTIDO','ENCERRADO').
+--       AUDITORIA: A09 (situação incoerente com o cadastro de alunos).
+--  RO07 Multa por atraso só nos planos de fidelidade, sem juros
+--       ESTRUTURA: PAGAMENTO.VL_MULTA (> 0 quando preenchida, vazia no plano Mensal e em
+--       parcela sem atraso); o banco não tem coluna de juros. UPDATE U01 aplica a multa de um
+--       mês de atraso (percentual ilustrativo: os valores reais são confidenciais).
+--       Sem consulta de auditoria própria: a restrição ao plano de fidelidade cruza tabelas.
+--  RO08 Fidelidade, cancelamento e multa rescisória
+--       ESTRUTURA: CONTRATO.DT_CANCELAMENTO e CK_CONTRATO_MULTA (a multa rescisória só existe
+--       se houve cancelamento). AUDITORIA: A08 (cancelamento antecipado de plano de mais de
+--       1 mês sem multa; plano Mensal com multa).
+--  RO09 Repasse por aula ministrada
 --       ESTRUTURA: AULA.ID_PROFESSOR registra quem DE FATO deu a aula e DESPESA.ID_PROFESSOR
 --       registra o repasse; G07 apura aulas x VL_POR_AULA. Os 5 prestadores recebem; o
---       gestor não. O instrutor auxiliar, por decisão de negócio, não tem tabela.
+--       gestor não.
 --
---  RESTRIÇÕES ORGANIZACIONAIS E DE INTEGRIDADE
+--  RESTRIÇÕES ORGANIZACIONAIS E DE INTEGRIDADE (RE01 a RE05 são os códigos da Entrega 1;
+--  RE06 a RE09 são novos)
 --  RE01 Máximo de 30 alunos ativos por turma
 --       ESTRUTURA: QT_CAPACIDADE_MAXIMA DEFAULT 30 com CK (1 a 30). Contar matrículas
 --       ativas exige olhar outras linhas, o que o CHECK não faz: AUDITORIA A06 e, no
 --       arquivo de operações, o INSERT de matrícula que só grava se houver vaga.
---  RE02 Quórum mínimo de referência (alerta, sem bloqueio)
---       ESTRUTURA: MODALIDADE.QT_MINIMA_REFERENCIA (> 0). AUDITORIA/ALERTA: A06.
---  RE03 Menor de 18 anos: responsável e atestado
---       ESTRUTURA: FK ALUNO → RESPONSAVEL e coluna DT_ENTREGA_ATESTADO. A idade muda com a
---       data de hoje (CURDATE não é aceito em CHECK): AUDITORIA A05; consulta J03.
---  RE04 Trancamento só por lesão ou razão médica
+--  RE02 Trancamento só por lesão ou razão médica
 --       ESTRUTURA: TP_TRANCAMENTO ENUM('LESAO','RAZAO_MEDICA') e CHECKs de datas.
 --       AUDITORIA: A03 (presença durante o trancamento). UPDATE U02 encerra o
 --       trancamento, gera a parcela e prorroga DT_FIM.
---  RE05 Professor exclusivo de uma modalidade
+--  RE03 Professor exclusivo de uma modalidade
 --       ESTRUTURA: PROFESSOR.ID_MODALIDADE NOT NULL (uma só modalidade). A compatibilidade
 --       com turma, aula e graduação cruza tabelas: AUDITORIA A04.
---  RE06 Domínios de situação e preservação do histórico
+--  RE04 Domínios de situação e preservação do histórico
 --       ESTRUTURA: ENUMs de ALUNO e MATRICULA; FKs RESTRICT impedem a exclusão física de
 --       matrículas, contratos, pagamentos e despesas com histórico (exemplo D03).
---  RE07 Bloqueio por inadimplência
+--  RE05 Bloqueio por inadimplência
 --       ESTRUTURA: situação da parcela em ENUM ('PAGO','ATRASADO','PENDENTE') e índice
 --       IX_PAGAMENTO_VENC_STATUS. AUDITORIA: A02 (presença de bloqueado) e A07;
 --       G04 lista os bloqueados; no arquivo de operações a chamada só grava os liberados.
+--  RE06 Quórum mínimo de referência (alerta, sem bloqueio)
+--       ESTRUTURA: MODALIDADE.QT_MINIMA_REFERENCIA (> 0). AUDITORIA/ALERTA: A06.
+--  RE07 Menor de 18 anos: responsável legal
+--       ESTRUTURA: FK ALUNO → RESPONSAVEL; ID_RESPONSAVEL aceita NULL porque o maior de
+--       idade não tem responsável. A idade muda com a data de hoje (CURDATE não é aceito
+--       em CHECK): AUDITORIA A05 (menor sem responsável); consulta J03.
+--  RE08 Atestado de aptidão física de todos os alunos
+--       ESTRUTURA: coluna DT_ENTREGA_ATESTADO, vazia até a entrega, com CK_ALUNO_DT_ATESTADO
+--       (depois do nascimento). O banco aceita a coluna vazia porque a entrega pode vir
+--       depois da matrícula: AUDITORIA A05 lista os alunos ativos ou trancados sem atestado.
+--  RE09 Proteção dos dados de saúde (LGPD)
+--       ESTRUTURA: dados de saúde isolados em PROBLEMA_SAUDE_ALUNO e TRANCAMENTO.DS_MOTIVO;
+--       LOG_ACESSO registra quem leu ou alterou CPF e DS_PROBLEMA_SAUDE. FORA DO SQL: o
+--       consentimento, a base legal e a retenção (dicionário, Seção 7) e as permissões por
+--       perfil, que são GRANTs aplicados na implantação (exemplo comentado na Seção 3.5).
 -- =====================================================================================
 
 
@@ -196,7 +217,7 @@ USE ACADEMIA_BFL;
 --  • CPF, CEP e telefone são texto, e não número: não fazemos conta com eles e um
 --    número apagaria o zero à esquerda (CEP 03310-000 viraria 3310000).
 --  • ENUM nas colunas de situação/tipo com lista fechada de valores (como no DER):
---    o banco recusa qualquer valor fora da lista [RE06].
+--    o banco recusa qualquer valor fora da lista [RE04].
 --  • BOOLEAN (no MySQL vira TINYINT(1)) para indicadores sim/não.
 --  • TEXT para textos longos e livres (histórico de treino, motivo do trancamento).
 --  • ENGINE = InnoDB em todas as tabelas: transações ACID e chaves estrangeiras [RNF04].
@@ -211,27 +232,27 @@ USE ACADEMIA_BFL;
 -- -------------------------------------------------------------------------------------
 -- 2.1 MODALIDADE — as seis artes marciais oferecidas                    [RF03]
 -- -------------------------------------------------------------------------------------
--- QT_MINIMA_REFERENCIA guarda o quórum que dispara o alerta de turma vazia [RE02].
--- IN_POSSUI_SISTEMA_FAIXAS separa exame de faixa de análise técnica (Boxe) [RO06].
--- TP_SITUACAO_MODALIDADE permite "desligar" uma modalidade sem apagá-la [RE06].
+-- QT_MINIMA_REFERENCIA guarda o quórum que dispara o alerta de turma vazia [RE06].
+-- IN_POSSUI_SISTEMA_FAIXAS separa exame de faixa de análise técnica (Boxe) [RO05].
+-- TP_SITUACAO_MODALIDADE permite "desligar" uma modalidade sem apagá-la [RE04].
 CREATE TABLE MODALIDADE (
     ID_MODALIDADE             INT          NOT NULL AUTO_INCREMENT,
     QT_MINIMA_REFERENCIA      INT          NOT NULL,                 -- quórum de referência para abrir horário
     TP_SITUACAO_MODALIDADE    ENUM('ATIVA','INATIVA') NOT NULL DEFAULT 'ATIVA',
-    IN_POSSUI_SISTEMA_FAIXAS  BOOLEAN      NOT NULL,                 -- FALSE no Boxe (análise técnica, RO06)
+    IN_POSSUI_SISTEMA_FAIXAS  BOOLEAN      NOT NULL,                 -- FALSE no Boxe (análise técnica, RO05)
     DT_INICIO_AULAS           DATE         NOT NULL,
     NM_MODALIDADE             VARCHAR(50)  NOT NULL,
     CONSTRAINT PK_MODALIDADE PRIMARY KEY (ID_MODALIDADE)
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.2 PROFESSOR — prestador de serviço (ou o gestor) pago por aula      [RF02, RE05, RO07]
+-- 2.2 PROFESSOR — prestador de serviço (ou o gestor) pago por aula      [RF02, RE03, RO09]
 -- -------------------------------------------------------------------------------------
--- ID_MODALIDADE é uma coluna única e obrigatória: o professor atua em UMA modalidade [RE05].
--- VL_POR_AULA é a base do repasse por aula ministrada [RO07].
+-- ID_MODALIDADE é uma coluna única e obrigatória: o professor atua em UMA modalidade [RE03].
+-- VL_POR_AULA é a base do repasse por aula ministrada [RO09].
 CREATE TABLE PROFESSOR (
     ID_PROFESSOR     INT            NOT NULL AUTO_INCREMENT,
-    ID_MODALIDADE    INT            NOT NULL,                        -- leciona uma única modalidade (RE05)
+    ID_MODALIDADE    INT            NOT NULL,                        -- leciona uma única modalidade (RE03)
     CPF              CHAR(11)       NOT NULL,
     NM_COMPLETO      VARCHAR(150)   NOT NULL,
     DT_NASCIMENTO    DATE           NOT NULL,
@@ -278,10 +299,10 @@ CREATE TABLE REGISTRO_QUALIFICACOES (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.3 RESPONSAVEL — responsável legal do aluno menor de 18 anos         [RF01, RE03]
+-- 2.3 RESPONSAVEL — responsável legal do aluno menor de 18 anos         [RF01, RE07]
 -- -------------------------------------------------------------------------------------
 -- Tabela separada porque um responsável pode representar vários alunos (irmãos) e
--- porque é ele quem dá o consentimento do menor, inclusive de imagem (LGPD art. 14) [RE03].
+-- porque é ele quem dá o consentimento do menor, inclusive de imagem (LGPD art. 14) [RE07].
 CREATE TABLE RESPONSAVEL (
     ID_RESPONSAVEL   INT           NOT NULL AUTO_INCREMENT,
     CPF              CHAR(11)      NOT NULL,
@@ -292,10 +313,10 @@ CREATE TABLE RESPONSAVEL (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.4 INTERESSADO — pré-cadastro da aula experimental gratuita          [RF01, RO03]
+-- 2.4 INTERESSADO — pré-cadastro da aula experimental gratuita          [RF01, RO06]
 -- -------------------------------------------------------------------------------------
 -- Guarda só o mínimo para o retorno (nome e telefone): minimização de dados [RNF02].
--- TP_STATUS mede a conversão da aula experimental em matrícula [RO03].
+-- TP_STATUS mede a conversão da aula experimental em matrícula [RO06].
 CREATE TABLE INTERESSADO (
     ID_INTERESSADO   INT           NOT NULL AUTO_INCREMENT,
     ID_MODALIDADE    INT           NOT NULL,
@@ -308,16 +329,18 @@ CREATE TABLE INTERESSADO (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.5 ALUNO — pessoa física matriculada na academia                     [RF01, RE03, RE06]
+-- 2.5 ALUNO — pessoa física matriculada na academia                     [RF01, RE07, RE08, RE04]
 -- -------------------------------------------------------------------------------------
--- ID_RESPONSAVEL e DT_ENTREGA_ATESTADO aceitam NULL porque só o menor de idade precisa
--- deles; a exigência para o menor é conferida pela auditoria A05 [RE03].
--- TP_STATUS_ALUNO só aceita os três estados do RE06; a inadimplência NÃO é um estado do
--- aluno, ela é derivada dos pagamentos [RE07].
+-- ID_RESPONSAVEL aceita NULL porque só o menor de idade tem responsável legal; a exigência
+-- para o menor é conferida pela auditoria A05 [RE07].
+-- DT_ENTREGA_ATESTADO aceita NULL até o aluno entregar o atestado de aptidão física, que é
+-- exigido de TODOS os alunos, adultos e menores [RE08]: a auditoria A05 lista quem ainda deve.
+-- TP_STATUS_ALUNO só aceita os três estados do RE04; a inadimplência NÃO é um estado do
+-- aluno, ela é derivada dos pagamentos [RE05].
 -- IN_ACEITE_USO_IMAGEM + DT_AUTORIZACAO_IMAGEM registram o consentimento (LGPD) [RNF02].
 CREATE TABLE ALUNO (
     ID_ALUNO                INT           NOT NULL AUTO_INCREMENT,
-    ID_RESPONSAVEL          INT           NULL,                       -- só para menor de 18 anos (RE03)
+    ID_RESPONSAVEL          INT           NULL,                       -- só para menor de 18 anos (RE07)
     ID_INTERESSADO          INT           NULL,                       -- só se veio da aula experimental
     DT_AUTORIZACAO_IMAGEM   DATE          NOT NULL,
     CPF                     CHAR(11)      NOT NULL,
@@ -325,8 +348,8 @@ CREATE TABLE ALUNO (
     DT_NASCIMENTO           DATE          NOT NULL,
     DS_HISTORICO_TREINO     TEXT          NOT NULL,
     IN_ACEITE_USO_IMAGEM    BOOLEAN       NOT NULL,
-    TP_STATUS_ALUNO         ENUM('ATIVO','INATIVO','TRANCADO') NOT NULL DEFAULT 'ATIVO',  -- RE06
-    DT_ENTREGA_ATESTADO     DATE          NULL,                       -- exigido do menor de 18 anos
+    TP_STATUS_ALUNO         ENUM('ATIVO','INATIVO','TRANCADO') NOT NULL DEFAULT 'ATIVO',  -- RE04
+    DT_ENTREGA_ATESTADO     DATE          NULL,                       -- exigido de todos (RE08); vazio até a entrega
     NR_CEP                  CHAR(8)       NOT NULL,
     NR_LOGRADOURO           VARCHAR(10)   NOT NULL,
     DS_RUA                  VARCHAR(100)  NOT NULL,
@@ -347,7 +370,7 @@ CREATE TABLE TELEFONE_ALUNO (
     CONSTRAINT PK_TELEFONE_ALUNO PRIMARY KEY (NR_TELEFONE, ID_ALUNO)
 ) ENGINE = InnoDB;
 
--- [RNF02] Dado sensível de saúde isolado numa tabela própria: fica mais fácil restringir
+-- [RNF02, RE09] Dado sensível de saúde isolado numa tabela própria: fica mais fácil restringir
 -- a leitura e registrar cada acesso em LOG_ACESSO. Sem problema de saúde, registra-se 'nenhum'.
 CREATE TABLE PROBLEMA_SAUDE_ALUNO (
     DS_PROBLEMA_SAUDE  VARCHAR(200) NOT NULL,
@@ -356,7 +379,7 @@ CREATE TABLE PROBLEMA_SAUDE_ALUNO (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.6 TURMA — dia e horário fixos de uma modalidade                     [RF03, RE01, RE05]
+-- 2.6 TURMA — dia e horário fixos de uma modalidade                     [RF03, RE01, RE03]
 -- -------------------------------------------------------------------------------------
 -- QT_CAPACIDADE_MAXIMA nasce com 30 (DEFAULT), o limite físico do tatame [RE01].
 -- As vagas ocupadas não são guardadas: são contadas nas matrículas ativas (evita um
@@ -373,11 +396,11 @@ CREATE TABLE TURMA (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.7 MATRICULA — vínculo entre um aluno e uma turma                    [RF03, RE06]
+-- 2.7 MATRICULA — vínculo entre um aluno e uma turma                    [RF03, RE04]
 -- -------------------------------------------------------------------------------------
 -- Resolve o N:N ALUNO x TURMA. Na transferência de turma a matrícula antiga vira
 -- 'ENCERRADA' e uma nova é criada; nada é apagado, e o histórico de presença continua
--- ligado à matrícula antiga [RE06].
+-- ligado à matrícula antiga [RE04].
 CREATE TABLE MATRICULA (
     ID_MATRICULA            INT   NOT NULL AUTO_INCREMENT,
     ID_ALUNO                INT   NOT NULL,
@@ -388,10 +411,10 @@ CREATE TABLE MATRICULA (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.8 TRANCAMENTO — afastamento por lesão ou razão médica               [RF06, RE04]
+-- 2.8 TRANCAMENTO — afastamento por lesão ou razão médica               [RF06, RE02]
 -- -------------------------------------------------------------------------------------
--- O ENUM só aceita os dois motivos permitidos [RE04]. Não há coluna de laudo porque a
--- regra dispensa laudo formal. DS_MOTIVO é dado de saúde (sensível) [RNF02].
+-- O ENUM só aceita os dois motivos permitidos [RE02]. Não há coluna de laudo porque a
+-- regra dispensa laudo formal. DS_MOTIVO é dado de saúde (sensível) [RNF02, RE09].
 -- DT_RETORNO_EFETIVA vazia = trancamento em curso (sem parcela e sem presença).
 CREATE TABLE TRANCAMENTO (
     ID_TRANCAMENTO        INT   NOT NULL AUTO_INCREMENT,
@@ -405,9 +428,9 @@ CREATE TABLE TRANCAMENTO (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.9 AULA — ocorrência datada de um treino                              [RF05, RO07]
+-- 2.9 AULA — ocorrência datada de um treino                              [RF05, RO09]
 -- -------------------------------------------------------------------------------------
--- ID_PROFESSOR é quem DE FATO ministrou (pode ser um substituto): é a base do repasse [RO07].
+-- ID_PROFESSOR é quem DE FATO ministrou (pode ser um substituto): é a base do repasse [RO09].
 -- ID_AULA_ORIGEM aponta para a própria tabela AULA (autorrelacionamento) e indica qual
 -- aula esta reposição substitui [RF05].
 CREATE TABLE AULA (
@@ -421,11 +444,11 @@ CREATE TABLE AULA (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.10 PRESENCA — lista de chamada (N:N AULA x MATRICULA)               [RF05, RO05, RE07]
+-- 2.10 PRESENCA — lista de chamada (N:N AULA x MATRICULA)               [RF05, RO03, RE05]
 -- -------------------------------------------------------------------------------------
 -- PK composta: a mesma matrícula não pode ter duas presenças na mesma aula.
--- É a fonte da frequência usada para liberar o exame de faixa [RO05]. Aluno bloqueado
--- ou trancado não recebe linha de presença [RE07, RE04].
+-- É a fonte da frequência usada para liberar o exame de faixa [RO03]. Aluno bloqueado
+-- ou trancado não recebe linha de presença [RE05, RE02].
 CREATE TABLE PRESENCA (
     ID_AULA        INT      NOT NULL,
     ID_MATRICULA   INT      NOT NULL,
@@ -450,12 +473,12 @@ CREATE TABLE PLANO (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.12 CONTRATO — acordo do aluno com a academia                       [RF04, RO01, RO04, RE04]
+-- 2.12 CONTRATO — acordo do aluno com a academia                       [RF04, RO01, RO08, RE02]
 -- -------------------------------------------------------------------------------------
 -- VL_MENSAL_ACORDADO é congelado: reajuste no PLANO não muda contratos já firmados.
 -- VL_ACRESCIMO_MODALIDADE cobra as modalidades extras [RO01].
--- VL_MULTA_RESCISORIA só existe no cancelamento antecipado de plano de fidelidade [RO04].
--- DT_FIM é prorrogado pelo tempo de trancamento [RE04].
+-- VL_MULTA_RESCISORIA só existe no cancelamento antecipado de plano de fidelidade [RO08].
+-- DT_FIM é prorrogado pelo tempo de trancamento [RE02].
 CREATE TABLE CONTRATO (
     ID_CONTRATO               INT            NOT NULL AUTO_INCREMENT,
     ID_ALUNO                  INT            NOT NULL,               -- aluno do contrato (no Plano Família, cada familiar tem o seu)
@@ -465,7 +488,7 @@ CREATE TABLE CONTRATO (
     VL_MENSAL_ACORDADO        DECIMAL(10,2)  NOT NULL,               -- congelado na contratação
     VL_ACRESCIMO_MODALIDADE   DECIMAL(10,2)  NULL,                   -- modalidades além da primeira
     DT_CANCELAMENTO           DATE           NULL,
-    VL_MULTA_RESCISORIA       DECIMAL(10,2)  NULL,                   -- só no cancelamento antecipado (RO04)
+    VL_MULTA_RESCISORIA       DECIMAL(10,2)  NULL,                   -- só no cancelamento antecipado (RO08)
     CONSTRAINT PK_CONTRATO PRIMARY KEY (ID_CONTRATO)
 ) ENGINE = InnoDB;
 
@@ -479,12 +502,12 @@ CREATE TABLE PARTICIPA (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.14 PAGAMENTO — parcela mensal do contrato                           [RF04, RO02, RO04, RO06, RE07]
+-- 2.14 PAGAMENTO — parcela mensal do contrato                           [RF04, RO02, RO07, RO05, RE05]
 -- -------------------------------------------------------------------------------------
 -- Uma linha por mês, sempre com vencimento no 5º dia útil e valor integral [RO02].
--- VL_MULTA = multa moratória dos planos de fidelidade [RO04].
--- VL_TAXA_GRADUACAO = taxa do exame de faixa, cobrada junto da mensalidade [RO06].
--- TP_STATUS_PAGAMENTO é a origem da inadimplência e do bloqueio [RE07].
+-- VL_MULTA = multa moratória dos planos de fidelidade [RO07].
+-- VL_TAXA_GRADUACAO = taxa do exame de faixa, cobrada junto da mensalidade [RO05].
+-- TP_STATUS_PAGAMENTO é a origem da inadimplência e do bloqueio [RE05].
 CREATE TABLE PAGAMENTO (
     ID_PAGAMENTO           INT            NOT NULL AUTO_INCREMENT,
     ID_CONTRATO            INT            NOT NULL,
@@ -500,10 +523,10 @@ CREATE TABLE PAGAMENTO (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.15 GRADUACAO — exame de faixa ou análise técnica                    [RF06, RO05, RO06, RE05]
+-- 2.15 GRADUACAO — exame de faixa ou análise técnica                    [RF06, RO03, RO05, RE03]
 -- -------------------------------------------------------------------------------------
 -- TP_AVALIACAO separa exame de faixa e análise técnica do Boxe; TP_NIVEL_FAIXA fica
--- vazio na análise técnica [RO06]. A reprovação fica no histórico com o motivo [RF06].
+-- vazio na análise técnica [RO05]. A reprovação fica no histórico com o motivo [RF06].
 CREATE TABLE GRADUACAO (
     ID_GRADUACAO           INT           NOT NULL AUTO_INCREMENT,
     ID_ALUNO               INT           NOT NULL,
@@ -518,9 +541,9 @@ CREATE TABLE GRADUACAO (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.16 DESPESA — contas a pagar e repasse aos professores               [RF04, RO07, RNF02]
+-- 2.16 DESPESA — contas a pagar e repasse aos professores               [RF04, RO09, RNF02]
 -- -------------------------------------------------------------------------------------
--- ID_PROFESSOR só é preenchido no repasse por aulas [RO07]. O credor é só um nome:
+-- ID_PROFESSOR só é preenchido no repasse por aulas [RO09]. O credor é só um nome:
 -- não se guardam dados bancários (minimização, LGPD) [RNF02].
 CREATE TABLE DESPESA (
     ID_DESPESA            INT            NOT NULL AUTO_INCREMENT,
@@ -537,7 +560,7 @@ CREATE TABLE DESPESA (
 ) ENGINE = InnoDB;
 
 -- -------------------------------------------------------------------------------------
--- 2.17 LOG_ACESSO — rastreabilidade de acesso a dado pessoal            [RNF02]
+-- 2.17 LOG_ACESSO — rastreabilidade de acesso a dado pessoal      [RNF02, RE09]
 -- -------------------------------------------------------------------------------------
 -- Registra quem leu ou alterou CPF e DS_PROBLEMA_SAUDE e toda operação de escrita, sem
 -- copiar o dado sensível para o log (só o ID do registro e o nome do campo).
@@ -571,7 +594,7 @@ CREATE TABLE LOG_ACESSO (
 --     esses valores não existem sem o dono; se o dono for excluído, vão junto.
 --   • Nas demais FKs vale o padrão RESTRICT: o banco IMPEDE apagar um registro que
 --     ainda é referenciado (ex.: não dá para apagar uma modalidade que tem turmas).
---     Isso preserva o histórico de matrículas, contratos, pagamentos e despesas [RE06]
+--     Isso preserva o histórico de matrículas, contratos, pagamentos e despesas [RE04]
 --     durante o prazo legal de guarda de 5 anos [RNF05].
 -- =====================================================================================
 
@@ -587,7 +610,7 @@ ALTER TABLE ALUNO       ADD CONSTRAINT UK_ALUNO_CPF         UNIQUE (CPF);
 -- Um interessado vira, no máximo, um aluno (relação 1:1 opcional) [RF01].
 -- O UNIQUE aceita vários NULL, então alunos cadastrados direto não conflitam.
 ALTER TABLE ALUNO       ADD CONSTRAINT UK_ALUNO_INTERESSADO UNIQUE (ID_INTERESSADO);
--- [RO03] Uma única aula experimental por pessoa, conferida por nome + telefone:
+-- [RO06] Uma única aula experimental por pessoa, conferida por nome + telefone:
 -- o segundo agendamento da mesma pessoa é recusado pelo próprio banco.
 ALTER TABLE INTERESSADO ADD CONSTRAINT UK_INTERESSADO_PESSOA UNIQUE (NM_INTERESSADO, NR_TELEFONE);
 -- [RF03] Permite renovar a matrícula na mesma turma em outra data, mas não duplicar no mesmo dia.
@@ -627,9 +650,9 @@ CREATE INDEX IX_LOG_TABELA_REGISTRO    ON LOG_ACESSO  (NM_TABELA, ID_REGISTRO); 
 CREATE INDEX IX_LOG_DT_ACESSO          ON LOG_ACESSO  (DT_ACESSO);
 
 -- -------------------------------------------------------------------------------------
--- 3.3 FOREIGN KEY                                                       [RNF04, RE06]
+-- 3.3 FOREIGN KEY                                                       [RNF04, RE04]
 -- -------------------------------------------------------------------------------------
--- [RF02, RE05] Professor vinculado a UMA modalidade existente, e suas tabelas de apoio
+-- [RF02, RE03] Professor vinculado a UMA modalidade existente, e suas tabelas de apoio
 ALTER TABLE PROFESSOR
     ADD CONSTRAINT FK_PROFESSOR_MODALIDADE FOREIGN KEY (ID_MODALIDADE) REFERENCES MODALIDADE (ID_MODALIDADE);
 ALTER TABLE EMAIL_PROFESSOR
@@ -648,7 +671,7 @@ ALTER TABLE REGISTRO_QUALIFICACOES
     ADD CONSTRAINT FK_REGISTRO_QUALIFICACOES_PROFESSOR FOREIGN KEY (ID_PROFESSOR)
         REFERENCES PROFESSOR (ID_PROFESSOR) ON DELETE CASCADE;
 
--- [RF01, RE03, RO03] Interessado ligado a uma modalidade; aluno ligado ao responsável
+-- [RF01, RE07, RO06] Interessado ligado a uma modalidade; aluno ligado ao responsável
 -- (menor) e ao interessado de origem
 ALTER TABLE INTERESSADO
     ADD CONSTRAINT FK_INTERESSADO_MODALIDADE FOREIGN KEY (ID_MODALIDADE) REFERENCES MODALIDADE (ID_MODALIDADE);
@@ -665,7 +688,7 @@ ALTER TABLE PROBLEMA_SAUDE_ALUNO
     ADD CONSTRAINT FK_PROBLEMA_SAUDE_ALUNO_ALUNO FOREIGN KEY (ID_ALUNO)
         REFERENCES ALUNO (ID_ALUNO) ON DELETE CASCADE;
 
--- [RF03, RF06, RE04] Turma, matrícula e trancamento
+-- [RF03, RF06, RE02] Turma, matrícula e trancamento
 ALTER TABLE TURMA
     ADD CONSTRAINT FK_TURMA_MODALIDADE FOREIGN KEY (ID_MODALIDADE) REFERENCES MODALIDADE (ID_MODALIDADE),
     ADD CONSTRAINT FK_TURMA_PROFESSOR  FOREIGN KEY (ID_PROFESSOR)  REFERENCES PROFESSOR (ID_PROFESSOR);
@@ -675,7 +698,7 @@ ALTER TABLE MATRICULA
 ALTER TABLE TRANCAMENTO
     ADD CONSTRAINT FK_TRANCAMENTO_MATRICULA FOREIGN KEY (ID_MATRICULA) REFERENCES MATRICULA (ID_MATRICULA);
 
--- [RF05, RO07] Aula (com autorrelacionamento da reposição) e presença
+-- [RF05, RO09] Aula (com autorrelacionamento da reposição) e presença
 ALTER TABLE AULA
     ADD CONSTRAINT FK_AULA_PROFESSOR FOREIGN KEY (ID_PROFESSOR)   REFERENCES PROFESSOR (ID_PROFESSOR),
     ADD CONSTRAINT FK_AULA_TURMA     FOREIGN KEY (ID_TURMA)       REFERENCES TURMA (ID_TURMA),
@@ -684,7 +707,7 @@ ALTER TABLE PRESENCA
     ADD CONSTRAINT FK_PRESENCA_AULA      FOREIGN KEY (ID_AULA)      REFERENCES AULA (ID_AULA),
     ADD CONSTRAINT FK_PRESENCA_MATRICULA FOREIGN KEY (ID_MATRICULA) REFERENCES MATRICULA (ID_MATRICULA);
 
--- [RF04, RO01, RO07] Financeiro: contrato, modalidades cobertas, parcelas e repasse
+-- [RF04, RO01, RO09] Financeiro: contrato, modalidades cobertas, parcelas e repasse
 ALTER TABLE CONTRATO
     ADD CONSTRAINT FK_CONTRATO_ALUNO FOREIGN KEY (ID_ALUNO) REFERENCES ALUNO (ID_ALUNO),
     ADD CONSTRAINT FK_CONTRATO_PLANO FOREIGN KEY (ID_PLANO) REFERENCES PLANO (ID_PLANO);
@@ -696,7 +719,7 @@ ALTER TABLE PAGAMENTO
 ALTER TABLE DESPESA
     ADD CONSTRAINT FK_DESPESA_PROFESSOR FOREIGN KEY (ID_PROFESSOR) REFERENCES PROFESSOR (ID_PROFESSOR);
 
--- [RF06, RE05] Graduação: aluno avaliado, professor avaliador e modalidade
+-- [RF06, RE03] Graduação: aluno avaliado, professor avaliador e modalidade
 ALTER TABLE GRADUACAO
     ADD CONSTRAINT FK_GRADUACAO_ALUNO      FOREIGN KEY (ID_ALUNO)      REFERENCES ALUNO (ID_ALUNO),
     ADD CONSTRAINT FK_GRADUACAO_PROFESSOR  FOREIGN KEY (ID_PROFESSOR)  REFERENCES PROFESSOR (ID_PROFESSOR),
@@ -707,15 +730,15 @@ ALTER TABLE GRADUACAO
 -- -------------------------------------------------------------------------------------
 -- Limitações do CHECK no MySQL que explicam por que algumas regras viraram auditoria:
 --  • Não aceita funções que mudam com o tempo, como CURDATE(). Por isso "menor de 18 anos
---    precisa de responsável" [RE03] e "parcela vencida deve estar ATRASADO" [RE07] são
+--    precisa de responsável" [RE07] e "parcela vencida deve estar ATRASADO" [RE05] são
 --    verificadas pelas consultas de auditoria (Seção 9).
 --  • Não compara linhas de tabelas diferentes nem conta linhas: "professor da turma deve
---    ser da modalidade da turma" [RE05] e "no máximo 30 matrículas ativas" [RE01] também
+--    ser da modalidade da turma" [RE03] e "no máximo 30 matrículas ativas" [RE01] também
 --    viram auditoria (A04 e A06).
 --  • Não pode ser usado em colunas de FK com ação ON DELETE, por isso não há CHECK
 --    nas colunas de chave estrangeira.
 
--- [RF01, RF02, RE03] Formatos: CPF com 11 dígitos, CEP com 8, telefone com DDD (10 ou 11
+-- [RF01, RF02, RE08] Formatos: CPF com 11 dígitos, CEP com 8, telefone com DDD (10 ou 11
 -- dígitos) e datas plausíveis (autorização de imagem e atestado depois do nascimento)
 ALTER TABLE ALUNO
     ADD CONSTRAINT CK_ALUNO_CPF         CHECK (CPF REGEXP '^[0-9]{11}$'),
@@ -728,14 +751,14 @@ ALTER TABLE RESPONSAVEL
     ADD CONSTRAINT CK_RESPONSAVEL_CPF      CHECK (CPF REGEXP '^[0-9]{11}$'),
     ADD CONSTRAINT CK_RESPONSAVEL_TELEFONE CHECK (NR_TELEFONE REGEXP '^[0-9]{10,11}$');
 
--- [RF02, RO07] Valor por aula positivo: base do repasse
+-- [RF02, RO09] Valor por aula positivo: base do repasse
 ALTER TABLE PROFESSOR
     ADD CONSTRAINT CK_PROFESSOR_CPF         CHECK (CPF REGEXP '^[0-9]{11}$'),
     ADD CONSTRAINT CK_PROFESSOR_CEP         CHECK (NR_CEP REGEXP '^[0-9]{8}$'),
     ADD CONSTRAINT CK_PROFESSOR_NASCIMENTO  CHECK (DT_NASCIMENTO >= '1920-01-01'),
     ADD CONSTRAINT CK_PROFESSOR_VL_POR_AULA CHECK (VL_POR_AULA > 0);
 
--- [RO03] Telefone válido, porque ele faz parte da identificação única do interessado
+-- [RO06] Telefone válido, porque ele faz parte da identificação única do interessado
 ALTER TABLE INTERESSADO
     ADD CONSTRAINT CK_INTERESSADO_TELEFONE CHECK (NR_TELEFONE REGEXP '^[0-9]{10,11}$');
 
@@ -745,7 +768,7 @@ ALTER TABLE EMAIL_PROFESSOR    ADD CONSTRAINT CK_EMAIL_PROFESSOR_FORMATO    CHEC
 ALTER TABLE TELEFONE_ALUNO     ADD CONSTRAINT CK_TELEFONE_ALUNO_FORMATO     CHECK (NR_TELEFONE REGEXP '^[0-9]{10,11}$');
 ALTER TABLE TELEFONE_PROFESSOR ADD CONSTRAINT CK_TELEFONE_PROFESSOR_FORMATO CHECK (NR_TELEFONE REGEXP '^[0-9]{10,11}$');
 
--- [RF03, RE02] Domínio fechado às 6 modalidades e quórum de referência positivo
+-- [RF03, RE06] Domínio fechado às 6 modalidades e quórum de referência positivo
 ALTER TABLE MODALIDADE
     ADD CONSTRAINT CK_MODALIDADE_NOME CHECK (NM_MODALIDADE IN
         ('Muay Thai','Kickboxing','Jiu-Jitsu','Boxe','Capoeira','No-Gi')),
@@ -756,7 +779,7 @@ ALTER TABLE TURMA
     ADD CONSTRAINT CK_TURMA_HORARIO    CHECK (HR_FIM > HR_INICIO),
     ADD CONSTRAINT CK_TURMA_CAPACIDADE CHECK (QT_CAPACIDADE_MAXIMA BETWEEN 1 AND 30);
 
--- [RE04] Os retornos não podem ser antes do início do afastamento
+-- [RE02] Os retornos não podem ser antes do início do afastamento
 ALTER TABLE TRANCAMENTO
     ADD CONSTRAINT CK_TRANCAMENTO_RETORNO_PREVISTO CHECK (DT_RETORNO_PREVISTA > DT_INICIO),
     ADD CONSTRAINT CK_TRANCAMENTO_RETORNO_EFETIVO  CHECK (DT_RETORNO_EFETIVA IS NULL OR DT_RETORNO_EFETIVA > DT_INICIO);
@@ -769,7 +792,7 @@ ALTER TABLE PLANO
     ADD CONSTRAINT CK_PLANO_PC_DESCONTO   CHECK (PC_DESCONTO BETWEEN 0 AND 100),
     ADD CONSTRAINT CK_PLANO_QT_PESSOAS    CHECK (QT_MINIMA_PESSOAS IS NULL OR QT_MINIMA_PESSOAS >= 2);
 
--- [RF04, RO01, RO04] Vigência coerente, valores positivos e multa rescisória só quando
+-- [RF04, RO01, RO08] Vigência coerente, valores positivos e multa rescisória só quando
 -- houve cancelamento
 ALTER TABLE CONTRATO
     ADD CONSTRAINT CK_CONTRATO_VIGENCIA     CHECK (DT_FIM > DT_INICIO),
@@ -779,9 +802,9 @@ ALTER TABLE CONTRATO
     ADD CONSTRAINT CK_CONTRATO_MULTA        CHECK (VL_MULTA_RESCISORIA IS NULL
                                                    OR (VL_MULTA_RESCISORIA > 0 AND DT_CANCELAMENTO IS NOT NULL));
 
--- [RF04, RO04, RO06, RE07] Valores positivos e coerência entre a situação e os dados da
+-- [RF04, RO07, RO05, RE05] Valores positivos e coerência entre a situação e os dados da
 -- liquidação: parcela PAGO precisa ter data, valor e forma; parcela não paga não pode
--- ter nenhum deles. Assim a situação usada no bloqueio (RE07) nunca contradiz os valores.
+-- ter nenhum deles. Assim a situação usada no bloqueio (RE05) nunca contradiz os valores.
 ALTER TABLE PAGAMENTO
     ADD CONSTRAINT CK_PAGAMENTO_VL_DEVIDO CHECK (VL_DEVIDO > 0),
     ADD CONSTRAINT CK_PAGAMENTO_VL_PAGO   CHECK (VL_PAGO IS NULL OR VL_PAGO > 0),
@@ -793,7 +816,7 @@ ALTER TABLE PAGAMENTO
         OR (TP_STATUS_PAGAMENTO <> 'PAGO'
               AND DT_PAGAMENTO IS NULL AND VL_PAGO IS NULL AND TP_FORMA_PAGAMENTO IS NULL));
 
--- [RF06, RO06] Faixa só no exame de faixa (o Boxe tem análise técnica, sem faixa) e
+-- [RF06, RO05] Faixa só no exame de faixa (o Boxe tem análise técnica, sem faixa) e
 -- motivo só na reprovação
 ALTER TABLE GRADUACAO
     ADD CONSTRAINT CK_GRADUACAO_TP_AVALIACAO CHECK (TP_AVALIACAO IN ('EXAME_FAIXA','ANALISE_TECNICA')),
@@ -804,7 +827,7 @@ ALTER TABLE GRADUACAO
            (TP_RESULTADO = 'REPROVADO' AND DS_MOTIVO_REPROVACAO IS NOT NULL)
         OR (TP_RESULTADO = 'APROVADO'  AND DS_MOTIVO_REPROVACAO IS NULL));
 
--- [RF04, RO07] Categorias de despesa, valores positivos e coerência da liquidação
+-- [RF04, RO09] Categorias de despesa, valores positivos e coerência da liquidação
 ALTER TABLE DESPESA
     ADD CONSTRAINT CK_DESPESA_CATEGORIA CHECK (DS_CATEGORIA IN
         ('ALUGUEL','CONSUMO','MANUTENCAO','COMPRAS','PROFESSORES')),
@@ -819,7 +842,7 @@ ALTER TABLE LOG_ACESSO
     ADD CONSTRAINT CK_LOG_ACESSO_PERFIL CHECK (TP_PERFIL IN ('ADMINISTRACAO','PROFESSOR'));
 
 -- -------------------------------------------------------------------------------------
--- 3.5 PERFIS DE ACESSO (exemplo comentado — aplicado na implantação)    [RNF02]
+-- 3.5 PERFIS DE ACESSO (exemplo comentado — aplicado na implantação) [RNF02, RE09]
 -- -------------------------------------------------------------------------------------
 -- O controle de acesso por perfil é feito com usuários do MySQL e GRANT. Fica comentado
 -- porque criar usuários exige privilégio de administrador do servidor e senhas reais.
@@ -898,20 +921,20 @@ ALTER TABLE LOG_ACESSO
 -- CASOS PROPOSITAIS PARA AS CONSULTAS DE AUDITORIA (Seção 9)
 -- São erros que acontecem na rotina e que nenhuma constraint consegue barrar. Estão
 -- descritos no cabeçalho de cada tabela abaixo:
---   A01 aluno matriculado sem contrato (RO02)      A06 turma abaixo do quórum (RE02)
---   A02 presença de aluno bloqueado (RE07)         A07 parcela vencida ainda PENDENTE (RE07)
---   A03 presença durante trancamento (RE04)        A08 cancelamento sem multa (RO04)
---   A04 aula com professor de outra mod. (RE05)    A09 convertido sem aluno (RO03)
---   A05 menor sem atestado (RE03)                  A10 desconto de balcão (RO01)
+--   A01 aluno matriculado sem contrato (RO02)      A06 turma abaixo do quórum (RE06)
+--   A02 presença de aluno bloqueado (RE05)         A07 parcela vencida ainda PENDENTE (RE05)
+--   A03 presença durante trancamento (RE02)        A08 cancelamento sem multa (RO08)
+--   A04 aula com professor de outra mod. (RE03)    A09 convertido sem aluno (RO06)
+--   A05 sem atestado; menor sem resp. (RE08, RE07) A10 desconto de balcão (RO01)
 --
 -- ORDEM DOS INSERTS: primeiro as tabelas "pai" (sem FK), depois as que dependem delas.
 -- Os IDs são informados explicitamente para que as referências entre tabelas fiquem claras.
 -- =====================================================================================
 
 -- -------------------------------------------------------------------------------------
--- 4.1 MODALIDADE (6) [RF03, RE02, RO06]
+-- 4.1 MODALIDADE (6) [RF03, RE06, RO05]
 -- As 6 modalidades ativas da academia, com o quórum de referência informado pelo gestor.
--- Boxe é a única sem sistema de faixas (usa análise técnica, RO06).
+-- Boxe é a única sem sistema de faixas (usa análise técnica, RO05).
 -- -------------------------------------------------------------------------------------
 INSERT INTO MODALIDADE (ID_MODALIDADE, NM_MODALIDADE, QT_MINIMA_REFERENCIA, TP_SITUACAO_MODALIDADE, IN_POSSUI_SISTEMA_FAIXAS, DT_INICIO_AULAS) VALUES
     (1, 'Muay Thai', 4, 'ATIVA', TRUE, '2018-03-05'),
@@ -922,7 +945,7 @@ INSERT INTO MODALIDADE (ID_MODALIDADE, NM_MODALIDADE, QT_MINIMA_REFERENCIA, TP_S
     (6, 'No-Gi', 8, 'ATIVA', TRUE, '2023-07-03');
 
 -- -------------------------------------------------------------------------------------
--- 4.2 PROFESSOR (6) e tabelas de apoio [RF02, RE05, RO07]
+-- 4.2 PROFESSOR (6) e tabelas de apoio [RF02, RE03, RO09]
 -- O professor 1 representa o gestor (CEO), que também dá as aulas de Muay Thai;
 -- os outros 5 são prestadores de serviço. Todos recebem o mesmo valor por aula.
 -- Nomes, CPFs, telefones e endereços são fictícios.
@@ -996,8 +1019,8 @@ INSERT INTO REGISTRO_QUALIFICACOES (DS_REGISTRO_QUALIFICACOES, ID_PROFESSOR) VAL
     ('Medalhista em campeonatos regionais de grappling (2021-2024)', 6);
 
 -- -------------------------------------------------------------------------------------
--- 4.3 RESPONSAVEL (11) [RF01, RE03, RO01]
--- Responsáveis legais dos alunos menores de 18 anos (RE03).
+-- 4.3 RESPONSAVEL (11) [RF01, RE07, RO01]
+-- Responsáveis legais dos alunos menores de 18 anos (RE07).
 -- No Plano Família, o responsável pelo menor é um familiar que também é aluno, por isso o CPF
 -- se repete em RESPONSAVEL e em ALUNO. Cada familiar tem o próprio CONTRATO.
 -- -------------------------------------------------------------------------------------
@@ -1015,7 +1038,7 @@ INSERT INTO RESPONSAVEL (ID_RESPONSAVEL, CPF, NM_RESPONSAVEL, NR_TELEFONE, DS_PA
     (11, '75510711460', 'Vanessa Rodrigues Cavalcanti', '11960555531', 'Mãe');
 
 -- -------------------------------------------------------------------------------------
--- 4.4 INTERESSADO (24) [RF01, RO03]
+-- 4.4 INTERESSADO (24) [RF01, RO06]
 -- Aulas experimentais de set/2026 a nov/2026 (cerca de 12 por mês, dentro da faixa de 8 a 16).
 -- CONVERTIDO = virou aluno | ENCERRADO = desistiu | PENDENTE = ainda vai decidir ou a aula já está agendada.
 -- Cenário de auditoria: o interessado 19 está CONVERTIDO, mas não tem aluno vinculado (A09).
@@ -1047,108 +1070,111 @@ INSERT INTO INTERESSADO (ID_INTERESSADO, ID_MODALIDADE, NM_INTERESSADO, TP_STATU
     (24, 2, 'Leonardo Farias Dias', 'PENDENTE', '11998604055', '2026-11-06', '18:00:00');
 
 -- -------------------------------------------------------------------------------------
--- 4.5 ALUNO (92) e tabelas de apoio [RF01, RE03, RE06, RNF02]
+-- 4.5 ALUNO (92) e tabelas de apoio [RF01, RE07, RE08, RE04, RE09, RNF02]
 -- Situação: 83 ATIVO, 6 INATIVO (contrato cancelado), 3 TRANCADO.
 -- 14 alunos são menores de idade e têm responsável; 8 deles estão no Plano Família, cada um com o seu contrato.
 -- 10 alunos vieram da aula experimental (ID_INTERESSADO preenchido).
--- Cenários de auditoria: aluno 53 é menor e ainda não entregou o atestado (A05);
+-- Atestado de aptidão física (RE08): todos os alunos entregaram, alguns dias antes da matrícula,
+-- exceto 3 casos propositais, que a auditoria A05 deve listar: o aluno 53 (menor, matriculado em
+-- 25/01/2026) e os alunos 90 e 92 (adultos, matriculados em 15/10 e 28/10).
+-- Cenários de auditoria: alunos 53, 90 e 92 sem atestado (A05);
 -- aluno 92 foi matriculado em 28/10 sem contrato (A01).
 -- Os dependentes usam o telefone e o e-mail do responsável: a PK composta (valor + ID_ALUNO)
 -- permite o mesmo telefone em alunos diferentes, mas não repetido no mesmo aluno.
 -- -------------------------------------------------------------------------------------
 INSERT INTO ALUNO (ID_ALUNO, ID_RESPONSAVEL, ID_INTERESSADO, DT_AUTORIZACAO_IMAGEM, CPF, NM_COMPLETO, DT_NASCIMENTO, DS_HISTORICO_TREINO, IN_ACEITE_USO_IMAGEM, TP_STATUS_ALUNO, DT_ENTREGA_ATESTADO, NR_CEP, NR_LOGRADOURO, DS_RUA, NM_BAIRRO) VALUES
-    (1, NULL, NULL, '2024-04-03', '20742934398', 'Beatriz Barbosa Ramos', '2001-09-26', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', NULL, '03284345', '609', 'Rua Manacá', 'Ermelino Matarazzo'),
-    (2, NULL, NULL, '2024-06-07', '77697705354', 'Larissa Freitas Brandão', '1976-02-25', 'Ex-praticante de karatê (faixa verde).', TRUE, 'ATIVO', NULL, '03180113', '161', 'Rua Manacá', 'Itaquera'),
-    (3, NULL, NULL, '2024-07-12', '71832122578', 'Ricardo Silva Moura', '1972-09-10', 'Fez capoeira na escola por 3 anos.', FALSE, 'ATIVO', NULL, '08621794', '698', 'Avenida dos Jasmins', 'Vila Formosa'),
-    (4, NULL, NULL, '2024-08-05', '67759336244', 'Renato Lopes Mendes', '1990-07-02', 'Nunca treinou; procurou a academia para defesa pessoal.', FALSE, 'ATIVO', NULL, '03099660', '1131', 'Rua Quaresmeira', 'Aricanduva'),
-    (5, NULL, NULL, '2024-10-04', '90322409849', 'Gabriela Santos Carvalho', '1988-10-09', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'ATIVO', NULL, '08074437', '499', 'Rua Manacá', 'Vila Matilde'),
-    (6, NULL, NULL, '2024-10-25', '56691475866', 'Daniela Correia Costa', '2002-04-22', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', FALSE, 'ATIVO', NULL, '08395582', '776', 'Rua Beija-flor', 'Penha'),
-    (7, NULL, NULL, '2024-11-12', '89890624959', 'Murilo Barbosa Costa', '1994-08-30', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', NULL, '03401683', '988', 'Rua das Violetas', 'Cidade Patriarca'),
-    (8, NULL, NULL, '2024-11-24', '65743830410', 'Lucas Ferreira Cavalcanti', '1989-06-26', 'Jogou futebol amador por 10 anos; iniciante em lutas.', FALSE, 'ATIVO', NULL, '08778837', '330', 'Rua Jequitibá', 'Guaianases'),
-    (9, NULL, NULL, '2024-11-28', '83043033911', 'Vinícius Lopes Almeida', '1974-09-18', 'Faixa azul de Jiu-Jitsu em outra academia; parado há 2 anos.', TRUE, 'ATIVO', NULL, '08232031', '116', 'Rua Beija-flor', 'Água Rasa'),
-    (10, NULL, NULL, '2024-12-16', '99538026517', 'Murilo Vieira Ramos', '1992-03-17', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', NULL, '08631085', '211', 'Rua Beija-flor', 'Cidade Patriarca'),
-    (11, NULL, NULL, '2024-12-20', '21576968933', 'Larissa Cardoso Queiroz', '1999-06-14', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', NULL, '03140389', '892', 'Travessa das Orquídeas', 'Água Rasa'),
-    (12, NULL, NULL, '2024-12-22', '49813312204', 'Camila Lima Vieira', '1992-05-01', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'ATIVO', NULL, '08804282', '1229', 'Avenida Cerejeira', 'Aricanduva'),
-    (13, NULL, NULL, '2025-01-02', '94879025344', 'Bruno Cardoso Moura', '1993-02-24', 'Corredor de rua (provas de 10 km); iniciante em lutas.', TRUE, 'ATIVO', NULL, '08638769', '386', 'Rua dos Cravos', 'Vila Carrão'),
-    (14, NULL, NULL, '2025-01-02', '19252676324', 'Carolina Souza Costa', '1978-07-03', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', NULL, '03272120', '103', 'Rua Sete Copas', 'Vila Formosa'),
-    (15, NULL, NULL, '2025-01-07', '14357742595', 'Gabriela Costa Queiroz', '1982-03-05', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'TRANCADO', NULL, '08171580', '1794', 'Rua Tangará', 'Itaquera'),
-    (16, NULL, NULL, '2025-02-19', '05832381199', 'Vanessa Macedo Cardoso', '1992-09-18', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'TRANCADO', NULL, '03874942', '1620', 'Rua Tangará', 'Aricanduva'),
-    (17, NULL, NULL, '2025-02-21', '07250193934', 'Sérgio Batista Mendes', '1999-01-18', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', NULL, '08160293', '1902', 'Rua Aroeira', 'Itaquera'),
-    (18, NULL, NULL, '2025-03-10', '32218340669', 'Leonardo Queiroz Gomes', '1983-10-23', 'Ex-praticante de karatê (faixa verde).', TRUE, 'ATIVO', NULL, '03476245', '576', 'Rua das Acácias', 'Artur Alvim'),
+    (1, NULL, NULL, '2024-04-03', '20742934398', 'Beatriz Barbosa Ramos', '2001-09-26', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', '2024-03-27', '03284345', '609', 'Rua Manacá', 'Ermelino Matarazzo'),
+    (2, NULL, NULL, '2024-06-07', '77697705354', 'Larissa Freitas Brandão', '1976-02-25', 'Ex-praticante de karatê (faixa verde).', TRUE, 'ATIVO', '2024-06-05', '03180113', '161', 'Rua Manacá', 'Itaquera'),
+    (3, NULL, NULL, '2024-07-12', '71832122578', 'Ricardo Silva Moura', '1972-09-10', 'Fez capoeira na escola por 3 anos.', FALSE, 'ATIVO', '2024-07-03', '08621794', '698', 'Avenida dos Jasmins', 'Vila Formosa'),
+    (4, NULL, NULL, '2024-08-05', '67759336244', 'Renato Lopes Mendes', '1990-07-02', 'Nunca treinou; procurou a academia para defesa pessoal.', FALSE, 'ATIVO', '2024-08-01', '03099660', '1131', 'Rua Quaresmeira', 'Aricanduva'),
+    (5, NULL, NULL, '2024-10-04', '90322409849', 'Gabriela Santos Carvalho', '1988-10-09', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'ATIVO', '2024-09-23', '08074437', '499', 'Rua Manacá', 'Vila Matilde'),
+    (6, NULL, NULL, '2024-10-25', '56691475866', 'Daniela Correia Costa', '2002-04-22', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', FALSE, 'ATIVO', '2024-10-19', '08395582', '776', 'Rua Beija-flor', 'Penha'),
+    (7, NULL, NULL, '2024-11-12', '89890624959', 'Murilo Barbosa Costa', '1994-08-30', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', '2024-11-11', '03401683', '988', 'Rua das Violetas', 'Cidade Patriarca'),
+    (8, NULL, NULL, '2024-11-24', '65743830410', 'Lucas Ferreira Cavalcanti', '1989-06-26', 'Jogou futebol amador por 10 anos; iniciante em lutas.', FALSE, 'ATIVO', '2024-11-16', '08778837', '330', 'Rua Jequitibá', 'Guaianases'),
+    (9, NULL, NULL, '2024-11-28', '83043033911', 'Vinícius Lopes Almeida', '1974-09-18', 'Faixa azul de Jiu-Jitsu em outra academia; parado há 2 anos.', TRUE, 'ATIVO', '2024-11-25', '08232031', '116', 'Rua Beija-flor', 'Água Rasa'),
+    (10, NULL, NULL, '2024-12-16', '99538026517', 'Murilo Vieira Ramos', '1992-03-17', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', '2024-12-06', '08631085', '211', 'Rua Beija-flor', 'Cidade Patriarca'),
+    (11, NULL, NULL, '2024-12-20', '21576968933', 'Larissa Cardoso Queiroz', '1999-06-14', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', '2024-12-15', '03140389', '892', 'Travessa das Orquídeas', 'Água Rasa'),
+    (12, NULL, NULL, '2024-12-22', '49813312204', 'Camila Lima Vieira', '1992-05-01', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'ATIVO', '2024-12-22', '08804282', '1229', 'Avenida Cerejeira', 'Aricanduva'),
+    (13, NULL, NULL, '2025-01-02', '94879025344', 'Bruno Cardoso Moura', '1993-02-24', 'Corredor de rua (provas de 10 km); iniciante em lutas.', TRUE, 'ATIVO', '2024-12-26', '08638769', '386', 'Rua dos Cravos', 'Vila Carrão'),
+    (14, NULL, NULL, '2025-01-02', '19252676324', 'Carolina Souza Costa', '1978-07-03', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', '2024-12-31', '03272120', '103', 'Rua Sete Copas', 'Vila Formosa'),
+    (15, NULL, NULL, '2025-01-07', '14357742595', 'Gabriela Costa Queiroz', '1982-03-05', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'TRANCADO', '2024-12-29', '08171580', '1794', 'Rua Tangará', 'Itaquera'),
+    (16, NULL, NULL, '2025-02-19', '05832381199', 'Vanessa Macedo Cardoso', '1992-09-18', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'TRANCADO', '2025-02-15', '03874942', '1620', 'Rua Tangará', 'Aricanduva'),
+    (17, NULL, NULL, '2025-02-21', '07250193934', 'Sérgio Batista Mendes', '1999-01-18', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', '2025-02-10', '08160293', '1902', 'Rua Aroeira', 'Itaquera'),
+    (18, NULL, NULL, '2025-03-10', '32218340669', 'Leonardo Queiroz Gomes', '1983-10-23', 'Ex-praticante de karatê (faixa verde).', TRUE, 'ATIVO', '2025-03-04', '03476245', '576', 'Rua das Acácias', 'Artur Alvim'),
     (19, 1, NULL, '2025-03-10', '82432854564', 'Benício Vieira Gomes', '2017-03-20', 'Fez natação por 1 ano.', TRUE, 'ATIVO', '2025-03-05', '03978393', '585', 'Avenida Cerejeira', 'Guaianases'),
     (20, 1, NULL, '2025-03-10', '58293739055', 'Valentina Cardoso Gomes', '2012-10-16', 'Joga futsal na escola.', TRUE, 'ATIVO', '2025-03-05', '03432813', '1502', 'Rua Beija-flor', 'Água Rasa'),
-    (21, NULL, NULL, '2025-03-13', '29006094815', 'Rodrigo Correia Campos', '1977-11-13', 'Jogou futebol amador por 10 anos; iniciante em lutas.', FALSE, 'ATIVO', NULL, '08536473', '928', 'Travessa das Orquídeas', 'São Mateus'),
-    (22, NULL, NULL, '2025-04-11', '62139568619', 'Leonardo Souza Nascimento', '1996-09-07', 'Nunca praticou artes marciais; sedentário há 3 anos.', FALSE, 'ATIVO', NULL, '08896891', '784', 'Rua das Violetas', 'Vila Formosa'),
-    (23, NULL, NULL, '2025-04-12', '75946200856', 'Raquel Santos Queiroz', '2001-11-14', 'Corredor de rua (provas de 10 km); iniciante em lutas.', TRUE, 'ATIVO', NULL, '08261040', '656', 'Rua das Camélias', 'Cangaíba'),
+    (21, NULL, NULL, '2025-03-13', '29006094815', 'Rodrigo Correia Campos', '1977-11-13', 'Jogou futebol amador por 10 anos; iniciante em lutas.', FALSE, 'ATIVO', '2025-03-10', '08536473', '928', 'Travessa das Orquídeas', 'São Mateus'),
+    (22, NULL, NULL, '2025-04-11', '62139568619', 'Leonardo Souza Nascimento', '1996-09-07', 'Nunca praticou artes marciais; sedentário há 3 anos.', FALSE, 'ATIVO', '2025-04-01', '08896891', '784', 'Rua das Violetas', 'Vila Formosa'),
+    (23, NULL, NULL, '2025-04-12', '75946200856', 'Raquel Santos Queiroz', '2001-11-14', 'Corredor de rua (provas de 10 km); iniciante em lutas.', TRUE, 'ATIVO', '2025-04-07', '08261040', '656', 'Rua das Camélias', 'Cangaíba'),
     (24, 2, NULL, '2025-04-14', '97979078018', 'Eduardo Batista Pereira', '2009-03-30', 'Nunca treinou; procurou a academia para defesa pessoal.', FALSE, 'ATIVO', '2025-04-12', '08193521', '174', 'Avenida dos Jasmins', 'Ermelino Matarazzo'),
-    (25, NULL, NULL, '2025-04-16', '36281572472', 'Jonas Ramos Campos', '2003-05-18', 'Jogou futebol amador por 10 anos; iniciante em lutas.', FALSE, 'ATIVO', NULL, '03206961', '1498', 'Rua Flamboyant', 'Penha'),
+    (25, NULL, NULL, '2025-04-16', '36281572472', 'Jonas Ramos Campos', '2003-05-18', 'Jogou futebol amador por 10 anos; iniciante em lutas.', FALSE, 'ATIVO', '2025-04-09', '03206961', '1498', 'Rua Flamboyant', 'Penha'),
     (26, 3, NULL, '2025-04-30', '95071296745', 'Bernardo Queiroz Rocha', '2014-05-04', 'Nunca praticou esportes.', FALSE, 'ATIVO', '2025-04-24', '08231001', '213', 'Rua Quaresmeira', 'Tatuapé'),
-    (27, NULL, NULL, '2025-05-26', '53222719855', 'Jéssica Nunes Moura', '1983-07-13', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', NULL, '03639796', '667', 'Avenida dos Jasmins', 'Penha'),
-    (28, NULL, NULL, '2025-06-02', '40109147169', 'Ricardo Macedo Pinto', '1980-12-13', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'INATIVO', NULL, '03925842', '525', 'Avenida dos Jasmins', 'Belém'),
-    (29, NULL, NULL, '2025-06-14', '09148600678', 'Vanessa Mendes Ramos', '1975-10-14', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', NULL, '08321884', '1387', 'Rua Aroeira', 'Vila Formosa'),
-    (30, NULL, NULL, '2025-06-21', '19880436819', 'Sabrina Lopes Oliveira', '1983-10-29', 'Pratica musculação há 4 anos; nunca treinou luta.', TRUE, 'ATIVO', NULL, '08454309', '1402', 'Rua das Violetas', 'Vila Matilde'),
-    (31, NULL, NULL, '2025-06-23', '57237053368', 'Rafael Barbosa Silva', '1985-04-07', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', NULL, '03096911', '1313', 'Rua Quaresmeira', 'São Mateus'),
-    (32, NULL, NULL, '2025-07-13', '63210126128', 'Thiago Siqueira Correia', '1979-12-09', 'Nunca treinou; procurou a academia para defesa pessoal.', TRUE, 'ATIVO', NULL, '03044756', '56', 'Rua Quaresmeira', 'Artur Alvim'),
-    (33, NULL, NULL, '2025-07-22', '11859434457', 'André Araújo Nunes', '1979-04-27', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', NULL, '03492733', '541', 'Rua Tangará', 'Tatuapé'),
-    (34, NULL, NULL, '2025-07-22', '84078500787', 'Ana Ribeiro Araújo', '1992-09-17', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', NULL, '03772820', '1863', 'Rua Aroeira', 'Cangaíba'),
-    (35, NULL, NULL, '2025-07-28', '90985631482', 'Matheus Farias Lima', '2005-02-24', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', NULL, '08907684', '1394', 'Rua das Camélias', 'Aricanduva'),
-    (36, NULL, NULL, '2025-08-04', '00552788823', 'Vitor Cavalcanti Farias', '1984-01-13', 'Corredor de rua (provas de 10 km); iniciante em lutas.', TRUE, 'ATIVO', NULL, '08822463', '619', 'Travessa das Orquídeas', 'Penha'),
+    (27, NULL, NULL, '2025-05-26', '53222719855', 'Jéssica Nunes Moura', '1983-07-13', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', '2025-05-17', '03639796', '667', 'Avenida dos Jasmins', 'Penha'),
+    (28, NULL, NULL, '2025-06-02', '40109147169', 'Ricardo Macedo Pinto', '1980-12-13', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'INATIVO', '2025-05-29', '03925842', '525', 'Avenida dos Jasmins', 'Belém'),
+    (29, NULL, NULL, '2025-06-14', '09148600678', 'Vanessa Mendes Ramos', '1975-10-14', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', '2025-06-03', '08321884', '1387', 'Rua Aroeira', 'Vila Formosa'),
+    (30, NULL, NULL, '2025-06-21', '19880436819', 'Sabrina Lopes Oliveira', '1983-10-29', 'Pratica musculação há 4 anos; nunca treinou luta.', TRUE, 'ATIVO', '2025-06-15', '08454309', '1402', 'Rua das Violetas', 'Vila Matilde'),
+    (31, NULL, NULL, '2025-06-23', '57237053368', 'Rafael Barbosa Silva', '1985-04-07', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', '2025-06-22', '03096911', '1313', 'Rua Quaresmeira', 'São Mateus'),
+    (32, NULL, NULL, '2025-07-13', '63210126128', 'Thiago Siqueira Correia', '1979-12-09', 'Nunca treinou; procurou a academia para defesa pessoal.', TRUE, 'ATIVO', '2025-07-05', '03044756', '56', 'Rua Quaresmeira', 'Artur Alvim'),
+    (33, NULL, NULL, '2025-07-22', '11859434457', 'André Araújo Nunes', '1979-04-27', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', '2025-07-19', '03492733', '541', 'Rua Tangará', 'Tatuapé'),
+    (34, NULL, NULL, '2025-07-22', '84078500787', 'Ana Ribeiro Araújo', '1992-09-17', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', '2025-07-12', '03772820', '1863', 'Rua Aroeira', 'Cangaíba'),
+    (35, NULL, NULL, '2025-07-28', '90985631482', 'Matheus Farias Lima', '2005-02-24', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', '2025-07-23', '08907684', '1394', 'Rua das Camélias', 'Aricanduva'),
+    (36, NULL, NULL, '2025-08-04', '00552788823', 'Vitor Cavalcanti Farias', '1984-01-13', 'Corredor de rua (provas de 10 km); iniciante em lutas.', TRUE, 'ATIVO', '2025-08-04', '08822463', '619', 'Travessa das Orquídeas', 'Penha'),
     (37, 4, NULL, '2025-08-04', '62201523499', 'Lorenzo Teixeira Farias', '2015-05-16', 'Joga futsal na escola.', TRUE, 'ATIVO', '2025-08-03', '08215779', '607', 'Rua Flamboyant', 'Penha'),
     (38, 4, NULL, '2025-08-04', '15430338779', 'Miguel Cavalcanti Farias', '2013-10-13', 'Primeira atividade esportiva.', TRUE, 'ATIVO', '2025-08-02', '03192858', '1282', 'Rua Flamboyant', 'Penha'),
-    (39, NULL, NULL, '2025-08-16', '52280478891', 'Cláudia Moreira Ramos', '2003-03-31', 'Treinou Muay Thai por 6 meses em 2021.', TRUE, 'ATIVO', NULL, '08334010', '61', 'Rua das Acácias', 'Vila Matilde'),
-    (40, NULL, NULL, '2025-09-01', '63243278213', 'Hugo Cavalcanti Barbosa', '1974-11-06', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', NULL, '03801196', '1166', 'Rua Flamboyant', 'Água Rasa'),
-    (41, NULL, NULL, '2025-09-18', '65886174949', 'Renato Teixeira Tavares', '1976-01-22', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', NULL, '03291422', '505', 'Rua Aroeira', 'Tatuapé'),
-    (42, NULL, NULL, '2025-10-10', '95671357822', 'Gabriel Nunes Gomes', '2003-01-17', 'Ex-praticante de karatê (faixa verde).', TRUE, 'ATIVO', NULL, '08878690', '227', 'Rua Sete Copas', 'Itaquera'),
-    (43, NULL, NULL, '2025-10-12', '69252669706', 'Sabrina Macedo Pinto', '2005-11-30', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'ATIVO', NULL, '08607924', '1881', 'Rua Manacá', 'Ermelino Matarazzo'),
-    (44, NULL, NULL, '2025-10-23', '56663382128', 'Larissa Queiroz Lopes', '1978-11-07', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', FALSE, 'ATIVO', NULL, '03834950', '1495', 'Rua Pau-Brasil', 'Vila Esperança'),
-    (45, NULL, NULL, '2025-11-03', '17368456956', 'Camila Almeida Freitas', '1989-03-18', 'Nunca treinou; procurou a academia para defesa pessoal.', TRUE, 'INATIVO', NULL, '08689054', '1342', 'Rua Beija-flor', 'Penha'),
-    (46, NULL, NULL, '2025-12-05', '35670349312', 'Samuel Rocha Oliveira', '1973-07-31', 'Fez capoeira na escola por 3 anos.', FALSE, 'ATIVO', NULL, '03381173', '1241', 'Rua Ipê Roxo', 'Artur Alvim'),
-    (47, NULL, NULL, '2025-12-10', '14183037366', 'Isabela Almeida Vieira', '2004-04-10', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', NULL, '08879837', '1815', 'Rua Pau-Brasil', 'Água Rasa'),
-    (48, NULL, NULL, '2025-12-16', '73316445888', 'Elaine Monteiro Queiroz', '1977-04-10', 'Treinou Muay Thai por 6 meses em 2021.', TRUE, 'ATIVO', NULL, '03750030', '1707', 'Rua Jequitibá', 'Vila Esperança'),
-    (49, NULL, NULL, '2025-12-30', '43274914905', 'Carolina Vieira Pereira', '1991-05-16', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', NULL, '03522033', '1826', 'Avenida Cerejeira', 'Belém'),
+    (39, NULL, NULL, '2025-08-16', '52280478891', 'Cláudia Moreira Ramos', '2003-03-31', 'Treinou Muay Thai por 6 meses em 2021.', TRUE, 'ATIVO', '2025-08-07', '08334010', '61', 'Rua das Acácias', 'Vila Matilde'),
+    (40, NULL, NULL, '2025-09-01', '63243278213', 'Hugo Cavalcanti Barbosa', '1974-11-06', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', '2025-08-28', '03801196', '1166', 'Rua Flamboyant', 'Água Rasa'),
+    (41, NULL, NULL, '2025-09-18', '65886174949', 'Renato Teixeira Tavares', '1976-01-22', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', '2025-09-07', '03291422', '505', 'Rua Aroeira', 'Tatuapé'),
+    (42, NULL, NULL, '2025-10-10', '95671357822', 'Gabriel Nunes Gomes', '2003-01-17', 'Ex-praticante de karatê (faixa verde).', TRUE, 'ATIVO', '2025-10-04', '08878690', '227', 'Rua Sete Copas', 'Itaquera'),
+    (43, NULL, NULL, '2025-10-12', '69252669706', 'Sabrina Macedo Pinto', '2005-11-30', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'ATIVO', '2025-10-11', '08607924', '1881', 'Rua Manacá', 'Ermelino Matarazzo'),
+    (44, NULL, NULL, '2025-10-23', '56663382128', 'Larissa Queiroz Lopes', '1978-11-07', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', FALSE, 'ATIVO', '2025-10-15', '03834950', '1495', 'Rua Pau-Brasil', 'Vila Esperança'),
+    (45, NULL, NULL, '2025-11-03', '17368456956', 'Camila Almeida Freitas', '1989-03-18', 'Nunca treinou; procurou a academia para defesa pessoal.', TRUE, 'INATIVO', '2025-10-31', '08689054', '1342', 'Rua Beija-flor', 'Penha'),
+    (46, NULL, NULL, '2025-12-05', '35670349312', 'Samuel Rocha Oliveira', '1973-07-31', 'Fez capoeira na escola por 3 anos.', FALSE, 'ATIVO', '2025-11-25', '03381173', '1241', 'Rua Ipê Roxo', 'Artur Alvim'),
+    (47, NULL, NULL, '2025-12-10', '14183037366', 'Isabela Almeida Vieira', '2004-04-10', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', '2025-12-05', '08879837', '1815', 'Rua Pau-Brasil', 'Água Rasa'),
+    (48, NULL, NULL, '2025-12-16', '73316445888', 'Elaine Monteiro Queiroz', '1977-04-10', 'Treinou Muay Thai por 6 meses em 2021.', TRUE, 'ATIVO', '2025-12-16', '03750030', '1707', 'Rua Jequitibá', 'Vila Esperança'),
+    (49, NULL, NULL, '2025-12-30', '43274914905', 'Carolina Vieira Pereira', '1991-05-16', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', '2025-12-23', '03522033', '1826', 'Avenida Cerejeira', 'Belém'),
     (50, 5, NULL, '2026-01-02', '15968244668', 'Raquel Moura Correia', '2012-11-27', 'Ex-praticante de karatê (faixa verde).', FALSE, 'ATIVO', '2026-01-02', '03590556', '1100', 'Rua Pau-Brasil', 'Artur Alvim'),
-    (51, NULL, NULL, '2026-01-05', '88713017126', 'Juliana Oliveira Ferreira', '1992-07-22', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'INATIVO', NULL, '03835708', '579', 'Rua Tangará', 'Itaquera'),
-    (52, NULL, NULL, '2026-01-05', '36671601625', 'Priscila Barbosa Macedo', '1982-10-03', 'Pratica musculação há 4 anos; nunca treinou luta.', FALSE, 'ATIVO', NULL, '03277310', '1905', 'Rua Sabiá', 'Vila Matilde'),
+    (51, NULL, NULL, '2026-01-05', '88713017126', 'Juliana Oliveira Ferreira', '1992-07-22', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'INATIVO', '2025-12-27', '03835708', '579', 'Rua Tangará', 'Itaquera'),
+    (52, NULL, NULL, '2026-01-05', '36671601625', 'Priscila Barbosa Macedo', '1982-10-03', 'Pratica musculação há 4 anos; nunca treinou luta.', FALSE, 'ATIVO', '2026-01-01', '03277310', '1905', 'Rua Sabiá', 'Vila Matilde'),
     (53, 6, NULL, '2026-01-25', '73696066399', 'Patrícia Dias Macedo', '2013-06-06', 'Jogou futebol amador por 10 anos; iniciante em lutas.', FALSE, 'ATIVO', NULL, '03078966', '431', 'Rua Quaresmeira', 'Penha'),
-    (54, NULL, NULL, '2026-02-02', '01146676432', 'Débora Nascimento Macedo', '1985-06-26', 'Pratica natação; quer melhorar o condicionamento.', FALSE, 'ATIVO', NULL, '03844533', '628', 'Rua Aroeira', 'Tatuapé'),
+    (54, NULL, NULL, '2026-02-02', '01146676432', 'Débora Nascimento Macedo', '1985-06-26', 'Pratica natação; quer melhorar o condicionamento.', FALSE, 'ATIVO', '2026-01-27', '03844533', '628', 'Rua Aroeira', 'Tatuapé'),
     (55, 7, NULL, '2026-02-02', '08024920854', 'Théo Ribeiro Macedo', '2011-11-27', 'Nunca praticou esportes.', FALSE, 'ATIVO', '2026-01-25', '03358809', '1008', 'Rua Jequitibá', 'Tatuapé'),
     (56, 7, NULL, '2026-02-02', '91422291069', 'Sofia Gomes Macedo', '2014-12-14', 'Fez balé por 2 anos.', FALSE, 'ATIVO', '2026-01-28', '08699798', '65', 'Rua Sete Copas', 'São Mateus'),
-    (57, NULL, NULL, '2026-02-08', '23124360883', 'Patrícia Ribeiro Costa', '1997-12-18', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', NULL, '08276054', '1845', 'Rua Pau-Brasil', 'Cidade Patriarca'),
-    (58, NULL, NULL, '2026-02-09', '88808225489', 'Daniela Monteiro Ferreira', '1988-07-23', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', NULL, '08188023', '1969', 'Rua Flamboyant', 'Belém'),
-    (59, NULL, NULL, '2026-02-10', '01259506553', 'Letícia Cardoso Santos', '1999-08-23', 'Pratica musculação há 4 anos; nunca treinou luta.', FALSE, 'ATIVO', NULL, '03060507', '1442', 'Rua Sabiá', 'Cidade Patriarca'),
-    (60, NULL, NULL, '2026-03-09', '71463007478', 'Yasmin Mendes Oliveira', '1976-09-07', 'Pratica musculação há 4 anos; nunca treinou luta.', TRUE, 'INATIVO', NULL, '03058800', '304', 'Rua Manacá', 'Vila Carrão');
+    (57, NULL, NULL, '2026-02-08', '23124360883', 'Patrícia Ribeiro Costa', '1997-12-18', 'Pratica natação; quer melhorar o condicionamento.', TRUE, 'ATIVO', '2026-02-05', '08276054', '1845', 'Rua Pau-Brasil', 'Cidade Patriarca'),
+    (58, NULL, NULL, '2026-02-09', '88808225489', 'Daniela Monteiro Ferreira', '1988-07-23', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', '2026-01-30', '08188023', '1969', 'Rua Flamboyant', 'Belém'),
+    (59, NULL, NULL, '2026-02-10', '01259506553', 'Letícia Cardoso Santos', '1999-08-23', 'Pratica musculação há 4 anos; nunca treinou luta.', FALSE, 'ATIVO', '2026-02-05', '03060507', '1442', 'Rua Sabiá', 'Cidade Patriarca'),
+    (60, NULL, NULL, '2026-03-09', '71463007478', 'Yasmin Mendes Oliveira', '1976-09-07', 'Pratica musculação há 4 anos; nunca treinou luta.', TRUE, 'INATIVO', '2026-03-09', '03058800', '304', 'Rua Manacá', 'Vila Carrão');
 INSERT INTO ALUNO (ID_ALUNO, ID_RESPONSAVEL, ID_INTERESSADO, DT_AUTORIZACAO_IMAGEM, CPF, NM_COMPLETO, DT_NASCIMENTO, DS_HISTORICO_TREINO, IN_ACEITE_USO_IMAGEM, TP_STATUS_ALUNO, DT_ENTREGA_ATESTADO, NR_CEP, NR_LOGRADOURO, DS_RUA, NM_BAIRRO) VALUES
-    (61, NULL, NULL, '2026-03-21', '48996801757', 'Yasmin Vieira Monteiro', '2000-04-22', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', NULL, '03243180', '1201', 'Rua Ipê Roxo', 'Belém'),
-    (62, NULL, NULL, '2026-03-28', '89217740555', 'Hugo Vieira Lima', '2002-06-08', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', NULL, '08091414', '55', 'Rua Ipê Roxo', 'Guaianases'),
-    (63, NULL, NULL, '2026-03-31', '29406570654', 'Otávio Dias Ribeiro', '1991-06-14', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', NULL, '03823026', '738', 'Avenida das Hortênsias', 'Cangaíba'),
-    (64, NULL, NULL, '2026-04-08', '30915308854', 'Isabela Souza Martins', '1984-12-11', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'TRANCADO', NULL, '03072518', '251', 'Rua dos Cravos', 'Vila Formosa'),
+    (61, NULL, NULL, '2026-03-21', '48996801757', 'Yasmin Vieira Monteiro', '2000-04-22', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', '2026-03-14', '03243180', '1201', 'Rua Ipê Roxo', 'Belém'),
+    (62, NULL, NULL, '2026-03-28', '89217740555', 'Hugo Vieira Lima', '2002-06-08', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', '2026-03-26', '08091414', '55', 'Rua Ipê Roxo', 'Guaianases'),
+    (63, NULL, NULL, '2026-03-31', '29406570654', 'Otávio Dias Ribeiro', '1991-06-14', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', '2026-03-22', '03823026', '738', 'Avenida das Hortênsias', 'Cangaíba'),
+    (64, NULL, NULL, '2026-04-08', '30915308854', 'Isabela Souza Martins', '1984-12-11', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'TRANCADO', '2026-04-04', '03072518', '251', 'Rua dos Cravos', 'Vila Formosa'),
     (65, 8, NULL, '2026-04-09', '63487301510', 'Manuela Almeida Nascimento', '2014-06-22', 'Fez natação por 1 ano.', TRUE, 'ATIVO', '2026-04-08', '08968400', '462', 'Rua Jequitibá', 'Cangaíba'),
-    (66, NULL, NULL, '2026-04-11', '54868236472', 'Marcelo Nascimento Rodrigues', '1994-06-10', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', NULL, '03901455', '1643', 'Rua Tangará', 'Aricanduva'),
-    (67, NULL, NULL, '2026-04-16', '00862569492', 'Aline Lopes Moreira', '2005-07-26', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'ATIVO', NULL, '03835723', '1891', 'Rua Sabiá', 'Vila Esperança'),
-    (68, NULL, NULL, '2026-04-21', '49605189397', 'Otávio Batista Teixeira', '1973-04-03', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', NULL, '03400072', '1612', 'Rua Sabiá', 'Vila Formosa'),
-    (69, NULL, NULL, '2026-04-26', '31836802439', 'Bianca Costa Machado', '1994-07-13', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', NULL, '08413620', '1256', 'Rua dos Cravos', 'Itaquera'),
-    (70, NULL, NULL, '2026-05-04', '51898758960', 'Leonardo Oliveira Freitas', '1981-09-20', 'Pratica natação; quer melhorar o condicionamento.', FALSE, 'INATIVO', NULL, '08624800', '30', 'Travessa das Orquídeas', 'Ermelino Matarazzo'),
-    (71, NULL, NULL, '2026-05-11', '90143028568', 'Viviane Correia Moura', '1978-08-03', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', NULL, '03311218', '895', 'Travessa das Orquídeas', 'Cangaíba'),
+    (66, NULL, NULL, '2026-04-11', '54868236472', 'Marcelo Nascimento Rodrigues', '1994-06-10', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', '2026-04-05', '03901455', '1643', 'Rua Tangará', 'Aricanduva'),
+    (67, NULL, NULL, '2026-04-16', '00862569492', 'Aline Lopes Moreira', '2005-07-26', 'Jogou futebol amador por 10 anos; iniciante em lutas.', TRUE, 'ATIVO', '2026-04-15', '03835723', '1891', 'Rua Sabiá', 'Vila Esperança'),
+    (68, NULL, NULL, '2026-04-21', '49605189397', 'Otávio Batista Teixeira', '1973-04-03', 'Treinou boxe por 1 ano em projeto social.', TRUE, 'ATIVO', '2026-04-13', '03400072', '1612', 'Rua Sabiá', 'Vila Formosa'),
+    (69, NULL, NULL, '2026-04-26', '31836802439', 'Bianca Costa Machado', '1994-07-13', 'Fez capoeira na escola por 3 anos.', TRUE, 'ATIVO', '2026-04-23', '08413620', '1256', 'Rua dos Cravos', 'Itaquera'),
+    (70, NULL, NULL, '2026-05-04', '51898758960', 'Leonardo Oliveira Freitas', '1981-09-20', 'Pratica natação; quer melhorar o condicionamento.', FALSE, 'INATIVO', '2026-04-24', '08624800', '30', 'Travessa das Orquídeas', 'Ermelino Matarazzo'),
+    (71, NULL, NULL, '2026-05-11', '90143028568', 'Viviane Correia Moura', '1978-08-03', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', '2026-05-06', '03311218', '895', 'Travessa das Orquídeas', 'Cangaíba'),
     (72, 9, NULL, '2026-05-11', '10590882124', 'Laura Ramos Moura', '2018-11-09', 'Fez balé por 2 anos.', TRUE, 'ATIVO', '2026-05-01', '08498644', '621', 'Rua Quaresmeira', 'Vila Formosa'),
-    (73, NULL, NULL, '2026-06-01', '48437064875', 'Murilo Pinto Martins', '1975-04-05', 'Ex-praticante de karatê (faixa verde).', TRUE, 'INATIVO', NULL, '08352534', '1338', 'Rua das Camélias', 'São Mateus'),
+    (73, NULL, NULL, '2026-06-01', '48437064875', 'Murilo Pinto Martins', '1975-04-05', 'Ex-praticante de karatê (faixa verde).', TRUE, 'INATIVO', '2026-05-25', '08352534', '1338', 'Rua das Camélias', 'São Mateus'),
     (74, 10, NULL, '2026-06-03', '17119168249', 'Aline Silva Siqueira', '2012-12-26', 'Treinou boxe por 1 ano em projeto social.', FALSE, 'ATIVO', '2026-05-29', '08937527', '1511', 'Rua dos Cravos', 'Tatuapé'),
-    (75, NULL, NULL, '2026-06-11', '66243238213', 'Viviane Gomes Ramos', '1992-12-04', 'Treinou Muay Thai por 6 meses em 2021.', TRUE, 'ATIVO', NULL, '08450899', '871', 'Rua das Acácias', 'Artur Alvim'),
-    (76, NULL, NULL, '2026-06-13', '88553229807', 'Gabriela Machado Cavalcanti', '1988-03-27', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', NULL, '08978398', '1331', 'Rua Tangará', 'Água Rasa'),
-    (77, NULL, NULL, '2026-07-06', '75510711460', 'Vanessa Rodrigues Cavalcanti', '1980-05-04', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', FALSE, 'ATIVO', NULL, '03823526', '1896', 'Rua Quaresmeira', 'Artur Alvim'),
+    (75, NULL, NULL, '2026-06-11', '66243238213', 'Viviane Gomes Ramos', '1992-12-04', 'Treinou Muay Thai por 6 meses em 2021.', TRUE, 'ATIVO', '2026-06-02', '08450899', '871', 'Rua das Acácias', 'Artur Alvim'),
+    (76, NULL, NULL, '2026-06-13', '88553229807', 'Gabriela Machado Cavalcanti', '1988-03-27', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', '2026-06-09', '08978398', '1331', 'Rua Tangará', 'Água Rasa'),
+    (77, NULL, NULL, '2026-07-06', '75510711460', 'Vanessa Rodrigues Cavalcanti', '1980-05-04', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', FALSE, 'ATIVO', '2026-06-25', '03823526', '1896', 'Rua Quaresmeira', 'Artur Alvim'),
     (78, 11, NULL, '2026-07-06', '83296066586', 'Théo Monteiro Cavalcanti', '2017-09-20', 'Fez balé por 2 anos.', FALSE, 'ATIVO', '2026-07-05', '08298077', '176', 'Rua Bem-te-vi', 'Vila Formosa'),
-    (79, NULL, NULL, '2026-07-15', '00958677994', 'Priscila Monteiro Ribeiro', '1978-08-19', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', FALSE, 'ATIVO', NULL, '03879348', '1460', 'Avenida Cerejeira', 'Penha'),
-    (80, NULL, NULL, '2026-07-26', '86601347849', 'Carolina Ferreira Carvalho', '2001-07-12', 'Corredor de rua (provas de 10 km); iniciante em lutas.', TRUE, 'ATIVO', NULL, '03009001', '1756', 'Rua Beija-flor', 'Penha'),
-    (81, NULL, NULL, '2026-08-23', '27552234514', 'Leonardo Batista Pereira', '2007-01-05', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', NULL, '03882518', '1318', 'Rua Jequitibá', 'Penha'),
-    (82, NULL, 1, '2026-09-03', '45628674121', 'Daniel Vieira Queiroz', '1987-10-28', 'Fez a aula experimental na academia. Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', NULL, '03125168', '984', 'Rua Manacá', 'Vila Esperança'),
-    (83, NULL, 3, '2026-09-11', '52611654533', 'Carolina Freitas Machado', '1977-02-18', 'Fez a aula experimental na academia. Treinou Muay Thai por 6 meses em 2021.', TRUE, 'ATIVO', NULL, '08127162', '298', 'Rua das Acácias', 'Cangaíba'),
-    (84, NULL, 4, '2026-09-21', '18371275341', 'Tatiane Mendes Dias', '1976-03-19', 'Fez a aula experimental na academia. Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', NULL, '08989621', '1707', 'Avenida das Hortênsias', 'Belém'),
-    (85, NULL, 8, '2026-09-27', '13312141917', 'Eduardo Pereira Rodrigues', '1986-09-17', 'Fez a aula experimental na academia. Pratica musculação há 4 anos; nunca treinou luta.', FALSE, 'ATIVO', NULL, '08042457', '912', 'Rua Jequitibá', 'Vila Formosa'),
-    (86, NULL, 11, '2026-10-06', '36971498622', 'Aline Campos Tavares', '1984-09-03', 'Fez a aula experimental na academia. Fez capoeira na escola por 3 anos.', FALSE, 'ATIVO', NULL, '03139721', '760', 'Rua Sete Copas', 'Belém'),
-    (87, NULL, 10, '2026-10-07', '47325601954', 'Fernanda Brandão Rodrigues', '1987-06-11', 'Fez a aula experimental na academia. Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', NULL, '03048550', '1857', 'Rua das Violetas', 'Vila Esperança'),
-    (88, NULL, 13, '2026-10-07', '88623682562', 'Viviane Teixeira Macedo', '1981-04-04', 'Fez a aula experimental na academia. Nunca treinou; procurou a academia para defesa pessoal.', TRUE, 'ATIVO', NULL, '03961132', '1292', 'Rua Bem-te-vi', 'Vila Formosa'),
-    (89, NULL, 14, '2026-10-11', '56232627922', 'Beatriz Batista Costa', '1982-03-24', 'Fez a aula experimental na academia. Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', NULL, '03168900', '1604', 'Rua das Camélias', 'Penha'),
+    (79, NULL, NULL, '2026-07-15', '00958677994', 'Priscila Monteiro Ribeiro', '1978-08-19', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', FALSE, 'ATIVO', '2026-07-14', '03879348', '1460', 'Avenida Cerejeira', 'Penha'),
+    (80, NULL, NULL, '2026-07-26', '86601347849', 'Carolina Ferreira Carvalho', '2001-07-12', 'Corredor de rua (provas de 10 km); iniciante em lutas.', TRUE, 'ATIVO', '2026-07-18', '03009001', '1756', 'Rua Beija-flor', 'Penha'),
+    (81, NULL, NULL, '2026-08-23', '27552234514', 'Leonardo Batista Pereira', '2007-01-05', 'Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', '2026-08-20', '03882518', '1318', 'Rua Jequitibá', 'Penha'),
+    (82, NULL, 1, '2026-09-03', '45628674121', 'Daniel Vieira Queiroz', '1987-10-28', 'Fez a aula experimental na academia. Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', '2026-08-24', '03125168', '984', 'Rua Manacá', 'Vila Esperança'),
+    (83, NULL, 3, '2026-09-11', '52611654533', 'Carolina Freitas Machado', '1977-02-18', 'Fez a aula experimental na academia. Treinou Muay Thai por 6 meses em 2021.', TRUE, 'ATIVO', '2026-09-06', '08127162', '298', 'Rua das Acácias', 'Cangaíba'),
+    (84, NULL, 4, '2026-09-21', '18371275341', 'Tatiane Mendes Dias', '1976-03-19', 'Fez a aula experimental na academia. Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', '2026-09-21', '08989621', '1707', 'Avenida das Hortênsias', 'Belém'),
+    (85, NULL, 8, '2026-09-27', '13312141917', 'Eduardo Pereira Rodrigues', '1986-09-17', 'Fez a aula experimental na academia. Pratica musculação há 4 anos; nunca treinou luta.', FALSE, 'ATIVO', '2026-09-20', '08042457', '912', 'Rua Jequitibá', 'Vila Formosa'),
+    (86, NULL, 11, '2026-10-06', '36971498622', 'Aline Campos Tavares', '1984-09-03', 'Fez a aula experimental na academia. Fez capoeira na escola por 3 anos.', FALSE, 'ATIVO', '2026-10-04', '03139721', '760', 'Rua Sete Copas', 'Belém'),
+    (87, NULL, 10, '2026-10-07', '47325601954', 'Fernanda Brandão Rodrigues', '1987-06-11', 'Fez a aula experimental na academia. Treinou judô na infância (faixa amarela); parado há 12 anos.', TRUE, 'ATIVO', '2026-09-28', '03048550', '1857', 'Rua das Violetas', 'Vila Esperança'),
+    (88, NULL, 13, '2026-10-07', '88623682562', 'Viviane Teixeira Macedo', '1981-04-04', 'Fez a aula experimental na academia. Nunca treinou; procurou a academia para defesa pessoal.', TRUE, 'ATIVO', '2026-10-03', '03961132', '1292', 'Rua Bem-te-vi', 'Vila Formosa'),
+    (89, NULL, 14, '2026-10-11', '56232627922', 'Beatriz Batista Costa', '1982-03-24', 'Fez a aula experimental na academia. Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', '2026-09-30', '03168900', '1604', 'Rua das Camélias', 'Penha'),
     (90, NULL, 17, '2026-10-15', '80257653917', 'Alexandre Almeida Freitas', '1981-08-12', 'Fez a aula experimental na academia. Pratica natação; quer melhorar o condicionamento.', FALSE, 'ATIVO', NULL, '08042724', '948', 'Travessa das Orquídeas', 'Guaianases'),
-    (91, NULL, 15, '2026-10-15', '07934933944', 'Cláudia Nascimento Teixeira', '1996-09-01', 'Fez a aula experimental na academia. Nunca treinou; procurou a academia para defesa pessoal.', TRUE, 'ATIVO', NULL, '08993350', '1255', 'Avenida Cerejeira', 'Penha'),
+    (91, NULL, 15, '2026-10-15', '07934933944', 'Cláudia Nascimento Teixeira', '1996-09-01', 'Fez a aula experimental na academia. Nunca treinou; procurou a academia para defesa pessoal.', TRUE, 'ATIVO', '2026-10-14', '08993350', '1255', 'Avenida Cerejeira', 'Penha'),
     (92, NULL, NULL, '2026-10-28', '86540428441', 'Débora Souza Vieira', '1999-05-21', 'Nunca praticou artes marciais; sedentário há 3 anos.', TRUE, 'ATIVO', NULL, '08237344', '1875', 'Rua Quaresmeira', 'Vila Matilde');
 
 INSERT INTO EMAIL_ALUNO (DS_EMAIL, ID_ALUNO) VALUES
@@ -1479,7 +1505,7 @@ INSERT INTO PROBLEMA_SAUDE_ALUNO (DS_PROBLEMA_SAUDE, ID_ALUNO) VALUES
     ('Rinite alérgica', 92);
 
 -- -------------------------------------------------------------------------------------
--- 4.6 TURMA (18) [RF03, RE01, RE02, RE05]
+-- 4.6 TURMA (18) [RF03, RE01, RE06, RE03]
 -- Grade semanal de segunda a sábado, nos períodos matutino, vespertino e noturno.
 -- A turma 18 (No-Gi, sábado 08:00) acabou de abrir e ainda não tem alunos: serve para mostrar
 -- o LEFT JOIN e o alerta de turma abaixo do quórum.
@@ -1505,7 +1531,7 @@ INSERT INTO TURMA (ID_TURMA, ID_MODALIDADE, ID_PROFESSOR, DS_DIA_SEMANA, HR_INIC
     (18, 6, 6, 'SABADO', '08:00:00', 30, '09:30:00');
 
 -- -------------------------------------------------------------------------------------
--- 4.7 MATRICULA (190) [RF03, RE06]
+-- 4.7 MATRICULA (190) [RF03, RE04]
 -- Cada aluno treina em 1 a 3 turmas da sua modalidade (uma matrícula por turma).
 -- 171 ATIVA, 3 TRANCADA, 3 ENCERRADA (troca de turma), 13 CANCELADA.
 -- Na troca de turma a matrícula antiga fica ENCERRADA e uma nova é criada (o histórico não é apagado).
@@ -1706,7 +1732,7 @@ INSERT INTO MATRICULA (ID_MATRICULA, ID_ALUNO, ID_TURMA, DT_MATRICULA, TP_SITUAC
     (190, 92, 9, '2026-10-28', 'ATIVA');
 
 -- -------------------------------------------------------------------------------------
--- 4.8 TRANCAMENTO (6) [RF06, RE04]
+-- 4.8 TRANCAMENTO (6) [RF06, RE02, RE09]
 -- 3 trancamentos já encerrados (aluno voltou) e 3 em curso (DT_RETORNO_EFETIVA vazia).
 -- -------------------------------------------------------------------------------------
 INSERT INTO TRANCAMENTO (ID_TRANCAMENTO, ID_MATRICULA, TP_TRANCAMENTO, DT_RETORNO_EFETIVA, DS_MOTIVO, DT_RETORNO_PREVISTA, DT_INICIO) VALUES
@@ -1718,7 +1744,7 @@ INSERT INTO TRANCAMENTO (ID_TRANCAMENTO, ID_MATRICULA, TP_TRANCAMENTO, DT_RETORN
     (6, 29, 'LESAO', NULL, 'Ruptura parcial do ligamento do ombro direito; fisioterapia.', '2027-01-20', '2026-10-20');
 
 -- -------------------------------------------------------------------------------------
--- 4.9 AULA (74) [RF05, RO07]
+-- 4.9 AULA (74) [RF05, RO09]
 -- Todas as aulas de outubro/2026: cada turma ocorre uma vez por semana; 12/10 foi feriado (sem aula).
 -- Aula 56 é a reposição (ID_AULA_ORIGEM = 44) da aula de Boxe de 20/10, interrompida por queda de energia.
 -- Cenário de auditoria: a aula 30 (Kickboxing, 14/10) foi dada pelo professor de Muay Thai (A04).
@@ -1801,9 +1827,9 @@ INSERT INTO AULA (ID_AULA, ID_PROFESSOR, ID_TURMA, DT_AULA, HR_INICIO, ID_AULA_O
     (74, 5, 16, '2026-10-31', '14:00:00', NULL);
 
 -- -------------------------------------------------------------------------------------
--- 4.10 PRESENCA (654) [RF05, RO05, RE04, RE07]
+-- 4.10 PRESENCA (654) [RF05, RO03, RE02, RE05]
 -- Uma linha por matrícula ativa em cada aula de outubro. Não há linha para quem estava trancado
--- ou bloqueado por parcela em atraso (RE07). Alguns alunos têm frequência baixa de propósito
+-- ou bloqueado por parcela em atraso (RE05). Alguns alunos têm frequência baixa de propósito
 -- (risco de evasão, consulta G09).
 -- Cenários de auditoria: presença do aluno 34 na aula 26, já bloqueado por atraso (A02);
 -- presença do aluno 15 na aula 14, durante o trancamento (A03).
@@ -2486,11 +2512,11 @@ INSERT INTO PLANO (ID_PLANO, NM_PLANO, QT_DURACAO_MESES, VL_MENSALIDADE, PC_DESC
     (8, 'Família Anual', 12, 180.00, 25.00, 2, 'Valor por pessoa; fidelidade de 12 meses. Mesmas regras de multa do plano Anual.');
 
 -- -------------------------------------------------------------------------------------
--- 4.12 CONTRATO (91) e PARTICIPA [RF04, RO01, RO04, RE04]
+-- 4.12 CONTRATO (91) e PARTICIPA [RF04, RO01, RO08, RE02]
 -- 85 contratos vigentes + 6 cancelados. VL_MENSAL_ACORDADO = valor do plano com desconto
 -- (no Família, o valor é por pessoa e cada familiar tem o seu contrato). Modalidade extra gera VL_ACRESCIMO_MODALIDADE (R$ 60,00 cada).
 -- DT_FIM é o fim do ciclo atual: o contrato renova sozinho e só termina por cancelamento; quem já voltou
--- de trancamento teve o DT_FIM prorrogado pelos dias de afastamento (RE04).
+-- de trancamento teve o DT_FIM prorrogado pelos dias de afastamento (RE02).
 -- Cenário de auditoria: o contrato 66 (Trimestral) foi cancelado antes do fim do ciclo sem multa (A08).
 -- -------------------------------------------------------------------------------------
 INSERT INTO CONTRATO (ID_CONTRATO, ID_ALUNO, ID_PLANO, DT_INICIO, DT_FIM, VL_MENSAL_ACORDADO, VL_ACRESCIMO_MODALIDADE, DT_CANCELAMENTO, VL_MULTA_RESCISORIA) VALUES
@@ -2695,7 +2721,7 @@ INSERT INTO PARTICIPA (ID_MODALIDADE, ID_CONTRATO) VALUES
     (3, 91);
 
 -- -------------------------------------------------------------------------------------
--- 4.13 PAGAMENTO (325) [RF04, RO02, RO04, RO06, RE07]
+-- 4.13 PAGAMENTO (325) [RF04, RO02, RO07, RO05, RE05]
 -- Parcelas de ago/2026 a nov/2026 (os 3 últimos meses fechados + o mês corrente), vencimento no 5º dia útil:
 -- 07/08, 08/09, 07/10 e 09/11 (RO02). Quem assina depois do vencimento do mês paga a 1ª parcela, com valor
 -- integral e o mesmo vencimento do 5º dia útil, no ato da assinatura (DT_PAGAMENTO = data do contrato).
@@ -3039,7 +3065,7 @@ INSERT INTO PAGAMENTO (ID_PAGAMENTO, ID_CONTRATO, DT_VENCIMENTO, DT_PAGAMENTO, V
     (325, 91, '2026-11-09', NULL, 153.00, NULL, NULL, NULL, NULL, 'PENDENTE');
 
 -- -------------------------------------------------------------------------------------
--- 4.14 GRADUACAO (28) [RF06, RO05, RO06]
+-- 4.14 GRADUACAO (28) [RF06, RO03, RO05]
 -- Exames de faixa trimestrais (dez/2025 a out/2026) e análises técnicas de Boxe, com aprovações e reprovações.
 -- 1 aluno(s) reprovado(s) em junho refizeram o exame em setembro e foram aprovados.
 -- -------------------------------------------------------------------------------------
@@ -3074,10 +3100,10 @@ INSERT INTO GRADUACAO (ID_GRADUACAO, ID_ALUNO, ID_PROFESSOR, ID_MODALIDADE, DS_M
     (28, 61, 4, 4, NULL, '2026-10-24', NULL, 'ANALISE_TECNICA', 'APROVADO');
 
 -- -------------------------------------------------------------------------------------
--- 4.15 DESPESA (50) [RF04, RO07]
+-- 4.15 DESPESA (50) [RF04, RO09]
 -- Despesas fixas mensais (aluguel, água, luz, internet), compras semanais de higiene/limpeza feitas pelo gestor,
 -- compras de equipamento, manutenção e o repasse aos 5 professores prestadores de serviço (aulas x R$ 80,00),
--- pago no 5º dia útil do mês seguinte (RO07). O gestor não recebe repasse. O repasse de outubro bate com as
+-- pago no 5º dia útil do mês seguinte (RO09). O gestor não recebe repasse. O repasse de outubro bate com as
 -- aulas registradas na tabela AULA.
 -- Há uma despesa ATRASADO (manutenção do ar-condicionado) e as de novembro estão PENDENTE.
 -- -------------------------------------------------------------------------------------
@@ -3134,7 +3160,7 @@ INSERT INTO DESPESA (ID_DESPESA, ID_PROFESSOR, DS_CATEGORIA, VL_DESPESA, DT_VENC
     (50, NULL, 'CONSUMO', 119.90, '2026-11-12', NULL, NULL, 'Internet e telefone - nov/2026', 'Provedor NetLeste', 'PENDENTE');
 
 -- -------------------------------------------------------------------------------------
--- 4.16 LOG_ACESSO (20) [RNF02]
+-- 4.16 LOG_ACESSO (20) [RNF02, RE09]
 -- Amostra de acessos de outubro: leitura de CPF e de problema de saúde, criações e atualizações.
 -- Em produção quem grava o log é a aplicação; aqui os registros são inseridos manualmente.
 -- -------------------------------------------------------------------------------------
@@ -3175,7 +3201,7 @@ SET @DT_INICIO_MES = '2026-10-01';
 SET @DT_FIM_MES    = '2026-10-31';
 
 -- J01 — Grade de alunos ativos: em que turma cada aluno treina, em que dia e com qual professor?
--- Atende: RF03 (turmas e matrículas) e RE05 (cada turma com o professor da sua modalidade)
+-- Atende: RF03 (turmas e matrículas) e RE03 (cada turma com o professor da sua modalidade)
 -- INNER JOIN entre 5 tabelas: MATRICULA liga ALUNO e TURMA; TURMA leva à MODALIDADE e ao PROFESSOR.
 -- Só aparecem linhas que têm correspondência em todas as tabelas.
 SELECT a.ID_ALUNO,
@@ -3195,7 +3221,7 @@ ORDER BY mo.NM_MODALIDADE, t.DS_DIA_SEMANA, t.HR_INICIO, a.NM_COMPLETO;
 
 -- J02 — Histórico de graduações: quais exames cada aluno fez, em que modalidade, com qual
 --       avaliador e qual foi o resultado?
--- Atende: RF06 (histórico com aprovações, reprovações e motivos) e RO06 (Boxe sem faixa)
+-- Atende: RF06 (histórico com aprovações, reprovações e motivos) e RO05 (Boxe sem faixa)
 -- COALESCE troca o NULL da faixa (Boxe não tem faixa) por um texto legível.
 SELECT a.NM_COMPLETO                                  AS NM_ALUNO,
        mo.NM_MODALIDADE,
@@ -3212,7 +3238,8 @@ INNER JOIN PROFESSOR p   ON p.ID_PROFESSOR   = g.ID_PROFESSOR
 ORDER BY a.NM_COMPLETO, g.DT_GRADUACAO;
 
 -- J03 — Alunos menores de idade: quem é o responsável legal de cada um e o atestado foi entregue?
--- Atende: RF01 e RE03 (menor de 18 anos com responsável e atestado)
+-- Atende: RF01 e RE07 (menor de 18 anos com responsável legal). Mostra também a entrega do
+--         atestado (RE08), que vale para todos os alunos e é conferida na auditoria A05.
 -- TIMESTAMPDIFF(YEAR, nascimento, data) calcula a idade em anos completos.
 SELECT a.NM_COMPLETO                                      AS NM_ALUNO,
        TIMESTAMPDIFF(YEAR, a.DT_NASCIMENTO, @DT_REF)      AS QT_IDADE,
@@ -3225,7 +3252,7 @@ INNER JOIN RESPONSAVEL r ON r.ID_RESPONSAVEL = a.ID_RESPONSAVEL
 ORDER BY r.NM_RESPONSAVEL, a.NM_COMPLETO;
 
 -- J04 — Funil da aula experimental: cada interessado virou aluno? (exemplo de LEFT JOIN)
--- Atende: RF01 (interessados) e RO03 (uma aula experimental, com situação Pendente,
+-- Atende: RF01 (interessados) e RO06 (uma aula experimental, com situação Pendente,
 --         Convertido ou Encerrado)
 -- LEFT JOIN mantém TODOS os interessados; quando não existe aluno ligado, as colunas do
 -- aluno vêm NULL. Com INNER JOIN, os não convertidos sumiriam do resultado.
@@ -3252,9 +3279,9 @@ ORDER BY i.DT_AULA, i.HR_AULA;
 -- U01 — Baixa de uma parcela em atraso: a aluna Sabrina Lopes Oliveira (plano Anual)
 --       pagou hoje, via Pix, a parcela de outubro que estava ATRASADO.
 -- Atende: RF04 (controle de atrasos e multas).
--- Regra: planos de fidelidade (mais de 1 mês) pagam multa moratória de 2% [RO04];
+-- Regra: planos de fidelidade (mais de 1 mês) pagam multa moratória de 2% [RO07];
 -- o plano mensal não teria multa, só o bloqueio.
--- Consequência: a parcela sai de ATRASADO e o aluno é desbloqueado [RE07]
+-- Consequência: a parcela sai de ATRASADO e o aluno é desbloqueado [RE05]
 -- (as consultas G04 e A02 mudam).
 
 -- Antes
@@ -3279,11 +3306,11 @@ WHERE ID_PAGAMENTO = 170;
 
 -- U02 — Retorno de trancamento: a aluna Isabela Souza Martins, afastada por lesão desde
 --       15/09, foi liberada pelo médico e volta a treinar hoje.
--- Atende: RF06 e RE04 (trancamento suspende a cobrança e prorroga o contrato).
+-- Atende: RF06 e RE02 (trancamento suspende a cobrança e prorroga o contrato).
 -- São 5 alterações que só fazem sentido juntas, por isso ficam numa TRANSAÇÃO [RNF04]:
 -- ou todas são gravadas (COMMIT) ou nenhuma (ROLLBACK, em caso de erro).
---   1) fecha o trancamento   2) reativa a matrícula   3) reativa o aluno   [RE06]
---   4) prorroga DT_FIM do contrato pelos dias em que ficou afastada(o)     [RE04]
+--   1) fecha o trancamento   2) reativa a matrícula   3) reativa o aluno   [RE04]
+--   4) prorroga DT_FIM do contrato pelos dias em que ficou afastada(o)     [RE02]
 --   5) gera a parcela de novembro, que não existia porque o mês estava suspenso,
 --      com vencimento no 5º dia útil (09/11) e valor integral             [RO02]
 START TRANSACTION;
@@ -3326,19 +3353,19 @@ WHERE tr.ID_TRANCAMENTO = 4;
 
 
 -- =====================================================================================
--- 7. EXEMPLOS DE DELETE (exclusão segura)                       [RE06, RNF02, RNF05]
+-- 7. EXEMPLOS DE DELETE (exclusão segura)                       [RE04, RNF02, RNF05]
 -- =====================================================================================
 -- Roteiro de exclusão segura usado aqui:
 --   1) consultar antes e conferir que o registro é o certo e não é referenciado;
 --   2) excluir pela chave primária, com uma trava no WHERE;
 --   3) registrar a operação no log (sem trigger: quem grava é a aplicação).
--- [RE06, RNF05] Matrículas encerradas, CONTRATO, PAGAMENTO e DESPESA nunca são excluídos
+-- [RE04, RNF05] Matrículas encerradas, CONTRATO, PAGAMENTO e DESPESA nunca são excluídos
 -- (histórico e retenção fiscal de 5 anos); o aluno é "excluído" logicamente (INATIVO).
 -- [RNF02] O passo 3 é a rastreabilidade exigida pela LGPD.
 
 -- D01 — Eliminar o pré-cadastro de um interessado que desistiu.
 -- Atende: RNF02 (LGPD: dado que não tem mais finalidade é eliminado; interessado não
---         convertido sai após o encerramento) e RO03 (só sai quem está ENCERRADO).
+--         convertido sai após o encerramento) e RO06 (só sai quem está ENCERRADO).
 
 -- Passo 1: conferir (ID_ALUNO tem que vir NULL, ou seja, ninguém aponta para ele)
 SELECT i.ID_INTERESSADO, i.NM_INTERESSADO, i.TP_STATUS, a.ID_ALUNO
@@ -3372,7 +3399,7 @@ WHERE NR_TELEFONE = '1124778764'
   AND ID_ALUNO    = 1;
 
 -- D03 — O que a integridade referencial IMPEDE (exemplo comentado para não parar o script).
--- Atende: RE06 (preservação do histórico) e RNF04 (integridade referencial do InnoDB).
+-- Atende: RE04 (preservação do histórico) e RNF04 (integridade referencial do InnoDB).
 -- Tentar apagar uma modalidade que tem professor, turmas e contratos:
 --
 --   DELETE FROM MODALIDADE WHERE ID_MODALIDADE = 4;
@@ -3397,7 +3424,7 @@ WHERE NR_TELEFONE = '1124778764'
 -- (@DT_INICIO_MES a @DT_FIM_MES), último mês fechado da massa de dados.
 
 -- G01 — Qual o faturamento recebido por modalidade no mês de referência?
--- Atende: KPI de Receita por Modalidade [RF04, RO01: rateio das modalidades do contrato]
+-- Atende: P6 (apoio ao repasse e à margem por modalidade) [RF04, RO01: rateio das modalidades do contrato]
 -- Regime de caixa (data em que o dinheiro entrou). Um contrato pode cobrir mais de uma
 -- modalidade (tabela PARTICIPA); para não contar a mesma parcela duas vezes, o valor é
 -- dividido igualmente entre as modalidades do contrato (rateio). A subconsulta QM conta
@@ -3417,7 +3444,7 @@ GROUP BY mo.NM_MODALIDADE
 ORDER BY VL_RECEITA_RATEADA DESC;
 
 -- G02 — Como evoluiu a receita mês a mês: quanto era previsto, quanto entrou e quanto ficou em aberto?
--- Atende: KPI de Receita Mensal (previsto x realizado) [RF04, RO02: uma parcela por mês]
+-- Atende: P2 (previsto x recebido por mês; KPI02 em reais) [RF04, RO02: uma parcela por mês]
 -- Regime de competência: agrupa pelo mês de vencimento da parcela.
 SELECT DATE_FORMAT(DT_VENCIMENTO, '%Y-%m')                                       AS MES_COMPETENCIA,
        COUNT(*)                                                                  AS QT_PARCELAS,
@@ -3429,7 +3456,7 @@ GROUP BY DATE_FORMAT(DT_VENCIMENTO, '%Y-%m')
 ORDER BY MES_COMPETENCIA;
 
 -- G03 — Qual a taxa de inadimplência de cada mês?
--- Atende: KPI de Taxa de Inadimplência [RF04, RE07: inadimplência derivada das parcelas]
+-- Atende: P2 e KPI02 (taxa de inadimplência) [RF04, RE05: inadimplência derivada das parcelas]
 -- Considera só parcelas já vencidas na data de referência; inadimplente = vencida e não paga.
 -- O 100.0 (com casa decimal) força divisão decimal.
 SELECT DATE_FORMAT(DT_VENCIMENTO, '%Y-%m')                                       AS MES_COMPETENCIA,
@@ -3444,7 +3471,7 @@ GROUP BY DATE_FORMAT(DT_VENCIMENTO, '%Y-%m')
 ORDER BY MES_COMPETENCIA;
 
 -- G04 — Quem são os inadimplentes hoje, quanto devem e há quantos dias?
--- Atende: Lista de cobrança e de bloqueio na recepção/catraca [RF04, RE07, RNF01, RNF03]
+-- Atende: P2 (lista de cobrança e de bloqueio na recepção/catraca) [RF04, RE05, RNF01, RNF03]
 -- Usa o índice IX_PAGAMENTO_VENC_STATUS (consulta crítica do RNF03).
 -- O telefone vem por subconsulta para não multiplicar as linhas (o aluno pode ter 2 telefones,
 -- e um JOIN direto dobraria a soma das parcelas).
@@ -3466,7 +3493,7 @@ GROUP BY a.ID_ALUNO, a.NM_COMPLETO, c.ID_CONTRATO, c.DT_CANCELAMENTO
 ORDER BY QT_DIAS_ATRASO DESC, VL_TOTAL_DEVIDO DESC;
 
 -- G05 — Quais modalidades são as mais procuradas (alunos ativos e ocupação das turmas)?
--- Atende: KPI de Demanda por Modalidade (abrir ou fechar turmas) [RF03, RE01, RE02]
+-- Atende: P5 e KPI07 (ocupação das vagas; abrir ou fechar turmas) [RF03, RE01, RE06]
 -- LEFT JOIN a partir de MODALIDADE para que nenhuma modalidade suma do relatório,
 -- mesmo que não tenha matrícula ativa. A ocupação compara matrículas ativas com as vagas.
 SELECT mo.NM_MODALIDADE,
@@ -3482,7 +3509,7 @@ GROUP BY mo.ID_MODALIDADE, mo.NM_MODALIDADE
 ORDER BY QT_ALUNOS_ATIVOS DESC;
 
 -- G06 — Quantas aulas experimentais viram matrícula, por modalidade?
--- Atende: KPI de Taxa de Conversão da Aula Experimental [RF01, RO03]
+-- Atende: P7 (conversão da aula experimental por modalidade; KPI09 mensal na G18) [RF01, RO06]
 -- NULLIF evita divisão por zero quando a modalidade ainda não teve interessados.
 SELECT mo.NM_MODALIDADE,
        COUNT(i.ID_INTERESSADO)                                            AS QT_INTERESSADOS,
@@ -3497,10 +3524,10 @@ GROUP BY mo.ID_MODALIDADE, mo.NM_MODALIDADE
 ORDER BY PC_CONVERSAO DESC;
 
 -- G07 — Quanto deve ser repassado a cada professor pelas aulas dadas no mês de referência?
--- Atende: Apuração do repasse (aulas ministradas x valor por aula) [RF05, RO07]
+-- Atende: P6 (apuração do repasse: aulas ministradas x valor por aula; base do KPI08) [RF05, RO09]
 -- Conta as aulas pelo professor que DE FATO ministrou (AULA.ID_PROFESSOR), inclusive
 -- substituições e reposições. O resultado é a base do lançamento em DESPESA, pago no
--- 5º dia útil do mês seguinte. Pela RO07 só os 5 prestadores recebem: a linha do gestor
+-- 5º dia útil do mês seguinte. Pela RO09 só os 5 prestadores recebem: a linha do gestor
 -- (professor 1) serve apenas para mostrar quantas aulas ele deu e não é lançada em DESPESA.
 SELECT p.ID_PROFESSOR,
        p.NM_COMPLETO                        AS NM_PROFESSOR,
@@ -3516,13 +3543,14 @@ GROUP BY p.ID_PROFESSOR, p.NM_COMPLETO, mo.NM_MODALIDADE, p.VL_POR_AULA
 ORDER BY VL_REPASSE DESC;
 
 -- G08 — Qual o resultado financeiro (entradas - saídas) de cada mês?
--- Atende: KPI de Resultado Mensal (fluxo de caixa) [RF04]
+-- Atende: KPI10 (resultado mensal e margem, em regime de caixa) [RF04]
 -- UNION ALL empilha as entradas (PAGAMENTO) e as saídas (DESPESA) numa única lista de
 -- movimentos; depois o GROUP BY soma por mês. Só entra o que foi efetivamente pago.
 SELECT MOV.MES,
        SUM(MOV.VL_ENTRADA)                     AS VL_ENTRADAS,
        SUM(MOV.VL_SAIDA)                       AS VL_SAIDAS,
-       SUM(MOV.VL_ENTRADA) - SUM(MOV.VL_SAIDA) AS VL_RESULTADO
+       SUM(MOV.VL_ENTRADA) - SUM(MOV.VL_SAIDA) AS VL_RESULTADO,
+       ROUND(100.0 * (SUM(MOV.VL_ENTRADA) - SUM(MOV.VL_SAIDA)) / SUM(MOV.VL_ENTRADA), 1) AS PC_MARGEM
 FROM (SELECT DATE_FORMAT(DT_PAGAMENTO, '%Y-%m') AS MES, VL_PAGO AS VL_ENTRADA, 0 AS VL_SAIDA
       FROM PAGAMENTO
       WHERE TP_STATUS_PAGAMENTO = 'PAGO'
@@ -3535,8 +3563,8 @@ GROUP BY MOV.MES
 ORDER BY MOV.MES;
 
 -- G09 — Quais alunos estão com frequência abaixo de 50% no mês (risco de evasão)?
--- Atende: KPI de Retenção / ação preventiva de contato [RF05, RO05, RNF03]
--- A mesma conta de frequência embasa a liberação para exame de faixa (RO05).
+-- Atende: P4 (lista de alunos em risco; KPI05 na G14) [RF05, RO03, RNF03]
+-- A mesma conta de frequência embasa a liberação para exame de faixa (RO03).
 -- Frequência = presenças / aulas registradas para o aluno no mês, somando todas as suas turmas.
 -- Só entram alunos com pelo menos 4 aulas registradas: quem se matriculou no fim do mês ou
 -- foi bloqueado por atraso tem poucas aulas na lista, e a porcentagem ficaria distorcida.
@@ -3557,7 +3585,7 @@ HAVING COUNT(*) >= 4
 ORDER BY PC_FREQUENCIA, a.NM_COMPLETO;
 
 -- G10 — Como os alunos preferem pagar (participação de cada forma de pagamento)?
--- Atende: Negociação de taxas com a maquininha e incentivo ao Pix [RF04]
+-- Atende: P2 (formas de pagamento: negociação de taxas e incentivo ao Pix) [RF04]
 SELECT TP_FORMA_PAGAMENTO,
        COUNT(*)                                                     AS QT_PAGAMENTOS,
        SUM(VL_PAGO)                                                 AS VL_RECEBIDO,
@@ -3569,7 +3597,7 @@ GROUP BY TP_FORMA_PAGAMENTO
 ORDER BY QT_PAGAMENTOS DESC;
 
 -- G11 — Quais planos têm mais contratos vigentes e quanto cada um gera por mês?
--- Atende: KPI de Receita Recorrente Mensal por Plano (mix de planos) [RF04, RO01]
+-- Atende: P3 e KPI04 (MRR por plano) [RF04, RO01]
 -- LEFT JOIN mostra também o plano que ainda não vendeu nenhum contrato.
 -- A condição de vigência fica no ON (e não no WHERE) para não eliminar o plano sem contrato.
 SELECT pl.NM_PLANO,
@@ -3582,6 +3610,164 @@ LEFT JOIN CONTRATO c ON c.ID_PLANO = pl.ID_PLANO
                     AND c.DT_CANCELAMENTO IS NULL
 GROUP BY pl.ID_PLANO, pl.NM_PLANO, pl.QT_DURACAO_MESES, pl.PC_DESCONTO
 ORDER BY QT_CONTRATOS_VIGENTES DESC, pl.ID_PLANO;
+
+-- G12 — Qual a completude do cadastro digital dos alunos atuais (sem fichas de papel incompletas)?
+-- Atende: P1 (fichas de papel e risco de perda de dados) e KPI01 [RF01, RE07, RE08]
+-- Aluno atual = ATIVO ou TRANCADO. Pendência = sem telefone, sem e-mail ou sem registro de
+-- saúde (atributos (1,n) do DER), menor de 18 anos sem responsável (RE07) ou sem atestado (RE08).
+-- NOT EXISTS procura a ausência de linha nas tabelas de apoio; a lista de quem tem pendência
+-- é a A05 (atestado e responsável).
+SELECT COUNT(*)                                                       AS QT_ALUNOS_ATUAIS,
+       SUM(CASE WHEN X.IN_PENDENCIA = 1 THEN 1 ELSE 0 END)            AS QT_COM_PENDENCIA,
+       ROUND(100.0 * SUM(CASE WHEN X.IN_PENDENCIA = 0 THEN 1 ELSE 0 END) / COUNT(*), 1) AS PC_COMPLETUDE
+FROM (SELECT a.ID_ALUNO,
+             CASE WHEN NOT EXISTS (SELECT 1 FROM TELEFONE_ALUNO t WHERE t.ID_ALUNO = a.ID_ALUNO)
+                    OR NOT EXISTS (SELECT 1 FROM EMAIL_ALUNO e WHERE e.ID_ALUNO = a.ID_ALUNO)
+                    OR NOT EXISTS (SELECT 1 FROM PROBLEMA_SAUDE_ALUNO s WHERE s.ID_ALUNO = a.ID_ALUNO)
+                    OR (TIMESTAMPDIFF(YEAR, a.DT_NASCIMENTO, @DT_REF) < 18 AND a.ID_RESPONSAVEL IS NULL)
+                    OR a.DT_ENTREGA_ATESTADO IS NULL
+                  THEN 1 ELSE 0 END AS IN_PENDENCIA
+      FROM ALUNO a
+      WHERE a.TP_STATUS_ALUNO IN ('ATIVO', 'TRANCADO')) X;
+
+-- G13 — Qual a taxa de cancelamento de contratos em cada mês?
+-- Atende: P3 (planos e multas acertados de boca) e KPI03 [RF04, RO08]
+-- Taxa = contratos cancelados no mês ÷ contratos vigentes no 1º dia do mês. Vigente no 1º dia =
+-- já iniciado e sem cancelamento até aquela data. QT_COM_MULTA mostra quantos cancelamentos
+-- antecipados de plano de fidelidade tiveram a multa rescisória lançada (A08 lista os que não tiveram).
+SELECT M.MES,
+       (SELECT COUNT(*) FROM CONTRATO c
+         WHERE c.DT_INICIO < M.DT_PRIMEIRO_DIA
+           AND (c.DT_CANCELAMENTO IS NULL OR c.DT_CANCELAMENTO >= M.DT_PRIMEIRO_DIA)) AS QT_VIGENTES_NO_INICIO,
+       (SELECT COUNT(*) FROM CONTRATO c
+         WHERE c.DT_CANCELAMENTO >= M.DT_PRIMEIRO_DIA
+           AND c.DT_CANCELAMENTO <  DATE_ADD(M.DT_PRIMEIRO_DIA, INTERVAL 1 MONTH))   AS QT_CANCELADOS,
+       (SELECT COUNT(*) FROM CONTRATO c
+         WHERE c.DT_CANCELAMENTO >= M.DT_PRIMEIRO_DIA
+           AND c.DT_CANCELAMENTO <  DATE_ADD(M.DT_PRIMEIRO_DIA, INTERVAL 1 MONTH)
+           AND c.VL_MULTA_RESCISORIA IS NOT NULL)                                    AS QT_COM_MULTA,
+       ROUND(100.0 *
+         (SELECT COUNT(*) FROM CONTRATO c
+           WHERE c.DT_CANCELAMENTO >= M.DT_PRIMEIRO_DIA
+             AND c.DT_CANCELAMENTO <  DATE_ADD(M.DT_PRIMEIRO_DIA, INTERVAL 1 MONTH))
+         / NULLIF((SELECT COUNT(*) FROM CONTRATO c
+                    WHERE c.DT_INICIO < M.DT_PRIMEIRO_DIA
+                      AND (c.DT_CANCELAMENTO IS NULL OR c.DT_CANCELAMENTO >= M.DT_PRIMEIRO_DIA)), 0), 1) AS PC_CANCELAMENTO
+FROM (SELECT '2026-08' AS MES, DATE('2026-08-01') AS DT_PRIMEIRO_DIA
+      UNION ALL SELECT '2026-09', DATE('2026-09-01')
+      UNION ALL SELECT '2026-10', DATE('2026-10-01')) M
+ORDER BY M.MES;
+
+-- G14 — Qual a frequência média do mês e quantos alunos estão em risco de evasão?
+-- Atende: P4 (graduação sem comprovação de frequência) e KPI05 [RF05, RO03]
+-- Frequência = presenças ÷ aulas registradas, só dos alunos com pelo menos 4 aulas no mês (mesma
+-- regra da G09, que lista quem está em risco). Em risco = frequência abaixo de 50%.
+SELECT COUNT(*)                                                       AS QT_ALUNOS_AVALIADOS,
+       ROUND(100.0 * SUM(F.QT_PRESENCAS) / SUM(F.QT_AULAS), 1)        AS PC_FREQUENCIA_MEDIA,
+       SUM(CASE WHEN 100.0 * F.QT_PRESENCAS / F.QT_AULAS < 50 THEN 1 ELSE 0 END) AS QT_EM_RISCO,
+       ROUND(100.0 * SUM(CASE WHEN 100.0 * F.QT_PRESENCAS / F.QT_AULAS < 50 THEN 1 ELSE 0 END)
+             / COUNT(*), 1)                                           AS PC_EM_RISCO
+FROM (SELECT m.ID_ALUNO,
+             COUNT(*)                                                 AS QT_AULAS,
+             SUM(CASE WHEN pr.IN_PRESENTE = TRUE THEN 1 ELSE 0 END)   AS QT_PRESENCAS
+      FROM PRESENCA pr
+      INNER JOIN AULA au     ON au.ID_AULA     = pr.ID_AULA
+      INNER JOIN MATRICULA m ON m.ID_MATRICULA = pr.ID_MATRICULA
+      WHERE au.DT_AULA BETWEEN @DT_INICIO_MES AND @DT_FIM_MES
+      GROUP BY m.ID_ALUNO
+      HAVING COUNT(*) >= 4) F;
+
+-- G15 — Os alunos chegaram preparados ao exame? Qual era a frequência de cada um nos 90 dias antes?
+-- Atende: P4 (graduação sem comprovação de frequência) [RF06, RO03]
+-- Para cada exame de faixa (a análise técnica do Boxe não tem faixa), mostra o resultado e a
+-- frequência do aluno nos 90 dias anteriores à data do exame. O LEFT JOIN mantém o exame mesmo
+-- que o aluno não tenha nenhuma aula registrada na janela.
+SELECT g.ID_GRADUACAO,
+       a.NM_COMPLETO                                                  AS NM_ALUNO,
+       mo.NM_MODALIDADE,
+       g.TP_NIVEL_FAIXA,
+       g.DT_GRADUACAO,
+       g.TP_RESULTADO,
+       g.DS_MOTIVO_REPROVACAO,
+       COUNT(pr.ID_AULA)                                          AS QT_AULAS_90_DIAS,
+       ROUND(100.0 * SUM(CASE WHEN pr.IN_PRESENTE = TRUE THEN 1 ELSE 0 END)
+             / NULLIF(COUNT(pr.ID_AULA), 0), 1)                   AS PC_FREQUENCIA_90_DIAS
+FROM GRADUACAO g
+INNER JOIN ALUNO a       ON a.ID_ALUNO      = g.ID_ALUNO
+INNER JOIN MODALIDADE mo ON mo.ID_MODALIDADE = g.ID_MODALIDADE
+LEFT JOIN MATRICULA m    ON m.ID_ALUNO      = g.ID_ALUNO
+LEFT JOIN AULA au        ON au.DT_AULA >= DATE_SUB(g.DT_GRADUACAO, INTERVAL 90 DAY)
+                        AND au.DT_AULA <  g.DT_GRADUACAO
+LEFT JOIN PRESENCA pr    ON pr.ID_AULA = au.ID_AULA AND pr.ID_MATRICULA = m.ID_MATRICULA
+WHERE g.TP_AVALIACAO = 'EXAME_FAIXA'
+GROUP BY g.ID_GRADUACAO, a.NM_COMPLETO, mo.NM_MODALIDADE, g.TP_NIVEL_FAIXA,
+         g.DT_GRADUACAO, g.TP_RESULTADO, g.DS_MOTIVO_REPROVACAO
+ORDER BY g.DT_GRADUACAO DESC, a.NM_COMPLETO;
+
+-- G16 — Qual a taxa de aprovação nas avaliações de graduação, por modalidade e no total?
+-- Atende: P4 (graduação sem comprovação de frequência) e KPI06 [RF06, RO03, RO05]
+-- Janela de 12 meses até a data de referência. Entram o exame de faixa e a análise técnica do Boxe.
+SELECT mo.NM_MODALIDADE,
+       COUNT(*)                                                       AS QT_AVALIADOS,
+       SUM(CASE WHEN g.TP_RESULTADO = 'APROVADO' THEN 1 ELSE 0 END)   AS QT_APROVADOS,
+       ROUND(100.0 * SUM(CASE WHEN g.TP_RESULTADO = 'APROVADO' THEN 1 ELSE 0 END) / COUNT(*), 1) AS PC_APROVACAO
+FROM GRADUACAO g
+INNER JOIN MODALIDADE mo ON mo.ID_MODALIDADE = g.ID_MODALIDADE
+WHERE g.DT_GRADUACAO >  DATE_SUB(@DT_REF, INTERVAL 12 MONTH)
+  AND g.DT_GRADUACAO <= @DT_REF
+GROUP BY mo.ID_MODALIDADE, mo.NM_MODALIDADE
+UNION ALL
+SELECT 'TOTAL',
+       COUNT(*),
+       SUM(CASE WHEN g.TP_RESULTADO = 'APROVADO' THEN 1 ELSE 0 END),
+       ROUND(100.0 * SUM(CASE WHEN g.TP_RESULTADO = 'APROVADO' THEN 1 ELSE 0 END) / COUNT(*), 1)
+FROM GRADUACAO g
+WHERE g.DT_GRADUACAO >  DATE_SUB(@DT_REF, INTERVAL 12 MONTH)
+  AND g.DT_GRADUACAO <= @DT_REF;
+
+-- G17 — Quanto da receita de cada mês vai para o repasse aos professores?
+-- Atende: P6 (repasse aos professores calculado de memória) e KPI08 [RF04, RO09]
+-- Repasse = despesas pagas que têm professor; receita = parcelas pagas no mês (regime de caixa).
+-- As duas últimas colunas simulam o custo se as aulas do gestor (professor 1, que não recebe
+-- por aula) fossem pagas ao valor médio dos prestadores (G07 mostra as aulas de cada um).
+SELECT R.MES,
+       R.VL_REPASSE,
+       R.VL_RECEITA,
+       ROUND(100.0 * R.VL_REPASSE / R.VL_RECEITA, 1)                  AS PC_CUSTO_DOCENTE,
+       COALESCE(G.QT_AULAS_GESTOR, 0)                                 AS QT_AULAS_GESTOR,
+       ROUND(100.0 * (R.VL_REPASSE + COALESCE(G.QT_AULAS_GESTOR, 0) * V.VL_MEDIO_PRESTADOR) / R.VL_RECEITA, 1) AS PC_CUSTO_SE_GESTOR_FOSSE_PAGO
+FROM (SELECT DATE_FORMAT(d.DT_PAGAMENTO, '%Y-%m')                     AS MES,
+             SUM(d.VL_PAGO)                                           AS VL_REPASSE,
+             (SELECT SUM(p.VL_PAGO) FROM PAGAMENTO p
+               WHERE p.TP_STATUS_PAGAMENTO = 'PAGO'
+                 AND DATE_FORMAT(p.DT_PAGAMENTO, '%Y-%m') = DATE_FORMAT(d.DT_PAGAMENTO, '%Y-%m')) AS VL_RECEITA
+      FROM DESPESA d
+      WHERE d.ID_PROFESSOR IS NOT NULL
+        AND d.TP_SITUACAO_DESPESA = 'PAGO'
+      GROUP BY DATE_FORMAT(d.DT_PAGAMENTO, '%Y-%m')) R
+LEFT JOIN (SELECT DATE_FORMAT(au.DT_AULA, '%Y-%m') AS MES, COUNT(*) AS QT_AULAS_GESTOR
+           FROM AULA au
+           WHERE au.ID_PROFESSOR = 1
+           GROUP BY DATE_FORMAT(au.DT_AULA, '%Y-%m')) G ON G.MES = R.MES
+CROSS JOIN (SELECT AVG(VL_POR_AULA) AS VL_MEDIO_PRESTADOR FROM PROFESSOR WHERE ID_PROFESSOR <> 1) V
+WHERE R.MES BETWEEN '2026-08' AND '2026-10'
+ORDER BY R.MES;
+
+-- G18 — Quantas aulas experimentais já realizadas viraram matrícula em cada mês?
+-- Atende: P7 (contatos de aula experimental perdidos) e KPI09 [RF01, RO06]
+-- Só entram aulas já realizadas (DT_AULA antes da data de referência). O interessado PENDENTE
+-- ainda não decidiu e fica no denominador; por isso a taxa do mês corrente pode subir. G06 mostra
+-- a mesma conversão por modalidade.
+SELECT DATE_FORMAT(i.DT_AULA, '%Y-%m')                                AS MES_AULA,
+       COUNT(*)                                                       AS QT_AULAS_REALIZADAS,
+       SUM(CASE WHEN i.TP_STATUS = 'CONVERTIDO' THEN 1 ELSE 0 END)    AS QT_CONVERTIDOS,
+       SUM(CASE WHEN i.TP_STATUS = 'ENCERRADO'  THEN 1 ELSE 0 END)    AS QT_DESISTENTES,
+       SUM(CASE WHEN i.TP_STATUS = 'PENDENTE'   THEN 1 ELSE 0 END)    AS QT_SEM_DECISAO,
+       ROUND(100.0 * SUM(CASE WHEN i.TP_STATUS = 'CONVERTIDO' THEN 1 ELSE 0 END) / COUNT(*), 1) AS PC_CONVERSAO
+FROM INTERESSADO i
+WHERE i.DT_AULA < @DT_REF
+GROUP BY DATE_FORMAT(i.DT_AULA, '%Y-%m')
+ORDER BY MES_AULA;
 
 
 -- =====================================================================================
@@ -3611,7 +3797,7 @@ WHERE m.TP_SITUACAO_MATRICULA = 'ATIVA'
                   WHERE c.ID_ALUNO = a.ID_ALUNO);
 
 -- A02 — Algum aluno teve presença registrada enquanto estava bloqueado por parcela em atraso?
--- Verifica: RE07 (a partir do dia seguinte ao vencimento sem pagamento, o aluno é bloqueado
+-- Verifica: RE05 (a partir do dia seguinte ao vencimento sem pagamento, o aluno é bloqueado
 --           e não tem presença registrada)
 -- Bloqueio = aula depois do vencimento e (parcela ainda ATRASADO ou paga só depois da aula).
 SELECT a.ID_ALUNO,
@@ -3634,7 +3820,7 @@ WHERE au.DT_AULA > pg.DT_VENCIMENTO
 ORDER BY au.DT_AULA;
 
 -- A03 — Algum aluno teve presença registrada durante um trancamento?
--- Verifica: RE04 / RE07 (matrícula trancada fica suspensa e não registra presença)
+-- Verifica: RE02 / RE05 (matrícula trancada fica suspensa e não registra presença)
 SELECT a.ID_ALUNO,
        a.NM_COMPLETO,
        tr.ID_TRANCAMENTO,
@@ -3652,7 +3838,7 @@ WHERE au.DT_AULA >= tr.DT_INICIO
   AND (tr.DT_RETORNO_EFETIVA IS NULL OR au.DT_AULA < tr.DT_RETORNO_EFETIVA);
 
 -- A04 — Alguma turma, aula ou graduação está com professor de outra modalidade?
--- Verifica: RE05 (o professor só pode ser alocado a turmas, aulas e avaliações de graduação
+-- Verifica: RE03 (o professor só pode ser alocado a turmas, aulas e avaliações de graduação
 --           da modalidade a que está vinculado)
 -- Três verificações empilhadas com UNION ALL: o professor responsável pela TURMA, o
 -- professor que de fato deu cada AULA e o professor que avaliou cada GRADUACAO.
@@ -3683,23 +3869,39 @@ INNER JOIN MODALIDADE mg ON mg.ID_MODALIDADE = g.ID_MODALIDADE
 INNER JOIN MODALIDADE mp ON mp.ID_MODALIDADE = p.ID_MODALIDADE
 WHERE p.ID_MODALIDADE <> g.ID_MODALIDADE;
 
--- A05 — Existe aluno menor de 18 anos sem responsável legal ou sem atestado entregue?
--- Verifica: RE03 (menor de idade precisa de responsável e de atestado de aptidão física)
--- Não dá para ser CHECK porque a idade depende da data de hoje.
+-- A05 — Existe aluno ativo ou trancado sem atestado de aptidão física entregue, ou menor de
+--       18 anos sem responsável legal?
+-- Verifica: RE08 (o atestado vale para todos os alunos, adultos e menores) e RE07 (menor de
+--           idade precisa de responsável legal)
+-- Não dá para ser CHECK: a idade depende da data de hoje, e o atestado pode ficar em branco
+-- até a entrega. Aluno INATIVO não entra, porque já saiu da academia.
+-- O LEFT JOIN traz a data da 1ª matrícula, para mostrar há quantos dias o atestado está pendente.
 SELECT a.ID_ALUNO,
        a.NM_COMPLETO,
-       TIMESTAMPDIFF(YEAR, a.DT_NASCIMENTO, @DT_REF) AS QT_IDADE,
+       a.TP_STATUS_ALUNO,
+       TIMESTAMPDIFF(YEAR, a.DT_NASCIMENTO, @DT_REF)  AS QT_IDADE,
        a.ID_RESPONSAVEL,
        a.DT_ENTREGA_ATESTADO,
-       CASE WHEN a.ID_RESPONSAVEL IS NULL THEN 'SEM RESPONSÁVEL'
+       pm.DT_PRIMEIRA_MATRICULA,
+       DATEDIFF(@DT_REF, pm.DT_PRIMEIRA_MATRICULA)    AS QT_DIAS_DESDE_MATRICULA,
+       CASE WHEN TIMESTAMPDIFF(YEAR, a.DT_NASCIMENTO, @DT_REF) < 18
+                 AND a.ID_RESPONSAVEL IS NULL AND a.DT_ENTREGA_ATESTADO IS NULL
+                 THEN 'MENOR SEM RESPONSÁVEL E SEM ATESTADO'
+            WHEN TIMESTAMPDIFF(YEAR, a.DT_NASCIMENTO, @DT_REF) < 18
+                 AND a.ID_RESPONSAVEL IS NULL
+                 THEN 'MENOR SEM RESPONSÁVEL'
             ELSE 'SEM ATESTADO' END                   AS DS_PENDENCIA
 FROM ALUNO a
-WHERE TIMESTAMPDIFF(YEAR, a.DT_NASCIMENTO, @DT_REF) < 18
-  AND a.TP_STATUS_ALUNO <> 'INATIVO'
-  AND (a.ID_RESPONSAVEL IS NULL OR a.DT_ENTREGA_ATESTADO IS NULL);
+LEFT JOIN (SELECT ID_ALUNO, MIN(DT_MATRICULA) AS DT_PRIMEIRA_MATRICULA
+           FROM MATRICULA
+           GROUP BY ID_ALUNO) pm ON pm.ID_ALUNO = a.ID_ALUNO
+WHERE a.TP_STATUS_ALUNO <> 'INATIVO'
+  AND (   a.DT_ENTREGA_ATESTADO IS NULL
+       OR (TIMESTAMPDIFF(YEAR, a.DT_NASCIMENTO, @DT_REF) < 18 AND a.ID_RESPONSAVEL IS NULL))
+ORDER BY pm.DT_PRIMEIRA_MATRICULA, a.ID_ALUNO;
 
 -- A06 — Alguma turma está acima da capacidade ou abaixo do quórum mínimo da modalidade?
--- Verifica: RE01 (máximo de 30 alunos ativos por turma) e RE02 (alerta de quórum mínimo,
+-- Verifica: RE01 (máximo de 30 alunos ativos por turma) e RE06 (alerta de quórum mínimo,
 --           sem bloquear a aula)
 -- HAVING filtra depois da contagem (o WHERE não enxerga o resultado do COUNT).
 SELECT t.ID_TURMA,
@@ -3722,7 +3924,7 @@ HAVING COUNT(m.ID_MATRICULA) > t.QT_CAPACIDADE_MAXIMA
 ORDER BY t.ID_TURMA;
 
 -- A07 — Existe parcela com a situação desatualizada (PENDENTE já vencida ou ATRASADO ainda a vencer)?
--- Verifica: RO02 / RE07 (passado o vencimento no 5º dia útil, a parcela deve ficar ATRASADO
+-- Verifica: RO02 / RE05 (passado o vencimento no 5º dia útil, a parcela deve ficar ATRASADO
 --           e o aluno ser bloqueado). Parcela vencida marcada como PENDENTE deixa o
 --           inadimplente treinar sem bloqueio.
 SELECT pg.ID_PAGAMENTO,
@@ -3738,7 +3940,7 @@ WHERE (pg.TP_STATUS_PAGAMENTO = 'PENDENTE' AND pg.DT_VENCIMENTO < @DT_REF)
    OR (pg.TP_STATUS_PAGAMENTO = 'ATRASADO' AND pg.DT_VENCIMENTO >= @DT_REF);
 
 -- A08 — Algum cancelamento descumpriu a regra da multa rescisória?
--- Verifica: RO04 (cancelamento antecipado de plano de mais de 1 mês gera multa;
+-- Verifica: RO08 (cancelamento antecipado de plano de mais de 1 mês gera multa;
 --           plano de 1 mês cancela sem multa)
 SELECT c.ID_CONTRATO,
        a.NM_COMPLETO              AS NM_TITULAR,
@@ -3757,7 +3959,7 @@ WHERE c.DT_CANCELAMENTO IS NOT NULL
        OR (pl.QT_DURACAO_MESES = 1 AND c.VL_MULTA_RESCISORIA IS NOT NULL));
 
 -- A09 — A situação dos interessados bate com o cadastro de alunos?
--- Verifica: RO03 (aula experimental: CONVERTIDO deve ter aluno ligado; ENCERRADO ou
+-- Verifica: RO06 (aula experimental: CONVERTIDO deve ter aluno ligado; ENCERRADO ou
 --           PENDENTE não podem ter)
 SELECT i.ID_INTERESSADO,
        i.NM_INTERESSADO,
@@ -3772,7 +3974,7 @@ WHERE (i.TP_STATUS = 'CONVERTIDO'  AND a.ID_ALUNO IS NULL)
 
 -- A10 — Alguma parcela foi quitada com valor diferente do devido + multa + taxa de exame?
 -- Verifica: RO01 (o desconto é do plano, nunca concedido ao aluno isoladamente); o valor
---           esperado inclui a multa moratória (RO04) e a taxa de exame de faixa (RO06)
+--           esperado inclui a multa moratória (RO07) e a taxa de exame de faixa (RO05)
 SELECT pg.ID_PAGAMENTO,
        pg.ID_CONTRATO,
        a.NM_COMPLETO                                                         AS NM_TITULAR,
