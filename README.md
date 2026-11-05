@@ -1291,10 +1291,8 @@ Embora os dados individuais sejam fictícios, a **quantidade de registos** em ca
 | **`CONTRATO`** | **92** | Um contrato por aluno: 86 vigentes (ativos e trancados) + 6 cancelados = 92. Dois casos propositais para auditoria: o aluno 92 está matriculado sem contrato (A01) e o aluno 9 tem dois contratos vigentes (A12). No Plano Família, cada familiar tem o seu contrato (ver seção 1.5, item 11). |
 | **`PARTICIPA`** | **104** | Vincula cada contrato a pelo menos 1 modalidade (92), mais as 12 modalidades extras contratadas por alguns alunos. |
 | **`MATRICULA`** | **204** | Simula cada aluno a treinar em 1 a 3 turmas de cada modalidade do contrato: 188 matrículas ativas (média de 9 alunos por turma, de 6 a 13, bem abaixo do limite de 30 vagas) mais 16 de histórico (3 encerradas, 3 trancadas e 10 canceladas). |
-| **`PAGAMENTO`** | **325** | Simula de 79 a 83 mensalidades geradas por mês, uma por contrato vigente, durante 4 meses (agosto a novembro de 2026). |
 | **`PAGAMENTO`** | **324** | Simula de 80 a 83 mensalidades geradas por mês, uma por contrato vigente, durante 4 meses (agosto a novembro de 2026). |
 | **`AULA` e `PRESENCA`** | **74 / 654** | Simula todas as aulas dadas pelas 21 turmas em outubro/2026 e a lista de chamada diária dos alunos matriculados. |
-| **`AULA` e `PRESENCA`** | **85 / 704** | Simula as aulas de outubro/2026: 20 das 21 turmas com aula uma vez por semana, sem o feriado de 12/10 (a 21ª turma acabou de abrir), mais 1 aula de reposição, que não gera presença. A lista de chamada tem uma linha por matrícula ativa em cada aula. |
 | **`DESPESA`** | **50** | Simula as contas fixas mensais, compras semanais de limpeza e o repasse mensal aos 5 professores terceirizados. |
 | **`LOG_ACESSO` e Apoio 1FN** | **387** | 20 registos de auditoria de acesso + 367 registos de e-mails, telefones, qualificações e fichas de saúde separados na 1ª Forma Normal. |
 
